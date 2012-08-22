@@ -1,0 +1,7 @@
+C:\svnroot\mediaportal\MyLyrics\TranslateProvider\obj\Debug\ResolveAssemblyReference.cache
+C:\svnroot\mediaportal\MyLyrics\TranslateProvider\bin\Debug\TranslateProvider.dll
+C:\svnroot\mediaportal\MyLyrics\TranslateProvider\bin\Debug\TranslateProvider.pdb
+C:\svnroot\mediaportal\MyLyrics\TranslateProvider\bin\Debug\GoogleTranslateAPI.dll
+C:\svnroot\mediaportal\MyLyrics\TranslateProvider\bin\Debug\GoogleTranslateAPI.xml
+C:\svnroot\mediaportal\MyLyrics\TranslateProvider\obj\Debug\TranslateProvider.dll
+C:\svnroot\mediaportal\MyLyrics\TranslateProvider\obj\Debug\TranslateProvider.pdb
