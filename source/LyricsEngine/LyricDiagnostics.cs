@@ -56,7 +56,7 @@ namespace LyricsEngine
                     StartTimer();
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 ;
             }

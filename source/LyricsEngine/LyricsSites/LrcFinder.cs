@@ -45,7 +45,7 @@ namespace LyricsEngine.LyricsSites
                         lrc = lrcFinder.FindLRC(this.artist, this.title);
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     lrc = "Not found";
                 }
@@ -182,7 +182,7 @@ namespace LyricsEngine.LyricsSites
 
                 return Domain + @"/LrcFinder.asmx";
             }
-            catch (WebException e)
+            catch (WebException)
             {
                 WebExceptionOccured = true;
                 return null;
