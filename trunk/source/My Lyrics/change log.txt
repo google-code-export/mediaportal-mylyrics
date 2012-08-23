@@ -1,4 +1,4 @@
-Release notes to MyLyrics 1.6.1.0
+Release notes to MyLyrics 1.7.0
 
 MyLyrics displays the lyric of the currently played song inside MediaPortal.
 The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics. 
