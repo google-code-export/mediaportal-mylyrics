@@ -69,7 +69,9 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PreBuildEvent>subwcrev ..\..\.. ..\..\Properties\AssemblyInfo.cs ..\..\Properties\AssemblyInfo.cs</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>svn revert ..\..\Properties\AssemblyInfo.cs</PostBuildEvent>
   </PropertyGroup>
 </Project>
