@@ -218,7 +218,7 @@ namespace MyLyrics
             this.linkLabelForum.Size = new System.Drawing.Size(168, 15);
             this.linkLabelForum.TabIndex = 9;
             this.linkLabelForum.TabStop = true;
-            this.linkLabelForum.Tag = "http://forum.team-mediaportal.com/my_lyrics_plugin-f163.html";
+            this.linkLabelForum.Tag = "http://forum.team-mediaportal.com/forums/my-lyrics-plugin.163/";
             this.linkLabelForum.Text = "MyLyrics plugin forum section";
             this.linkLabelForum.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelForum_LinkClicked);
             // 
