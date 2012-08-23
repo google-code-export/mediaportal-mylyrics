@@ -69,7 +69,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) "C:\Program Files (x86)\Team MediaPortal\MediaPortal"
-copy $(TargetDir)\GoogleTranslateAPI.dll "C:\Program Files (x86)\Team MediaPortal\MediaPortal"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
