@@ -1,0 +1,1035 @@
+﻿<window>
+  <id>90478</id>
+  <defaultcontrol>20</defaultcontrol>
+  <allowoverlay>no</allowoverlay>
+  <controls>
+    <control>
+      <type>image</type>
+      <description>background image</description>
+      <id>0</id>
+      <posX>0</posX>
+      <posY>0</posY>
+      <texture>background.png</texture>
+    </control>
+    <control>
+      <type>textbox</type>
+      <description>The Lyric area basic</description>
+      <id>20</id>
+      <posX>48</posX>
+      <posY>104</posY>
+      <width>336</width>
+      <height>340</height>
+      <image>icon-folder.png</image>
+      <label>-</label>
+      <text>6</text>
+      <spinPosX>620</spinPosX>
+      <spinPosY>410</spinPosY>
+      <font>font12</font>
+      <onleft>2</onleft>
+      <onright>2</onright>
+      <onup>2</onup>
+      <ondown>2</ondown>
+      <textcolor>ffdddddd</textcolor>
+    </control>
+    <control>
+      <type>textbox</type>
+      <description>The Lyric area wide</description>
+      <id>21</id>
+      <posX>48</posX>
+      <posY>104</posY>
+      <width>640</width>
+      <height>340</height>
+      <image>icon-folder.png</image>
+      <label>-</label>
+      <text>6</text>
+      <spinPosX>620</spinPosX>
+      <spinPosY>410</spinPosY>
+      <font>font12</font>
+      <onleft>2</onleft>
+      <onright>2</onright>
+      <onup>2</onup>
+      <ondown>2</ondown>
+      <textcolor>ffdddddd</textcolor>
+    </control>
+    <control>
+      <type>textboxscrollup</type>
+      <description>The Lyric area basic</description>
+      <id>1020</id>
+      <posX>48</posX>
+      <posY>104</posY>
+      <width>336</width>
+      <height>318</height>
+      <image>icon-folder.png</image>
+      <label>-</label>
+      <text>6</text>
+      <spinPosX>320</spinPosX>
+      <spinPosY>400</spinPosY>
+      <seperator>----------------------------------------------------------------------------------------------</seperator>
+      <font>font12</font>
+      <onleft>2</onleft>
+      <onright>2</onright>
+      <onup>2</onup>
+      <ondown>2</ondown>
+      <textcolor>ffdddddd</textcolor>
+    </control>
+    <control>
+      <type>textboxscrollup</type>
+      <description>The Lyric area wide</description>
+      <id>1021</id>
+      <posX>48</posX>
+      <posY>104</posY>
+      <width>640</width>
+      <height>318</height>
+      <image>icon-folder.png</image>
+      <label>-</label>
+      <text>6</text>
+      <spinPosX>620</spinPosX>
+      <spinPosY>400</spinPosY>
+      <seperator>----------------------------------------------------------------------------------------------</seperator>
+      <font>font12</font>
+      <onleft>2</onleft>
+      <onright>2</onright>
+      <onup>2</onup>
+      <ondown>2</ondown>
+      <textcolor>ffdddddd</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>LrcPick status</description>
+      <id>1011</id>
+      <posX>410</posX>
+      <posY>50</posY>
+      <label></label>
+      <font>font13</font>
+      <textcolor>ffdddddd</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>Status</description>
+      <id>11</id>
+      <posX>48</posX>
+      <posY>112</posY>
+      <label>No media playing</label>
+      <font>font12</font>
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>image</type>
+      <description>menu background image</description>
+      <id>34</id>
+      <posX>31</posX>
+      <posY>425</posY>
+      <width>670</width>
+      <height>142</height>
+      <animation>WindowOpen</animation>
+      <texture>osd_bg.png</texture>
+    </control>
+    <control>
+      <type>fadelabel</type>
+      <description>track label</description>
+      <id>33</id>
+      <posX>138</posX>
+      <posY>512</posY>
+      <animation>WindowOpen</animation>
+      <label>#Play.Current.Track</label>
+      <font>font16</font>
+      <textcolor>80ffffff</textcolor>
+      <disabledcolor>ff808080</disabledcolor>
+    </control>
+    <control>
+      <type>fadelabel</type>
+      <description>track label</description>
+      <id>32</id>
+      <posX>138</posX>
+      <posY>484</posY>
+      <animation>WindowOpen</animation>
+      <label>#Play.Current.Artist</label>
+      <font>font16</font>
+      <textcolor>80ffffff</textcolor>
+      <disabledcolor>ff808080</disabledcolor>
+    </control>
+    <control>
+      <type>fadelabel</type>
+      <description>track label</description>
+      <id>30</id>
+      <posX>138</posX>
+      <posY>452</posY>
+      <animation>WindowOpen</animation>
+      <label>#Play.Current.Title</label>
+      <font>font18</font>
+      <textcolor>80ffffff</textcolor>
+      <disabledcolor>ff808080</disabledcolor>
+    </control>
+    <control>
+      <type>image</type>
+      <description>title image</description>
+      <id>36</id>
+      <posX>60</posX>
+      <posY>20</posY>
+      <animation>WindowOpen</animation>
+      <texture>music_logo.png</texture>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 8</description>
+      <id>308</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>304</posY>
+      <label>line 8</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 7</description>
+      <id>307</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>280</posY>
+      <label>line 7</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 6</description>
+      <id>306</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>256</posY>
+      <label>line 6</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 5</description>
+      <id>305</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>232</posY>
+      <label>line 5</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 4</description>
+      <id>304</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>208</posY>
+      <label>line 4</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 3</description>
+      <id>303</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>184</posY>
+      <label>line 3</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 2</description>
+      <id>302</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>160</posY>
+      <label>line 2</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 1</description>
+      <id>301</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>136</posY>
+      <label>line 1</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 0</description>
+      <id>300</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>112</posY>
+      <label>line 0</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>time 4</description>
+      <id>604</id>
+      <width>100</width>
+      <posX>8</posX>
+      <posY>210</posY>
+      <label>(xx:xx:xx)</label>
+      <font>font10</font>
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>time 3</description>
+      <id>603</id>
+      <width>100</width>
+      <posX>8</posX>
+      <posY>186</posY>
+      <label>(xx:xx:xx)</label>
+      <font>font10</font>
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>time 2</description>
+      <id>602</id>
+      <width>100</width>
+      <posX>8</posX>
+      <posY>162</posY>
+      <label>(xx:xx:xx)</label>
+      <font>font10</font>
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>time 1</description>
+      <id>601</id>
+      <width>100</width>
+      <posX>8</posX>
+      <posY>138</posY>
+      <label>(xx:xx:xx)</label>
+      <font>font10</font>
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>time 0</description>
+      <id>600</id>
+      <width>100</width>
+      <posX>8</posX>
+      <posY>114</posY>
+      <label>(xx:xx:xx)</label>
+      <font>font10</font>
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 4</description>
+      <id>204</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>208</posY>
+      <label>line 4</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 3</description>
+      <id>203</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>184</posY>
+      <label>line 3</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 2</description>
+      <id>202</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>160</posY>
+      <label>line 2</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 1</description>
+      <id>201</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>136</posY>
+      <label>line 1</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>image</type>
+      <description>title image</description>
+      <id>35</id>
+      <posX>60</posX>
+      <posY>20</posY>
+      <animation>WindowOpen</animation>
+      <texture>music_logo.png</texture>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 0</description>
+      <id>200</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>112</posY>
+      <label>line 0</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>time 5</description>
+      <id>605</id>
+      <width>100</width>
+      <posX>8</posX>
+      <posY>234</posY>
+      <label>(xx:xx:xx)</label>
+      <font>font10</font>
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 5</description>
+      <id>205</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>232</posY>
+      <label>line 5</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>time 6</description>
+      <id>606</id>
+      <width>100</width>
+      <posX>8</posX>
+      <posY>258</posY>
+      <label>(xx:xx:xx)</label>
+      <font>font10</font>
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 6</description>
+      <id>206</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>256</posY>
+      <label>line 6</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>time 7</description>
+      <id>607</id>
+      <width>100</width>
+      <posX>8</posX>
+      <posY>282</posY>
+      <label>(xx:xx:xx)</label>
+      <font>font10</font>
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 7</description>
+      <id>207</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>280</posY>
+      <label>line 7</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>time 8</description>
+      <id>608</id>
+      <width>100</width>
+      <posX>8</posX>
+      <posY>306</posY>
+      <label>(xx:xx:xx)</label>
+      <font>font10</font>
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 8</description>
+      <id>208</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>304</posY>
+      <label>line 8</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>time 9</description>
+      <id>609</id>
+      <width>100</width>
+      <posX>8</posX>
+      <posY>330</posY>
+      <label>(xx:xx:xx)</label>
+      <font>font10</font>
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 9</description>
+      <id>209</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>328</posY>
+      <label>line 9</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 9</description>
+      <id>309</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>328</posY>
+      <label>line 9</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>time 10</description>
+      <id>610</id>
+      <width>100</width>
+      <posX>8</posX>
+      <posY>354</posY>
+      <label>(xx:xx:xx)</label>
+      <font>font10</font>
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 10</description>
+      <id>210</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>352</posY>
+      <label>line 10</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 10</description>
+      <id>310</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>352</posY>
+      <label>line 10</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>time 11</description>
+      <id>611</id>
+      <width>100</width>
+      <posX>8</posX>
+      <posY>376</posY>
+      <label>(xx:xx:xx)</label>
+      <font>font10</font>
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 11</description>
+      <id>211</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>376</posY>
+      <label>line 11</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 11</description>
+      <id>311</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>376</posY>
+      <label>line 11</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>time 12</description>
+      <id>612</id>
+      <width>100</width>
+      <posX>8</posX>
+      <posY>402</posY>
+      <label>(xx:xx:xx)</label>
+      <font>font10</font>
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 12</description>
+      <id>212</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>400</posY>
+      <label>line 12</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 12</description>
+      <id>312</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>400</posY>
+      <label>line 12</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>image</type>
+      <description>nowplaying background</description>
+      <id>31</id>
+      <posX>392</posX>
+      <posY>58</posY>
+      <width>307</width>
+      <height>358</height>
+      <animation>WindowOpen</animation>
+      <texture>nowplaying_background.png</texture>
+    </control>
+    <control>
+      <type>image</type>
+      <description>album art image</description>
+      <id>112</id>
+      <posX>416</posX>
+      <posY>110</posY>
+      <width>250</width>
+      <height>250</height>
+      <zoom>yes</zoom>
+      <texture>background.png</texture>
+      <centered>yes</centered>
+    </control>
+    <control>
+      <type>fadelabel</type>
+      <description>year label</description>
+      <id>27</id>
+      <posX>604</posX>
+      <posY>78</posY>
+      <label>#Play.Current.Year</label>
+      <font>font14</font>
+      <textcolor>ffdddddd</textcolor>
+      <disabledcolor>80ffffff</disabledcolor>
+    </control>
+    <control>
+      <type>fadelabel</type>
+      <description>album label</description>
+      <id>26</id>
+      <posX>404</posX>
+      <posY>78</posY>
+      <animation>WindowOpen</animation>
+      <label>#Play.Current.Album</label>
+      <font>font14</font>
+      <textcolor>ffdddddd</textcolor>
+      <disabledcolor>80ffffff</disabledcolor>
+    </control>
+    <control>
+      <type>image</type>
+      <id>117</id>
+      <posX>450</posX>
+      <posY>373</posY>
+      <width>180</width>
+      <height>22</height>
+      <animation>WindowOpen</animation>
+      <texture>osd_progress_background.png</texture>
+    </control>
+    <control>
+      <type>progress</type>
+      <description>track progress</description>
+      <id>118</id>
+      <posX>438</posX>
+      <posY>373</posY>
+      <width>204</width>
+      <lefttexture>osd_progress_left.png</lefttexture>
+      <texturebg>progress_back.png</texturebg>
+      <midtexture>osd_progress_mid.png</midtexture>
+      <righttexture>osd_progress_right.png</righttexture>
+      <label>#percentage</label>
+      <visible>player.hasmedia</visible>
+    </control>
+    <control>
+      <type>label</type>
+      <description>track progress label</description>
+      <id>24</id>
+      <posX>404</posX>
+      <posY>374</posY>
+      <animation>WindowOpen</animation>
+      <label>#currentplaytime</label>
+      <font>font14</font>
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>track duration label</description>
+      <id>25</id>
+      <posX>675</posX>
+      <posY>374</posY>
+      <label>#duration</label>
+      <font>font14</font>
+      <align>right</align>
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>up next label</description>
+      <id>0</id>
+      <posX>664</posX>
+      <posY>457</posY>
+      <label>4541</label>
+      <font>font14</font>
+      <align>right</align>
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>fadelabel</type>
+      <description>next track label</description>
+      <id>121</id>
+      <posX>663</posX>
+      <posY>513</posY>
+      <label>#Play.Next.Title</label>
+      <align>right</align>
+      <textcolor>80ffffff</textcolor>
+      <disabledcolor>ff808080</disabledcolor>
+    </control>
+    <control>
+      <type>fadelabel</type>
+      <description>next artist label</description>
+      <id>123</id>
+      <posX>662</posX>
+      <posY>489</posY>
+      <label>#Play.Next.Artist</label>
+      <align>right</align>
+      <textcolor>80ffffff</textcolor>
+      <disabledcolor>ff808080</disabledcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 0</description>
+      <id>400</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>112</posY>
+      <colordiffuse>80ffffff</colordiffuse>
+      <label>line 0</label>
+      
+      <textcolor>80ffffff</textcolor>
+      <disabledcolor>ffffffff</disabledcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 0</description>
+      <id>500</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>112</posY>
+      <label>line 0</label>
+      
+      <textcolor>ffffffff</textcolor>
+      <disabledcolor>ffffffff</disabledcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 1</description>
+      <id>401</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>136</posY>
+      <label>line 1</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 1</description>
+      <id>501</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>136</posY>
+      <label>line 1</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 2</description>
+      <id>402</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>160</posY>
+      <label>line 2</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 2</description>
+      <id>502</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>160</posY>
+      <label>line 2</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 3</description>
+      <id>403</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>184</posY>
+      <label>line 3</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 3</description>
+      <id>503</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>184</posY>
+      <label>line 3</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 4</description>
+      <id>404</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>208</posY>
+      <label>line 4</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 4</description>
+      <id>504</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>208</posY>
+      <label>line 4</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 5</description>
+      <id>405</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>232</posY>
+      <label>line 5</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 5</description>
+      <id>505</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>232</posY>
+      <label>line 5</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 6</description>
+      <id>406</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>256</posY>
+      <label>line 6</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 6</description>
+      <id>506</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>256</posY>
+      <label>line 6</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 7</description>
+      <id>407</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>280</posY>
+      <label>line 7</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 7</description>
+      <id>507</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>280</posY>
+      <label>line 7</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 8</description>
+      <id>408</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>304</posY>
+      <label>line 8</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 8</description>
+      <id>508</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>304</posY>
+      <label>line 8</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 9</description>
+      <id>409</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>328</posY>
+      <label>line 9</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 9</description>
+      <id>509</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>328</posY>
+      <label>line 9</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 10</description>
+      <id>410</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>352</posY>
+      <label>line 10</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 10</description>
+      <id>510</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>352</posY>
+      <label>line 10</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 11</description>
+      <id>411</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>376</posY>
+      <label>line 11</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 11</description>
+      <id>511</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>376</posY>
+      <label>line 11</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 12</description>
+      <id>412</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>400</posY>
+      <label>line 12</label>
+      
+      <textcolor>80ffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>line 12</description>
+      <id>512</id>
+      <width>640</width>
+      <posX>72</posX>
+      <posY>400</posY>
+      <label>line 12</label>
+      
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <type>label</type>
+      <description>Screen Title</description>
+      <id>2</id>
+      <posX>219</posX>
+      <posY>78</posY>
+      <label>Titel</label>
+      <font>font16</font>
+      <textcolor>ffffffff</textcolor>
+    </control>
+  </controls>
+</window>

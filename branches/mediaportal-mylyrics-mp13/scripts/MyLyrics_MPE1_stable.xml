@@ -1,0 +1,1169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExtensionCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Items>
+    <PackageClass>
+      <Version>2.0</Version>
+      <Groups>
+        <Items>
+          <GroupItem Name="Default">
+            <DisplayName>Default</DisplayName>
+            <DefaulChecked>true</DefaulChecked>
+            <Description>Default</Description>
+            <Files>
+              <Items />
+            </Files>
+          </GroupItem>
+        </Items>
+      </Groups>
+      <Sections>
+        <Items />
+      </Sections>
+      <Dependencies>
+        <Items />
+      </Dependencies>
+      <PluginDependencies>
+        <Items />
+      </PluginDependencies>
+      <GeneralInfo>
+        <Name>MyLyrics</Name>
+        <Id>acdc23fa-19b4-4867-bf25-176e79753869</Id>
+        <Author>mackey</Author>
+        <HomePage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</HomePage>
+        <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
+        <UpdateUrl>http://code.google.com/p/mpmylyrics/source/browse/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
+        <Version>
+          <Major>1</Major>
+          <Minor>5</Minor>
+          <Build>0</Build>
+          <Revision>0</Revision>
+        </Version>
+        <ExtensionDescription>MyLyrics displays the lyric of the currently played song inside MediaPortal.
+
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics.
+</ExtensionDescription>
+        <VersionDescription>Release notes to MyLyrics 1.5.0.0
+
+MyLyrics displays the lyric of the currently played song inside MediaPortal.
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics. 
+
+Basic features:
+- Dynamic search for the lyric (both LRC's and plain lyrics) to the currently played music file.
+- Browse your music database and select the songs to which you want to find lyrics.
+- Batch search for lyrics matching songs in music database.
+- Search single title and select amoung lyrics from various lyrics sites.
+- Add/delete/edit lyrics and save changes in lyrics databases.
+- Import/export lyrics to/from music tags.
+- Include lyrics from the Internet, musictags, text- and lrc-files.
+- Create a LRC from a basic lyric on the fly and share it with the community.
+
+Keys:
+- E key (or '0' button on remote): Toggle between lyric and editor screen.
+- P key: Toggle between LRC and LRC Pick screen.
+- F key: Toggle between LRC and lyric mode. In lyric mode a new online search starts.
+- S key: Increase the vertical scroll speed in scroll mode. A total of six speed available.
+- Numeric keys (or left or right on remote) to select among various LRC's on LRC Pick screen
+- Enter key (or 'OK' or '#' on remote): Tag line in LRC editor mode.
+- Backslash key (or '*' on remote): Delete the last tagged line in LRC editor mode.
+- F9 (or info button on remote): Shows context menu
+
+Screens:
+- Lyric: shows lyric with coverart on the right.
+  (Two sub modes for both Lyrics basic and Lyrics wide: static (default) or scroll mode)
+- LRC: shows lrc file and coverart on the right.
+- LRC pick: uses BennieBoy's LRCFinder to select among different matching LRC entries.
+- LRC editor: enables the creation of lrc lyric from a plain lyric.
+- Translation screen. See a translated version of the lyric.
+
+Compatible with MediaPortal 1.0.2, MediaPortal 1.1.0 Beta and MediaPortal 1.1.0 RC1
+
+Changes and fixes since version 1.4.2.0 (by mackey):
+* Fix: Compatible with MediaPortal 1.1.0 RC 
+* Fix: Titles starting with parentheses wasn't always handled correctly
+* Fix: Within MP LRC files were always shown/searched even when LRCFinder was deselected within configuration
+* Fix: First word of every other line was not translated due to inproper position of newline code '\n'
+* Fix: Title string is stripped when parentheses before lyrics search, but not for LRC searches
+* Fix: Improved search for titles including special chars
+
+Changes and fixes since version 1.4.2.0 (by SilectExcept. A BIG thank you for the many and high-quality fixes!):
+* Add: added new setting: alwaysAskUploadToLrcFinder - it'll always ask for uploading newly created LRC to LrcFinder
+* Add: implemented left - right actions on lyric picker
+* Fix: inserted few functions from mediaportal guiplayingnow to try to improve artist/track detection and publishing of play properties
+* Fix: unified key codes so (see updated key list above!)
+* Fix: fixed missing album covers
+* Fix: improved thread handling and killing
+* Fix: some events on LRC pick status are automatically cleared on timer after 3 seconds
+* Fix: hiding/showing controls order so that for example done text doesn't show over not done
+* Fix: hiding image on stop playback
+* Fix: improved browsing through all the screens
+* Fix: long operations called from threads are now in background workers for nice cancellation
+* Fix: improved reading lyrics from tag
+* Fix: proper message when there is no enough data for search
+* Fix: proper messages in lrc editor when no music file is playing and when there is no valid lyrics
+* Fix: scrolling or static lyrics type will be remembered until mp restart (it'll not be reset on each page load)
+* Fix: action key 13 now implemented on ACTION_SELECT_ITEM as selecting item on context menu also triggered action_key_pressed
+* Fix: implemented action key '0' to show lrc editor, implemented action key '*' to tag line in lrc editor, implemented action key '#' to untag last line in lrc editor
+* Fix: fixed vertical scroll speed 6 (mp error, check comments)
+* Fix: restricted access to some screens in certain conditions
+* Fix: in lrc picker, current showing LRC is compared to those returned and automatically selected
+
+Changes relevant for skinners:
+* Add: label controls with the id 1400-1404. Two labels shows past LRC lines, one shows the current and the latter two show the upcoming lines. 
+* Add: since lrc time is shown only on lrc edit and lrc pick, skinner is able to choose weather lrc edit controls should be used for lrc pick also, so that he could move other LRC controls more to the left with no empty space when no lrc time is shown (&lt;define&gt;#MyLyrics.UseEditControlsOnLRCPick:yes&lt;/define&gt;)
+* Add: adding a usage for previously added define: &lt;define&gt;#MyLyrics.BlacklistedControlIDs:ID1,ID2,ID3,ID4,...&lt;/define&gt;
+* Add: allow skinner to define #MyLyrics.BlacklistedControlIDs in skin file, if any of those is focused plugin SELECT action (lrc pick select or lrc edit tag line) won't be executed
+* Add: reused control id 50 and renamed to CONTROL_TAGPICKBUTTON. button can now be used in LRC pick to pick lrc or in LRC edit to tag line. it does not have to be defined in skin file at all</VersionDescription>
+        <DevelopmentStatus>Stable</DevelopmentStatus>
+        <OnlineLocation>http://mpmylyrics.googlecode.com/files/MyLyrics_1500.MPE1</OnlineLocation>
+        <ReleaseDate>2010-03-14T19:49:03</ReleaseDate>
+        <Tags>mylyrics,lyrics,lrcs,music</Tags>
+        <Location>C:\Users\saamand\Desktop\MyLyrics_1500.MPE1</Location>
+        <Params>
+          <Items>
+            <SectionParam Name="Icon">
+              <Value>C:\svnroot\mediaportal\MyLyrics MPEI\icon.bmp</Value>
+              <ValueType>File</ValueType>
+              <Description>The icon file of the package (jpg,png,bmp)</Description>
+            </SectionParam>
+            <SectionParam Name="Online Icon">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>The icon file of the package stored online (jpg,png,bmp)</Description>
+            </SectionParam>
+            <SectionParam Name="Configuration file">
+              <Value />
+              <ValueType>Template</ValueType>
+              <Description>The file used to configure the extension.
+ If have .exe extension the will be executed
+ If have .dll extension used like MP plugin configuration</Description>
+            </SectionParam>
+            <SectionParam Name="Online Screenshots">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>Online stored screenshot urls separated by ; </Description>
+            </SectionParam>
+          </Items>
+        </Params>
+      </GeneralInfo>
+      <UniqueFileList>
+        <Items />
+      </UniqueFileList>
+      <ProjectSettings>
+        <FolderGroups />
+      </ProjectSettings>
+      <IsSkin>false</IsSkin>
+    </PackageClass>
+    <PackageClass>
+      <Version>2.0</Version>
+      <Groups>
+        <Items>
+          <GroupItem Name="Default">
+            <DisplayName>Default</DisplayName>
+            <DefaulChecked>true</DefaulChecked>
+            <Description>Default</Description>
+            <Files>
+              <Items />
+            </Files>
+          </GroupItem>
+        </Items>
+      </Groups>
+      <Sections>
+        <Items />
+      </Sections>
+      <Dependencies>
+        <Items />
+      </Dependencies>
+      <PluginDependencies>
+        <Items />
+      </PluginDependencies>
+      <GeneralInfo>
+        <Name>MyLyrics</Name>
+        <Id>acdc23fa-19b4-4867-bf25-176e79753869</Id>
+        <Author>mackey</Author>
+        <HomePage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</HomePage>
+        <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
+        <UpdateUrl>http://mpmylyrics.googlecode.com/svn/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
+        <Version>
+          <Major>1</Major>
+          <Minor>5</Minor>
+          <Build>1</Build>
+          <Revision>0</Revision>
+        </Version>
+        <ExtensionDescription>MyLyrics displays the lyric of the currently played song inside MediaPortal.
+
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics.
+</ExtensionDescription>
+        <VersionDescription>Release notes to MyLyrics 1.5.1.0
+
+MyLyrics displays the lyric of the currently played song inside MediaPortal.
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics. 
+
+Basic features:
+- Dynamic search for the lyric (both LRC's and plain lyrics) to the currently played music file.
+- Browse your music database and select the songs to which you want to find lyrics.
+- Batch search for lyrics matching songs in music database.
+- Search single title and select amoung lyrics from various lyrics sites.
+- Add/delete/edit lyrics and save changes in lyrics databases.
+- Import/export lyrics to/from music tags.
+- Include lyrics from the Internet, musictags, text- and lrc-files.
+- Create a LRC from a basic lyric on the fly and share it with the community.
+
+Keys:
+- E key (or '0' button on remote): Toggle between lyric and editor screen.
+- P key: Toggle between LRC and LRC Pick screen.
+- F key: Toggle between LRC and lyric mode. In lyric mode a new online search starts.
+- S key: Increase the vertical scroll speed in scroll mode. A total of six speed available.
+- Numeric keys (or left or right on remote) to select among various LRC's on LRC Pick screen
+- Enter key (or 'OK' or '#' on remote): Tag line in LRC editor mode.
+- Backslash key (or '*' on remote): Delete the last tagged line in LRC editor mode.
+- F9 (or info button on remote): Shows context menu
+
+Screens:
+- Lyric: shows lyric with coverart on the right.
+  (Two sub modes for both Lyrics basic and Lyrics wide: static (default) or scroll mode)
+- LRC: shows lrc file and coverart on the right.
+- LRC pick: uses BennieBoy's LRCFinder to select among different matching LRC entries.
+- LRC editor: enables the creation of lrc lyric from a plain lyric.
+- Translation screen. See a translated version of the lyric.
+
+Compatible with MediaPortal 1.1.0
+
+Changes and fixes since version 1.5.0.0
+* Lyricspluginsite.com was no longer suited for parsing and invalid lyric is returned. Support removed.
+* Replaced obsolete FreeResource calls with Dispose
+* Improved LRC edit when LRC is available (user can edit existing LRC if he wishes to - will be asked)
+* Improved LRC/Lyrics modes switch (user can now search for Lyrics even when LRC is available)
+* LRC file in music tag will always be used
+* Exiting the contextmenu without any action chosen the focus is given back to proper control
+* Added &lt;define&gt;#MyLyrics.EnableMouseControl:yes&lt;/define&gt; to enable mouse movement on the window (was disabled before), default stays as is (no mouse)
+* and some smaller fixes
+</VersionDescription>
+        <DevelopmentStatus>Stable</DevelopmentStatus>
+        <OnlineLocation>http://mpmylyrics.googlecode.com/files/MyLyrics_1510.MPE1</OnlineLocation>
+        <ReleaseDate>2010-08-04T19:49:03</ReleaseDate>
+        <Tags>mylyrics,lyrics,lrcs,music</Tags>
+        <Location>C:\Users\saamand\Desktop\MyLyrics_1510.MPE1</Location>
+        <Params>
+          <Items>
+            <SectionParam Name="Icon">
+              <Value>C:\svnroot\mediaportal\MyLyrics MPEI\icon.bmp</Value>
+              <ValueType>File</ValueType>
+              <Description>The icon file of the package (jpg,png,bmp)</Description>
+            </SectionParam>
+            <SectionParam Name="Online Icon">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>The icon file of the package stored online (jpg,png,bmp)</Description>
+            </SectionParam>
+            <SectionParam Name="Configuration file">
+              <Value />
+              <ValueType>Template</ValueType>
+              <Description>The file used to configure the extension.
+ If have .exe extension the will be executed
+ If have .dll extension used like MP plugin configuration</Description>
+            </SectionParam>
+            <SectionParam Name="Online Screenshots">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>Online stored screenshot urls separated by ; </Description>
+            </SectionParam>
+            <SectionParam Name="Force to uninstall on update">
+              <Value>yes</Value>
+              <ValueType>Bool</ValueType>
+              <Description>Show dialog and force to uninstall previous version when updating an extension. Should only be disabled if you are using an NSIS/MSI installer.</Description>
+            </SectionParam>
+          </Items>
+        </Params>
+      </GeneralInfo>
+      <UniqueFileList>
+        <Items />
+      </UniqueFileList>
+      <ProjectSettings>
+        <FolderGroups />
+      </ProjectSettings>
+      <IsSkin>false</IsSkin>
+    </PackageClass>
+    <PackageClass>
+      <Version>2.0</Version>
+      <Groups>
+        <Items>
+          <GroupItem Name="Default">
+            <DisplayName>Default</DisplayName>
+            <DefaulChecked>true</DefaulChecked>
+            <Description>Default</Description>
+            <Files>
+              <Items />
+            </Files>
+          </GroupItem>
+        </Items>
+      </Groups>
+      <Sections>
+        <Items />
+      </Sections>
+      <Dependencies>
+        <Items />
+      </Dependencies>
+      <PluginDependencies>
+        <Items />
+      </PluginDependencies>
+      <GeneralInfo>
+        <Name>MyLyrics</Name>
+        <Id>acdc23fa-19b4-4867-bf25-176e79753869</Id>
+        <Author>mackey</Author>
+        <HomePage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</HomePage>
+        <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
+        <UpdateUrl>http://mpmylyrics.googlecode.com/svn/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
+        <Version>
+          <Major>1</Major>
+          <Minor>5</Minor>
+          <Build>2</Build>
+          <Revision>0</Revision>
+        </Version>
+        <ExtensionDescription>MyLyrics displays the lyric of the currently played song inside MediaPortal.
+
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics.
+</ExtensionDescription>
+        <VersionDescription>Release notes to MyLyrics 1.5.2.0
+
+MyLyrics displays the lyric of the currently played song inside MediaPortal.
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics. 
+
+Basic features:
+- Dynamic search for the lyric (both LRC's and plain lyrics) to the currently played music file.
+- Browse your music database and select the songs to which you want to find lyrics.
+- Batch search for lyrics matching songs in music database.
+- Search single title and select amoung lyrics from various lyrics sites.
+- Add/delete/edit lyrics and save changes in lyrics databases.
+- Import/export lyrics to/from music tags.
+- Include lyrics from the Internet, musictags, text- and lrc-files.
+- Create a LRC from a basic lyric on the fly and share it with the community.
+
+Keys:
+- E key (or '0' button on remote): Toggle between lyric and editor screen.
+- P key: Toggle between LRC and LRC Pick screen.
+- F key: Toggle between LRC and lyric mode. In lyric mode a new online search starts.
+- S key: Increase the vertical scroll speed in scroll mode. A total of six speed available.
+- Numeric keys (or left or right on remote) to select among various LRC's on LRC Pick screen
+- Enter key (or 'OK' or '#' on remote): Tag line in LRC editor mode.
+- Backslash key (or '*' on remote): Delete the last tagged line in LRC editor mode.
+- F9 (or info button on remote): Shows context menu
+
+Screens:
+- Lyric: shows lyric with coverart on the right.
+  (Two sub modes for both Lyrics basic and Lyrics wide: static (default) or scroll mode)
+- LRC: shows lrc file and coverart on the right.
+- LRC pick: uses BennieBoy's LRCFinder to select among different matching LRC entries.
+- LRC editor: enables the creation of lrc lyric from a plain lyric.
+- Translation screen. See a translated version of the lyric.
+
+Compatible with MediaPortal 1.1.0 nad 1.1.1
+
+Changes and fixes since version 1.5.1.0
+- Fix: LyricsPluginSite fixed and reenabled (big thanks to yoavain).
+- Fix: Lyrics007 which didn't return valid result.
+- Rem: LyricWiki didn't work and could not be fixed.
+</VersionDescription>
+        <DevelopmentStatus>Stable</DevelopmentStatus>
+        <OnlineLocation>http://mpmylyrics.googlecode.com/files/MyLyrics_1520.MPE1</OnlineLocation>
+        <ReleaseDate>2010-10-03T19:49:03</ReleaseDate>
+        <Tags>mylyrics,lyrics,lrcs,music</Tags>
+        <Location>C:\Users\saamand\Desktop\MyLyrics_1520.MPE1</Location>
+        <Params>
+          <Items>
+            <SectionParam Name="Icon">
+              <Value>C:\svnroot\mediaportal\MyLyrics MPEI\icon.bmp</Value>
+              <ValueType>File</ValueType>
+              <Description>The icon file of the package (jpg,png,bmp)</Description>
+            </SectionParam>
+            <SectionParam Name="Online Icon">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>The icon file of the package stored online (jpg,png,bmp)</Description>
+            </SectionParam>
+            <SectionParam Name="Configuration file">
+              <Value />
+              <ValueType>Template</ValueType>
+              <Description>The file used to configure the extension.
+ If have .exe extension the will be executed
+ If have .dll extension used like MP plugin configuration</Description>
+            </SectionParam>
+            <SectionParam Name="Online Screenshots">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>Online stored screenshot urls separated by ; </Description>
+            </SectionParam>
+            <SectionParam Name="Force to uninstall on update">
+              <Value>yes</Value>
+              <ValueType>Bool</ValueType>
+              <Description>Show dialog and force to uninstall previous version when updating an extension. Should only be disabled if you are using an NSIS/MSI installer.</Description>
+            </SectionParam>
+          </Items>
+        </Params>
+      </GeneralInfo>
+      <UniqueFileList>
+        <Items />
+      </UniqueFileList>
+      <ProjectSettings>
+        <FolderGroups />
+      </ProjectSettings>
+      <IsSkin>false</IsSkin>
+    </PackageClass>
+    <PackageClass>
+      <Version>2.0</Version>
+      <Groups>
+        <Items>
+          <GroupItem Name="Default">
+            <DisplayName>Default</DisplayName>
+            <DefaulChecked>true</DefaulChecked>
+            <Description>Default</Description>
+            <Files>
+              <Items />
+            </Files>
+          </GroupItem>
+        </Items>
+      </Groups>
+      <Sections>
+        <Items />
+      </Sections>
+      <Dependencies>
+        <Items />
+      </Dependencies>
+      <PluginDependencies>
+        <Items />
+      </PluginDependencies>
+      <GeneralInfo>
+        <Name>MyLyrics</Name>
+        <Id>acdc23fa-19b4-4867-bf25-176e79753869</Id>
+        <Author>mackey</Author>
+        <HomePage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</HomePage>
+        <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
+        <UpdateUrl>http://mpmylyrics.googlecode.com/svn/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
+        <Version>
+          <Major>1</Major>
+          <Minor>5</Minor>
+          <Build>3</Build>
+          <Revision>0</Revision>
+        </Version>
+        <ExtensionDescription>MyLyrics displays the lyric of the currently played song inside MediaPortal.
+
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics.
+</ExtensionDescription>
+        <VersionDescription>Release notes to MyLyrics 1.5.3.0
+
+MyLyrics displays the lyric of the currently played song inside MediaPortal.
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics. 
+
+Basic features:
+- Dynamic search for the lyric (both LRC's and plain lyrics) to the currently played music file.
+- Browse your music database and select the songs to which you want to find lyrics.
+- Batch search for lyrics matching songs in music database.
+- Search single title and select amoung lyrics from various lyrics sites.
+- Add/delete/edit lyrics and save changes in lyrics databases.
+- Import/export lyrics to/from music tags.
+- Include lyrics from the Internet, musictags, text- and lrc-files.
+- Create a LRC from a basic lyric on the fly and share it with the community.
+
+Keys:
+- E key (or '0' button on remote): Toggle between lyric and editor screen.
+- P key: Toggle between LRC and LRC Pick screen.
+- F key: Toggle between LRC and lyric mode. In lyric mode a new online search starts.
+- S key: Increase the vertical scroll speed in scroll mode. A total of six speed available.
+- Numeric keys (or left or right on remote) to select among various LRC's on LRC Pick screen
+- Enter key (or 'OK' or '#' on remote): Tag line in LRC editor mode.
+- Backslash key (or '*' on remote): Delete the last tagged line in LRC editor mode.
+- F9 (or info button on remote): Shows context menu
+
+Screens:
+- Lyric: shows lyric with coverart on the right.
+  (Two sub modes for both Lyrics basic and Lyrics wide: static (default) or scroll mode)
+- LRC: shows lrc file and coverart on the right.
+- LRC pick: uses BennieBoy's LRCFinder to select among different matching LRC entries.
+- LRC editor: enables the creation of lrc lyric from a plain lyric.
+- Translation screen. See a translated version of the lyric.
+
+Compatible with MediaPortal 1.1.0 nad 1.1.1
+
+Changes and fixes since version 1.5.2.0
+- Fix: LyricsPluginSite changed once again and an invalid result was when lyric not found.
+
+Changes and fixes since version 1.5.1.0
+- Fix: LyricsPluginSite fixed and reenabled (big thanks to yoavain).
+- Fix: Lyrics007 which didn't return valid result.
+- Rem: LyricWiki didn't work and could not be fixed.</VersionDescription>
+        <DevelopmentStatus>Stable</DevelopmentStatus>
+        <OnlineLocation>http://mpmylyrics.googlecode.com/files/MyLyrics_1530.MPE1</OnlineLocation>
+        <ReleaseDate>2010-10-05T19:49:03</ReleaseDate>
+        <Tags>mylyrics,lyrics,lrcs,music</Tags>
+        <Location>C:\Users\saamand\Desktop\MyLyrics_1530.MPE1</Location>
+        <Params>
+          <Items>
+            <SectionParam Name="Icon">
+              <Value>C:\svnroot\mediaportal\MyLyrics MPEI\icon.bmp</Value>
+              <ValueType>File</ValueType>
+              <Description>The icon file of the package (jpg,png,bmp)</Description>
+            </SectionParam>
+            <SectionParam Name="Online Icon">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>The icon file of the package stored online (jpg,png,bmp)</Description>
+            </SectionParam>
+            <SectionParam Name="Configuration file">
+              <Value />
+              <ValueType>Template</ValueType>
+              <Description>The file used to configure the extension.
+ If have .exe extension the will be executed
+ If have .dll extension used like MP plugin configuration</Description>
+            </SectionParam>
+            <SectionParam Name="Online Screenshots">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>Online stored screenshot urls separated by ; </Description>
+            </SectionParam>
+            <SectionParam Name="Force to uninstall on update">
+              <Value>yes</Value>
+              <ValueType>Bool</ValueType>
+              <Description>Show dialog and force to uninstall previous version when updating an extension. Should only be disabled if you are using an NSIS/MSI installer.</Description>
+            </SectionParam>
+          </Items>
+        </Params>
+      </GeneralInfo>
+      <UniqueFileList>
+        <Items />
+      </UniqueFileList>
+      <ProjectSettings>
+        <FolderGroups />
+      </ProjectSettings>
+      <IsSkin>false</IsSkin>
+    </PackageClass>
+    <PackageClass>
+      <Version>2.0</Version>
+      <Groups>
+        <Items>
+          <GroupItem Name="Default">
+            <DisplayName>Default</DisplayName>
+            <DefaulChecked>true</DefaulChecked>
+            <Description>Default</Description>
+            <Files>
+              <Items />
+            </Files>
+          </GroupItem>
+        </Items>
+      </Groups>
+      <Sections>
+        <Items />
+      </Sections>
+      <Dependencies>
+        <Items />
+      </Dependencies>
+      <PluginDependencies>
+        <Items />
+      </PluginDependencies>
+      <GeneralInfo>
+        <Name>MyLyrics</Name>
+        <Id>acdc23fa-19b4-4867-bf25-176e79753869</Id>
+        <Author>mackey</Author>
+        <HomePage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</HomePage>
+        <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
+        <UpdateUrl>http://mpmylyrics.googlecode.com/svn/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
+        <Version>
+          <Major>1</Major>
+          <Minor>5</Minor>
+          <Build>4</Build>
+          <Revision>0</Revision>
+        </Version>
+        <ExtensionDescription>MyLyrics displays the lyric of the currently played song inside MediaPortal.
+
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics.
+</ExtensionDescription>
+        <VersionDescription>Release notes to MyLyrics 1.5.4.0
+
+MyLyrics displays the lyric of the currently played song inside MediaPortal.
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics. 
+
+Basic features:
+- Dynamic search for the lyric (both LRC's and plain lyrics) to the currently played music file.
+- Browse your music database and select the songs to which you want to find lyrics.
+- Batch search for lyrics matching songs in music database.
+- Search single title and select amoung lyrics from various lyrics sites.
+- Add/delete/edit lyrics and save changes in lyrics databases.
+- Import/export lyrics to/from music tags.
+- Include lyrics from the Internet, musictags, text- and lrc-files.
+- Create a LRC from a basic lyric on the fly and share it with the community.
+
+Keys:
+- E key (or '0' button on remote): Toggle between lyric and editor screen.
+- P key: Toggle between LRC and LRC Pick screen.
+- F key: Toggle between LRC and lyric mode. In lyric mode a new online search starts.
+- S key: Increase the vertical scroll speed in scroll mode. A total of six speed available.
+- Numeric keys (or left or right on remote) to select among various LRC's on LRC Pick screen
+- Enter key (or 'OK' or '#' on remote): Tag line in LRC editor mode.
+- Backslash key (or '*' on remote): Delete the last tagged line in LRC editor mode.
+- F9 (or info button on remote): Shows context menu
+
+Screens:
+- Lyric: shows lyric with coverart on the right.
+  (Two sub modes for both Lyrics basic and Lyrics wide: static (default) or scroll mode)
+- LRC: shows lrc file and coverart on the right.
+- LRC pick: uses BennieBoy's LRCFinder to select among different matching LRC entries.
+- LRC editor: enables the creation of lrc lyric from a plain lyric.
+- Translation screen. See a translated version of the lyric.
+
+Compatible with MediaPortal 1.1.0 nad 1.1.1
+
+Changes and fixes since version 1.5.3.0
+- Add: Gui property #currentmodule returns user defined plugin name
+- Fix: LRC tagging offset value wasn't saved in version 1.5.2.0
+- Fix: Minor fixes in configuration</VersionDescription>
+        <DevelopmentStatus>Stable</DevelopmentStatus>
+        <OnlineLocation>http://mpmylyrics.googlecode.com/files/MyLyrics_1540.MPE1</OnlineLocation>
+        <ReleaseDate>2010-11-21T19:49:03</ReleaseDate>
+        <Tags>mylyrics,lyrics,lrcs,music</Tags>
+        <Location>C:\Users\saamand\Desktop\MyLyrics_1540.MPE1</Location>
+        <Params>
+          <Items>
+            <SectionParam Name="Icon">
+              <Value>C:\svnroot\mediaportal\MyLyrics MPEI\icon.bmp</Value>
+              <ValueType>File</ValueType>
+              <Description>The icon file of the package (jpg,png,bmp)</Description>
+            </SectionParam>
+            <SectionParam Name="Online Icon">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>The icon file of the package stored online (jpg,png,bmp)</Description>
+            </SectionParam>
+            <SectionParam Name="Configuration file">
+              <Value />
+              <ValueType>Template</ValueType>
+              <Description>The file used to configure the extension.
+ If have .exe extension the will be executed
+ If have .dll extension used like MP plugin configuration</Description>
+            </SectionParam>
+            <SectionParam Name="Online Screenshots">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>Online stored screenshot urls separated by ; </Description>
+            </SectionParam>
+            <SectionParam Name="Force to uninstall on update">
+              <Value>yes</Value>
+              <ValueType>Bool</ValueType>
+              <Description>Show dialog and force to uninstall previous version when updating an extension. Should only be disabled if you are using an NSIS/MSI installer.</Description>
+            </SectionParam>
+          </Items>
+        </Params>
+      </GeneralInfo>
+      <UniqueFileList>
+        <Items />
+      </UniqueFileList>
+      <ProjectSettings>
+        <FolderGroups />
+      </ProjectSettings>
+      <IsSkin>false</IsSkin>
+    </PackageClass>
+    <PackageClass>
+      <Version>2.0</Version>
+      <Groups>
+        <Items>
+          <GroupItem Name="Default">
+            <DisplayName>Default</DisplayName>
+            <DefaulChecked>true</DefaulChecked>
+            <Description>Default</Description>
+            <Files>
+              <Items />
+            </Files>
+          </GroupItem>
+        </Items>
+      </Groups>
+      <Sections>
+        <Items />
+      </Sections>
+      <Dependencies>
+        <Items />
+      </Dependencies>
+      <PluginDependencies>
+        <Items />
+      </PluginDependencies>
+      <GeneralInfo>
+        <Name>MyLyrics</Name>
+        <Id>acdc23fa-19b4-4867-bf25-176e79753869</Id>
+        <Author>mackey</Author>
+        <HomePage>http://wiki.team-mediaportal.com/1_MEDIAPORTAL_1/17_Extensions/3_Plugins/MyLyrics</HomePage>
+        <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
+        <UpdateUrl>http://mpmylyrics.googlecode.com/svn/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
+        <Version>
+          <Major>1</Major>
+          <Minor>5</Minor>
+          <Build>4</Build>
+          <Revision>0</Revision>
+        </Version>
+        <ExtensionDescription>MyLyrics displays the lyric of the currently played song inside MediaPortal.
+
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics.
+</ExtensionDescription>
+        <VersionDescription>Release notes to MyLyrics 1.6.0.0
+
+MyLyrics displays the lyric of the currently played song inside MediaPortal.
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics. 
+
+Basic features:
+- Dynamic search for the lyric (both LRC's and plain lyrics) to the currently played music file.
+- Browse your music database and select the songs to which you want to find lyrics.
+- Batch search for lyrics matching songs in music database.
+- Search single title and select amoung lyrics from various lyrics sites.
+- Add/delete/edit lyrics and save changes in lyrics databases.
+- Import/export lyrics to/from music tags.
+- Include lyrics from the Internet, musictags, text- and lrc-files.
+- Create a LRC from a basic lyric on the fly and share it with the community.
+
+Keys:
+- E key (or '0' button on remote): Toggle between lyric and editor screen.
+- P key: Toggle between LRC and LRC Pick screen.
+- F key: Toggle between LRC and lyric mode. In lyric mode a new online search starts.
+- S key: Increase the vertical scroll speed in scroll mode. A total of six speed available.
+- Numeric keys (or left or right on remote) to select among various LRC's on LRC Pick screen
+- Enter key (or 'OK' or '#' on remote): Tag line in LRC editor mode.
+- Backslash key (or '*' on remote): Delete the last tagged line in LRC editor mode.
+- F9 (or info button on remote): Shows context menu
+
+Screens:
+- Lyric: shows lyric with coverart on the right.
+  (Two sub modes for both Lyrics basic and Lyrics wide: static (default) or scroll mode)
+- LRC: shows lrc file and coverart on the right.
+- LRC pick: uses BennieBoy's LRCFinder to select among different matching LRC entries.
+- LRC editor: enables the creation of lrc lyric from a plain lyric.
+- Translation screen. See a translated version of the lyric.
+
+Compatible with MediaPortal 1.2.0 beta
+
+Changes and fixes since version 1.5.5.0
+- Add: Now compatible with MediaPotal 1.2.0 beta </VersionDescription>
+        <DevelopmentStatus>Stable</DevelopmentStatus>
+        <OnlineLocation>http://mpmylyrics.googlecode.com/files/MyLyrics_1600.MPE1</OnlineLocation>
+        <ReleaseDate>2011-03-09T19:49:03</ReleaseDate>
+        <Tags>mylyrics,lyrics,lrcs,music</Tags>
+        <Location>C:\Users\saamand\Desktop\MyLyrics_1600.MPE1</Location>
+        <Params>
+          <Items>
+            <SectionParam Name="Icon">
+              <Value>C:\svnroot\mediaportal\MyLyrics MPEI\icon.bmp</Value>
+              <ValueType>File</ValueType>
+              <Description>The icon file of the package (jpg,png,bmp)</Description>
+            </SectionParam>
+            <SectionParam Name="Online Icon">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>The icon file of the package stored online (jpg,png,bmp)</Description>
+            </SectionParam>
+            <SectionParam Name="Configuration file">
+              <Value />
+              <ValueType>Template</ValueType>
+              <Description>The file used to configure the extension.
+ If have .exe extension the will be executed
+ If have .dll extension used like MP plugin configuration</Description>
+            </SectionParam>
+            <SectionParam Name="Online Screenshots">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>Online stored screenshot urls separated by ; </Description>
+            </SectionParam>
+            <SectionParam Name="Force to uninstall on update">
+              <Value>yes</Value>
+              <ValueType>Bool</ValueType>
+              <Description>Show dialog and force to uninstall previous version when updating an extension. Should only be disabled if you are using an NSIS/MSI installer.</Description>
+            </SectionParam>
+          </Items>
+        </Params>
+      </GeneralInfo>
+      <UniqueFileList>
+        <Items />
+      </UniqueFileList>
+      <ProjectSettings>
+        <FolderGroups />
+      </ProjectSettings>
+      <IsSkin>false</IsSkin>
+    </PackageClass>
+    <PackageClass>
+      <Version>2.0</Version>
+      <Groups>
+        <Items>
+          <GroupItem Name="Default">
+            <DisplayName>Default</DisplayName>
+            <DefaulChecked>true</DefaulChecked>
+            <Description>Default</Description>
+            <Files>
+              <Items />
+            </Files>
+          </GroupItem>
+        </Items>
+      </Groups>
+      <Sections>
+        <Items />
+      </Sections>
+      <Dependencies>
+        <Items />
+      </Dependencies>
+      <PluginDependencies>
+        <Items />
+      </PluginDependencies>
+      <GeneralInfo>
+        <Name>MyLyrics</Name>
+        <Id>acdc23fa-19b4-4867-bf25-176e79753869</Id>
+        <Author>mackey</Author>
+        <HomePage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</HomePage>
+        <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
+        <UpdateUrl>http://mpmylyrics.googlecode.com/svn/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
+        <Version>
+          <Major>1</Major>
+          <Minor>5</Minor>
+          <Build>5</Build>
+          <Revision>0</Revision>
+        </Version>
+        <ExtensionDescription>MyLyrics displays the lyric of the currently played song inside MediaPortal.
+
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics.
+</ExtensionDescription>
+        <VersionDescription>Release notes to MyLyrics 1.5.5.0
+
+MyLyrics displays the lyric of the currently played song inside MediaPortal.
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics. 
+
+Basic features:
+- Dynamic search for the lyric (both LRC's and plain lyrics) to the currently played music file.
+- Browse your music database and select the songs to which you want to find lyrics.
+- Batch search for lyrics matching songs in music database.
+- Search single title and select amoung lyrics from various lyrics sites.
+- Add/delete/edit lyrics and save changes in lyrics databases.
+- Import/export lyrics to/from music tags.
+- Include lyrics from the Internet, musictags, text- and lrc-files.
+- Create a LRC from a basic lyric on the fly and share it with the community.
+
+Keys:
+- E key (or '0' button on remote): Toggle between lyric and editor screen.
+- P key: Toggle between LRC and LRC Pick screen.
+- F key: Toggle between LRC and lyric mode. In lyric mode a new online search starts.
+- S key: Increase the vertical scroll speed in scroll mode. A total of six speed available.
+- Numeric keys (or left or right on remote) to select among various LRC's on LRC Pick screen
+- Enter key (or 'OK' or '#' on remote): Tag line in LRC editor mode.
+- Backslash key (or '*' on remote): Delete the last tagged line in LRC editor mode.
+- F9 (or info button on remote): Shows context menu
+
+Screens:
+- Lyric: shows lyric with coverart on the right.
+  (Two sub modes for both Lyrics basic and Lyrics wide: static (default) or scroll mode)
+- LRC: shows lrc file and coverart on the right.
+- LRC pick: uses BennieBoy's LRCFinder to select among different matching LRC entries.
+- LRC editor: enables the creation of lrc lyric from a plain lyric.
+- Translation screen. See a translated version of the lyric.
+
+Compatible with MediaPortal 1.1.0 nad 1.1.1
+
+Changes and fixes since version 1.5.3.0
+- Add: Gui property #currentmodule returns user defined plugin name
+- Fix: LRC tagging offset value wasn't saved in version 1.5.2.0
+- Fix: Minor fixes in configuration</VersionDescription>
+        <DevelopmentStatus>Stable</DevelopmentStatus>
+        <OnlineLocation>http://mpmylyrics.googlecode.com/files/MyLyrics_1550.MPE1</OnlineLocation>
+        <ReleaseDate>2010-11-21T19:49:03</ReleaseDate>
+        <Tags>mylyrics,lyrics,lrcs,music</Tags>
+        <Location>C:\Users\saamand\Desktop\MyLyrics_1550.MPE1</Location>
+        <Params>
+          <Items>
+            <SectionParam Name="Icon">
+              <Value>C:\svnroot\mediaportal\MyLyrics MPEI\icon.bmp</Value>
+              <ValueType>File</ValueType>
+              <Description>The icon file of the package (jpg,png,bmp)</Description>
+            </SectionParam>
+            <SectionParam Name="Online Icon">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>The icon file of the package stored online (jpg,png,bmp)</Description>
+            </SectionParam>
+            <SectionParam Name="Configuration file">
+              <Value />
+              <ValueType>Template</ValueType>
+              <Description>The file used to configure the extension.
+ If have .exe extension the will be executed
+ If have .dll extension used like MP plugin configuration</Description>
+            </SectionParam>
+            <SectionParam Name="Online Screenshots">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>Online stored screenshot urls separated by ; </Description>
+            </SectionParam>
+            <SectionParam Name="Force to uninstall on update">
+              <Value>yes</Value>
+              <ValueType>Bool</ValueType>
+              <Description>Show dialog and force to uninstall previous version when updating an extension. Should only be disabled if you are using an NSIS/MSI installer.</Description>
+            </SectionParam>
+          </Items>
+        </Params>
+      </GeneralInfo>
+      <UniqueFileList>
+        <Items />
+      </UniqueFileList>
+      <ProjectSettings>
+        <FolderGroups />
+      </ProjectSettings>
+      <IsSkin>false</IsSkin>
+    </PackageClass>
+    <PackageClass>
+      <Version>2.0</Version>
+      <Groups>
+        <Items>
+          <GroupItem Name="Default">
+            <DisplayName>Default</DisplayName>
+            <DefaulChecked>true</DefaulChecked>
+            <Description>Default</Description>
+            <Files>
+              <Items />
+            </Files>
+          </GroupItem>
+        </Items>
+      </Groups>
+      <Sections>
+        <Items />
+      </Sections>
+      <Dependencies>
+        <Items />
+      </Dependencies>
+      <PluginDependencies>
+        <Items />
+      </PluginDependencies>
+      <GeneralInfo>
+        <Name>MyLyrics</Name>
+        <Id>acdc23fa-19b4-4867-bf25-176e79753869</Id>
+        <Author>mackey</Author>
+        <HomePage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</HomePage>
+        <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
+        <UpdateUrl>http://mpmylyrics.googlecode.com/svn/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
+        <Version>
+          <Major>1</Major>
+          <Minor>5</Minor>
+          <Build>5</Build>
+          <Revision>0</Revision>
+        </Version>
+        <ExtensionDescription>MyLyrics displays the lyric of the currently played song inside MediaPortal.
+
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics.
+</ExtensionDescription>
+        <VersionDescription>Release notes to MyLyrics 1.5.5.0
+
+MyLyrics displays the lyric of the currently played song inside MediaPortal.
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics. 
+
+Basic features:
+- Dynamic search for the lyric (both LRC's and plain lyrics) to the currently played music file.
+- Browse your music database and select the songs to which you want to find lyrics.
+- Batch search for lyrics matching songs in music database.
+- Search single title and select amoung lyrics from various lyrics sites.
+- Add/delete/edit lyrics and save changes in lyrics databases.
+- Import/export lyrics to/from music tags.
+- Include lyrics from the Internet, musictags, text- and lrc-files.
+- Create a LRC from a basic lyric on the fly and share it with the community.
+
+Keys:
+- E key (or '0' button on remote): Toggle between lyric and editor screen.
+- P key: Toggle between LRC and LRC Pick screen.
+- F key: Toggle between LRC and lyric mode. In lyric mode a new online search starts.
+- S key: Increase the vertical scroll speed in scroll mode. A total of six speed available.
+- Numeric keys (or left or right on remote) to select among various LRC's on LRC Pick screen
+- Enter key (or 'OK' or '#' on remote): Tag line in LRC editor mode.
+- Backslash key (or '*' on remote): Delete the last tagged line in LRC editor mode.
+- F9 (or info button on remote): Shows context menu
+
+Screens:
+- Lyric: shows lyric with coverart on the right.
+  (Two sub modes for both Lyrics basic and Lyrics wide: static (default) or scroll mode)
+- LRC: shows lrc file and coverart on the right.
+- LRC pick: uses BennieBoy's LRCFinder to select among different matching LRC entries.
+- LRC editor: enables the creation of lrc lyric from a plain lyric.
+- Translation screen. See a translated version of the lyric.
+
+Compatible with MediaPortal 1.1.0 nad 1.1.1
+
+Changes and fixes since version 1.5.3.0
+- Add: Gui property #currentmodule returns user defined plugin name
+- Fix: LRC tagging offset value wasn't saved in version 1.5.2.0
+- Fix: Minor fixes in configuration</VersionDescription>
+        <DevelopmentStatus>Stable</DevelopmentStatus>
+        <OnlineLocation>http://mpmylyrics.googlecode.com/files/MyLyrics_1550.MPE1</OnlineLocation>
+        <ReleaseDate>2010-11-21T19:49:03</ReleaseDate>
+        <Tags>mylyrics,lyrics,lrcs,music</Tags>
+        <Location>C:\Users\saamand\Desktop\MyLyrics_1550.MPE1</Location>
+        <Params>
+          <Items>
+            <SectionParam Name="Icon">
+              <Value>C:\svnroot\mediaportal\MyLyrics MPEI\icon.bmp</Value>
+              <ValueType>File</ValueType>
+              <Description>The icon file of the package (jpg,png,bmp)</Description>
+            </SectionParam>
+            <SectionParam Name="Online Icon">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>The icon file of the package stored online (jpg,png,bmp)</Description>
+            </SectionParam>
+            <SectionParam Name="Configuration file">
+              <Value />
+              <ValueType>Template</ValueType>
+              <Description>The file used to configure the extension.
+ If have .exe extension the will be executed
+ If have .dll extension used like MP plugin configuration</Description>
+            </SectionParam>
+            <SectionParam Name="Online Screenshots">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>Online stored screenshot urls separated by ; </Description>
+            </SectionParam>
+            <SectionParam Name="Force to uninstall on update">
+              <Value>yes</Value>
+              <ValueType>Bool</ValueType>
+              <Description>Show dialog and force to uninstall previous version when updating an extension. Should only be disabled if you are using an NSIS/MSI installer.</Description>
+            </SectionParam>
+          </Items>
+        </Params>
+      </GeneralInfo>
+      <UniqueFileList>
+        <Items />
+      </UniqueFileList>
+      <ProjectSettings>
+        <FolderGroups />
+      </ProjectSettings>
+      <IsSkin>false</IsSkin>
+    </PackageClass>
+    <PackageClass>
+      <Version>2.0</Version>
+      <Groups>
+        <Items>
+          <GroupItem Name="Default">
+            <DisplayName>Default</DisplayName>
+            <DefaulChecked>true</DefaulChecked>
+            <Description>Default</Description>
+            <Files>
+              <Items />
+            </Files>
+          </GroupItem>
+        </Items>
+      </Groups>
+      <Sections>
+        <Items />
+      </Sections>
+      <Dependencies>
+        <Items>
+          <DependencyItem>
+            <Type>MediaPortal</Type>
+            <Id />
+            <MinVersion>
+              <Major>1</Major>
+              <Minor>1</Minor>
+              <Build>6</Build>
+              <Revision>27644</Revision>
+            </MinVersion>
+            <MaxVersion>
+              <Major>1</Major>
+              <Minor>1</Minor>
+              <Build>6</Build>
+              <Revision>27644</Revision>
+            </MaxVersion>
+            <WarnOnly>false</WarnOnly>
+            <Message>requires MediaPortal version 1.1.6.27644 to 1.1.6.27644.</Message>
+            <Name>MediaPortal</Name>
+          </DependencyItem>
+        </Items>
+      </Dependencies>
+      <PluginDependencies>
+        <Items />
+      </PluginDependencies>
+      <GeneralInfo>
+        <Name>MyLyrics</Name>
+        <Id>acdc23fa-19b4-4867-bf25-176e79753869</Id>
+        <Author>mackey</Author>
+        <HomePage>http://wiki.team-mediaportal.com/1_MEDIAPORTAL_1/17_Extensions/3_Plugins/MyLyrics</HomePage>
+        <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
+        <UpdateUrl>http://mpmylyrics.googlecode.com/svn/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
+        <Version>
+          <Major>1</Major>
+          <Minor>6</Minor>
+          <Build>1</Build>
+          <Revision>1</Revision>
+        </Version>
+        <ExtensionDescription>MyLyrics displays the lyric of the currently played song inside MediaPortal.
+
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics.
+</ExtensionDescription>
+        <VersionDescription>Release notes to MyLyrics 1.6.1.0
+
+MyLyrics displays the lyric of the currently played song inside MediaPortal.
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics. 
+
+Basic features:
+- Dynamic search for the lyric (both LRC's and plain lyrics) to the currently played music file.
+- Browse your music database and select the songs to which you want to find lyrics.
+- Batch search for lyrics matching songs in music database.
+- Search single title and select amoung lyrics from various lyrics sites.
+- Add/delete/edit lyrics and save changes in lyrics databases.
+- Import/export lyrics to/from music tags.
+- Include lyrics from the Internet, musictags, text- and lrc-files.
+- Create a LRC from a basic lyric on the fly and share it with the community.
+
+Keys:
+- E key (or '0' button on remote): Toggle between lyric and editor screen.
+- P key: Toggle between LRC and LRC Pick screen.
+- F key: Toggle between LRC and lyric mode. In lyric mode a new online search starts.
+- S key: Increase the vertical scroll speed in scroll mode. A total of six speed available.
+- Numeric keys (or left or right on remote) to select among various LRC's on LRC Pick screen
+- Enter key (or 'OK' or '#' on remote): Tag line in LRC editor mode.
+- Backslash key (or '*' on remote): Delete the last tagged line in LRC editor mode.
+- F9 (or info button on remote): Shows context menu
+
+Screens:
+- Lyric: shows lyric with coverart on the right.
+  (Two sub modes for both Lyrics basic and Lyrics wide: static (default) or scroll mode)
+- LRC: shows lrc file and coverart on the right.
+- LRC pick: uses BennieBoy's LRCFinder to select among different matching LRC entries.
+- LRC editor: enables the creation of lrc lyric from a plain lyric.
+- Translation screen. See a translated version of the lyric.
+
+Compatible with MediaPortal 1.2.0 beta
+
+Changes and fixes since version 1.6.1.0
+- Add: Support for Shiron.net (Hebrew site)</VersionDescription>
+        <DevelopmentStatus>Stable</DevelopmentStatus>
+        <OnlineLocation>http://mpmylyrics.googlecode.com/files/MyLyrics_1611.MPE1</OnlineLocation>
+        <ReleaseDate>2011-03-09T19:49:03</ReleaseDate>
+        <Tags>mylyrics,lyrics,lrcs,music</Tags>
+        <Location>C:\Users\DellStudio\Desktop\MyLyrics_1611.MPE1</Location>
+        <Params>
+          <Items>
+            <SectionParam Name="Online Icon">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>The icon file of the package stored online (jpg,png,bmp)</Description>
+            </SectionParam>
+            <SectionParam Name="Configuration file">
+              <Value />
+              <ValueType>Template</ValueType>
+              <Description>The file used to configure the extension.
+ If have .exe extension the will be executed
+ If have .dll extension used like MP plugin configuration</Description>
+            </SectionParam>
+            <SectionParam Name="Online Screenshots">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>Online stored screenshot urls separated by ; </Description>
+            </SectionParam>
+            <SectionParam Name="Force to uninstall on update">
+              <Value>yes</Value>
+              <ValueType>Bool</ValueType>
+              <Description>Show dialog and force to uninstall previous version when updating an extension. Should only be disabled if you are using an NSIS/MSI installer.</Description>
+            </SectionParam>
+          </Items>
+        </Params>
+      </GeneralInfo>
+      <UniqueFileList>
+        <Items />
+      </UniqueFileList>
+      <ProjectSettings>
+        <FolderGroups />
+      </ProjectSettings>
+      <IsSkin>false</IsSkin>
+    </PackageClass>
+  </Items>
+</ExtensionCollection>
