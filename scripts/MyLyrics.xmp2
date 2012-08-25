@@ -188,12 +188,12 @@ Click Next to continue or Cancel to exit Setup.</Value>
         </MinVersion>
         <MaxVersion>
           <Major>1</Major>
-          <Minor>1</Minor>
-          <Build>6</Build>
-          <Revision>27644</Revision>
+          <Minor>2</Minor>
+          <Build>100</Build>
+          <Revision>99999</Revision>
         </MaxVersion>
         <WarnOnly>false</WarnOnly>
-        <Message>requires MediaPortal version 1.1.6.27644 to 1.1.6.27644.</Message>
+        <Message>requires MediaPortal version 1.1.6.27644 to 1.2.100.99999.</Message>
         <Name>MediaPortal</Name>
       </DependencyItem>
     </Items>
@@ -210,15 +210,15 @@ Click Next to continue or Cancel to exit Setup.</Value>
     <UpdateUrl>http://mpmylyrics.googlecode.com/svn/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
     <Version>
       <Major>1</Major>
-      <Minor>6</Minor>
-      <Build>1</Build>
-      <Revision>1</Revision>
+      <Minor>7</Minor>
+      <Build>0</Build>
+      <Revision>0</Revision>
     </Version>
     <ExtensionDescription>MyLyrics displays the lyric of the currently played song inside MediaPortal.
 
 The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics.
 </ExtensionDescription>
-    <VersionDescription>Release notes to MyLyrics 1.6.1.0
+    <VersionDescription>Release notes to MyLyrics 1.7.0
 
 MyLyrics displays the lyric of the currently played song inside MediaPortal.
 The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics. 
@@ -251,13 +251,11 @@ Screens:
 - LRC editor: enables the creation of lrc lyric from a plain lyric.
 - Translation screen. See a translated version of the lyric.
 
-Compatible with MediaPortal 1.2.0 beta
-
-Changes and fixes since version 1.6.1.0
-- Add: Support for Shiron.net (Hebrew site)</VersionDescription>
+Compatible with MediaPortal 1.2.0 and 1.3.0 alpha
+</VersionDescription>
     <DevelopmentStatus>Stable</DevelopmentStatus>
     <OnlineLocation>http://mpmylyrics.googlecode.com/files/MyLyrics_1611.MPE1</OnlineLocation>
-    <ReleaseDate>2011-03-09T19:49:03</ReleaseDate>
+    <ReleaseDate>2012-08-25T19:49:03</ReleaseDate>
     <Tags>mylyrics,lyrics,lrcs,music</Tags>
     <Location>C:\Users\DellStudio\Desktop\MyLyrics_1700.MPE1</Location>
     <Params>
