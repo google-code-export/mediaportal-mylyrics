@@ -27,6 +27,7 @@ namespace MyLyrics
     /// <summary>
     /// Summary description for Class1.
     /// </summary>
+    [PluginIcons("MyLyrics.Resources.MyLyrics_icon_enabled.png", "MyLyrics.Resources.MyLyrics_icon_disabled.png")]
     public partial class GUIMyLyrics : GUIWindow, ILyricForm, ISetupForm
     {
         #region Fields related to the MyLyrics in general
