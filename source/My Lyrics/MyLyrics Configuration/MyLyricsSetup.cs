@@ -15,7 +15,7 @@ using MediaPortal.Music.Database;
 using MediaPortal.Profile;
 using MediaPortal.TagReader;
 using MediaPortal.Util;
-using Timer=System.Windows.Forms.Timer;
+using Timer = System.Windows.Forms.Timer;
 
 namespace MyLyrics
 {

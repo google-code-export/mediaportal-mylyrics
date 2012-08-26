@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
+using System.Xml;
 using LyricsEngine;
 using LyricsEngine.LRC;
 using LyricsEngine.LyricsSites;
@@ -18,8 +20,6 @@ using MediaPortal.Player;
 using MediaPortal.Playlists;
 using MediaPortal.Profile;
 using MediaPortal.TagReader;
-using System.ComponentModel;
-using System.Xml;
 using Timer = System.Timers.Timer;
 
 namespace MyLyrics
