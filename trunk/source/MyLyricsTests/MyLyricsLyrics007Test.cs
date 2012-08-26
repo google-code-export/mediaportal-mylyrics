@@ -2,7 +2,6 @@
 using LyricsEngine.LyricsSites;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-
 namespace MyLyricsTests
 {
   [TestClass]
