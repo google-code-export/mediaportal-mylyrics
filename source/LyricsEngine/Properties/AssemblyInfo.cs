@@ -6,12 +6,12 @@ using System.Reflection;
 // associated with an assembly.
 //
 
-[assembly: AssemblyTitle("")]
+[assembly: AssemblyTitle("LyricsEngine")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("")]
+[assembly: AssemblyProduct("LyricsEngine")]
+[assembly: AssemblyCopyright("Copyright © 2009-2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
