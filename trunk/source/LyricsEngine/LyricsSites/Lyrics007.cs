@@ -9,7 +9,7 @@ using Timer=System.Timers.Timer;
 
 namespace LyricsEngine.LyricsSites
 {
-    internal class Lyrics007
+  public class Lyrics007
     {
         private bool complete;
         private string lyric = "";
@@ -102,7 +102,10 @@ namespace LyricsEngine.LyricsSites
 
                     while (line.IndexOf("<script") == -1)
                     {
-                        lyricTemp.Append(line);
+                        if (line.IndexOf("<fb:like") == -1)
+                        {
+                          lyricTemp.Append(line);
+                        }
                         if (sr.EndOfStream)
                         {
                             thisMayBeTheCorrectLyric = false;
@@ -119,6 +122,7 @@ namespace LyricsEngine.LyricsSites
 
                 if (lyric.Length > 0)
                 {
+                    lyric = lyric.Replace("</script>", "");
                     lyric = lyric.Replace("??s", "'s");
                     lyric = lyric.Replace("??t", "'t");
                     lyric = lyric.Replace("??m", "'m");
