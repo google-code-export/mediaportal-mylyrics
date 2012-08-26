@@ -4,8 +4,8 @@ using System.Text;
 
 namespace LyricsEngine
 {
-    interface ICommand
-    {
-        void Execute();
-    }
+  interface ICommand
+  {
+    void Execute();
+  }
 }

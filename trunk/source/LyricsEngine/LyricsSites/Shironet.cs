@@ -24,7 +24,7 @@ namespace LyricsEngine.LyricsSites
     private string _wrkid;
     private bool _firstStepComplete;
     private bool _complete;
-    
+
     private readonly Timer _timer;
 
     public Shironet(string artist, string title, WaitHandle mEventStopSiteSearches, int timeLimit)
