@@ -1,6 +1,6 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
-using MediaPortal.Common.Utils;  
+using MediaPortal.Common.Utils;
 
 [assembly: CompatibleVersion("1.2.100.0", "1.1.6.27644")]
 [assembly: UsesSubsystem("MP.SkinEngine")]
