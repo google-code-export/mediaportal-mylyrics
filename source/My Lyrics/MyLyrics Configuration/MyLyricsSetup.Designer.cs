@@ -1051,7 +1051,7 @@
       this.cbShironet.Location = new System.Drawing.Point(230, 40);
       this.cbShironet.Name = "cbShironet";
       this.cbShironet.Size = new System.Drawing.Size(80, 17);
-      this.cbShironet.TabIndex = 9;
+      this.cbShironet.TabIndex = 11;
       this.cbShironet.Text = "Shironet";
       this.cbShironet.UseVisualStyleBackColor = true;
       this.cbShironet.Leave += new System.EventHandler(this.WriteMediaPortalXML);
