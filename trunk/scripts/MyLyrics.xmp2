@@ -37,6 +37,13 @@ The plugin can show LRC's and plain lyrics. It uses both musictags and online se
             <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
               <Param1 />
               <UpdateOption>AlwaysOverwrite</UpdateOption>
+              <LocalFileName>..\source\Skin\DefaultWide\myLyrics.hiddenmenu.xml</LocalFileName>
+              <ZipFileName>Installer{CopyFile}\{923c1103-4dd2-4237-88e6-d137b886ea0b}-myLyrics.hiddenmenu.xml</ZipFileName>
+              <DestinationFilename>%Skin%\Defaultwide\myLyrics.hiddenmenu.xml</DestinationFilename>
+            </FileItem>
+            <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+              <Param1 />
+              <UpdateOption>AlwaysOverwrite</UpdateOption>
               <LocalFileName>..\source\Skin\DefaultWide\Media\hover_my lyrics.png</LocalFileName>
               <ZipFileName>Installer{CopyFile}\{dc9d7cf3-731e-41ed-98f9-0dc78ac5fefc}-hover_my lyrics.png</ZipFileName>
               <DestinationFilename>%Skin%\Defaultwide\Media\hover_my lyrics.png</DestinationFilename>
@@ -312,6 +319,13 @@ Compatible with MediaPortal 1.2.0 and 1.3.0 alpha
         <LocalFileName>..\source\Skin\DefaultWide\myLyrics.xml</LocalFileName>
         <ZipFileName>Installer{CopyFile}\{33ccc7ed-b833-4b30-9215-d4faec51c792}-myLyrics.xml</ZipFileName>
         <DestinationFilename>%Skin%\Defaultwide\myLyrics.xml</DestinationFilename>
+      </FileItem>
+      <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+        <Param1 />
+        <UpdateOption>AlwaysOverwrite</UpdateOption>
+        <LocalFileName>..\source\Skin\DefaultWide\myLyrics.hiddenmenu.xml</LocalFileName>
+        <ZipFileName>Installer{CopyFile}\{923c1103-4dd2-4237-88e6-d137b886ea0b}-myLyrics.hiddenmenu.xml</ZipFileName>
+        <DestinationFilename>%Skin%\Defaultwide\myLyrics.hiddenmenu.xml</DestinationFilename>
       </FileItem>
       <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
         <Param1 />
