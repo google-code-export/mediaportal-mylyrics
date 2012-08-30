@@ -129,7 +129,7 @@ namespace LyricsEngine.LyricsSites
           lyricTemp = new StringBuilder();
           line = sr.ReadLine().Trim();
 
-          while (line.Contains("<p>") == false)
+          while (!line.StartsWith("<script") && !line.StartsWith("<!--"))
           {
             lyricTemp.Append(line);
             if (sr.EndOfStream || ++noOfLinesCount > 300)
@@ -146,6 +146,8 @@ namespace LyricsEngine.LyricsSites
           lyricTemp.Replace("<br>", " \r\n");
           lyricTemp.Replace("</font></p>", " \r\n");
           lyricTemp.Replace("<p><font size=\"2\" face=\"Verdana\">", " \r\n");
+          lyricTemp.Replace("</p>", "");
+          lyricTemp.Replace("<p>", "");
           lyricTemp.Replace("<i>", "");
           lyricTemp.Replace("</i>", "");
           lyricTemp.Replace("*", "");
