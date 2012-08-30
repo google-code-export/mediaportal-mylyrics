@@ -15,10 +15,10 @@ namespace MyLyricsTests
       Assert.AreEqual("There's", splitVhcslu[0]);
       Assert.AreEqual("YOU", splitVhcslu[splitVhcslu.Length - 1]);
 
-      var ericClaptonIShotTheSheriff = new Lyrics007("Eric Clapton", "I Shot the Sheriff", new ManualResetEvent(false), 10000);
+      var ericClaptonIShotTheSheriff = new LyricsOnDemand("Eric Clapton", "I Shot the Sheriff", new ManualResetEvent(false), 10000);
       var splitEcists = ericClaptonIShotTheSheriff.Lyric.Split(' ');
-      Assert.AreEqual("shot", splitEcists[1]);
-      Assert.AreEqual("in", splitEcists[splitEcists.Length - 2]);
+      Assert.AreEqual("I", splitEcists[0]);
+      Assert.AreEqual("no.", splitEcists[splitEcists.Length - 1]);
     }
 
     [TestMethod]
