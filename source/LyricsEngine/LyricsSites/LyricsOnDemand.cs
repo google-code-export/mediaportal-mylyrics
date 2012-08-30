@@ -8,7 +8,7 @@ using Timer = System.Timers.Timer;
 
 namespace LyricsEngine.LyricsSites
 {
-  internal class LyricsOnDemand
+  public class LyricsOnDemand
   {
     private bool complete;
     private string lyric = "";
