@@ -19,6 +19,11 @@ namespace MyLyricsTests
       var splitEcists = ericClaptonIShotTheSheriff.Lyric.Split(' ');
       Assert.AreEqual("I", splitEcists[0]);
       Assert.AreEqual("no.", splitEcists[splitEcists.Length - 1]);
+
+      var barryManilowIWriteTheSongs = new LyricsOnDemand("Barry Manilow", "I Write The Songs", new ManualResetEvent(false), 10000);
+      var splitBmiwts = barryManilowIWriteTheSongs.Lyric.Split(' ');
+      Assert.AreEqual("I've", splitBmiwts[0]);
+      Assert.AreEqual("songs", splitBmiwts[splitBmiwts.Length - 1]);
     }
 
     [TestMethod]
