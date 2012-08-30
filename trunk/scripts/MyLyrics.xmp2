@@ -214,7 +214,7 @@ Click Next to continue or Cancel to exit Setup.</Value>
     <Author>mackey (with the help of BennieBoy, SilentException, Søren, yoavain)</Author>
     <HomePage>http://wiki.team-mediaportal.com/1_MEDIAPORTAL_1/17_Extensions/3_Plugins/MyLyrics</HomePage>
     <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
-    <UpdateUrl>http://mpmylyrics.googlecode.com/svn/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
+    <UpdateUrl>http://mediaportal-mylyrics.googlecode.com/svn/trunk/scripts/MyLyrics.xml</UpdateUrl>
     <Version>
       <Major>1</Major>
       <Minor>7</Minor>
