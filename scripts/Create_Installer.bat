@@ -28,4 +28,5 @@ FOR /F "tokens=1-4 delims=." %%i IN ("%version%") DO (
 )
 
 :: Rename MPE1
+if exist "..\builds\MyLyrics-%major%.%minor%.%build%.%revision%.MPE1" del "..\builds\MyLyrics-%major%.%minor%.%build%.%revision%.MPE1"
 rename ..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1 "MyLyrics-%major%.%minor%.%build%.%revision%.MPE1"
