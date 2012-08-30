@@ -302,10 +302,10 @@ namespace MyLyrics
       this.cbShironet.Checked = true;
       this.cbShironet.CheckState = System.Windows.Forms.CheckState.Checked;
       this.cbShironet.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.cbShironet.Location = new System.Drawing.Point(237, 21);
+      this.cbShironet.Location = new System.Drawing.Point(338, 44);
       this.cbShironet.Name = "cbShironet";
       this.cbShironet.Size = new System.Drawing.Size(72, 17);
-      this.cbShironet.TabIndex = 15;
+      this.cbShironet.TabIndex = 11;
       this.cbShironet.Text = "Shironet";
       this.cbShironet.UseVisualStyleBackColor = true;
       // 
