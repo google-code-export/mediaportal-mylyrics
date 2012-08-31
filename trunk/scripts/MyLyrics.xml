@@ -1685,7 +1685,7 @@ Compatible with MediaPortal 1.2.0 and 1.3.0 alpha
  If have .dll extension used like MP plugin configuration</Description>
             </SectionParam>
             <SectionParam Name="Online Screenshots">
-              <Value />
+              <Value>https://mediaportal-mylyrics.googlecode.com/svn/trunk/Screenshots/DefaultWide01.jpg;https://mediaportal-mylyrics.googlecode.com/svn/trunk/Screenshots/DefaultWide02.jpg;https://mediaportal-mylyrics.googlecode.com/svn/trunk/Screenshots/DefaultWide03-LRC.jpg;https://mediaportal-mylyrics.googlecode.com/svn/trunk/Screenshots/Default01.jpg;https://mediaportal-mylyrics.googlecode.com/svn/trunk/Screenshots/Default02.jpg</Value>
               <ValueType>String</ValueType>
               <Description>Online stored screenshot urls separated by ; </Description>
             </SectionParam>
