@@ -1271,14 +1271,14 @@ Screens:
 Compatible with MediaPortal 1.2.0 and 1.3.0 alpha
 </VersionDescription>
         <DevelopmentStatus>Stable</DevelopmentStatus>
-        <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/files/MyLyrics-1.7.0.63.MPE1</OnlineLocation>
+        <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/files/MyLyrics-1.7.0.67.MPE1</OnlineLocation>
         <ReleaseDate>2012-08-31T17:38:58.6092+03:00</ReleaseDate>
         <Tags>mylyrics,lyrics,lrcs,music</Tags>
         <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
         <Params>
           <Items>
             <SectionParam Name="Online Icon">
-              <Value />
+              <Value>http://mediaportal-mylyrics.googlecode.com/svn/trunk/scripts/icon.bmp</Value>
               <ValueType>String</ValueType>
               <Description>The icon file of the package stored online (jpg,png,bmp)</Description>
             </SectionParam>
