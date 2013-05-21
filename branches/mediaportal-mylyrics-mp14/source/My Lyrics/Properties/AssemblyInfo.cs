@@ -18,7 +18,7 @@ using MediaPortal.Common.Utils;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("My Lyrics")]
-[assembly: AssemblyCopyright("Copyright © 2009-2012")]
+[assembly: AssemblyCopyright("Copyright © 2009-2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -43,5 +43,5 @@ using MediaPortal.Common.Utils;
 // by using the '*' as shown below:
 
 
-[assembly: AssemblyVersion("1.7.0.$WCREV$")]
-[assembly: AssemblyFileVersion("1.7.0.$WCREV$")]
+[assembly: AssemblyVersion("1.7.1.$WCREV$")]
+[assembly: AssemblyFileVersion("1.7.1.$WCREV$")]

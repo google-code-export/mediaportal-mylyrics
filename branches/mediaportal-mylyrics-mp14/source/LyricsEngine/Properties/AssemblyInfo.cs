@@ -11,7 +11,7 @@ using System.Reflection;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("LyricsEngine")]
-[assembly: AssemblyCopyright("Copyright © 2009-2012")]
+[assembly: AssemblyCopyright("Copyright © 2009-2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -27,8 +27,8 @@ using System.Reflection;
 // by using the '*' as shown below:
 
 
-[assembly: AssemblyVersion("1.7.0.$WCREV$")]
-[assembly: AssemblyFileVersion("1.7.0.$WCREV$")]
+[assembly: AssemblyVersion("1.7.1.$WCREV$")]
+[assembly: AssemblyFileVersion("1.7.1.$WCREV$")]
 
 
 //
