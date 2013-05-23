@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using MediaPortal.Common.Utils;
 
-[assembly: CompatibleVersion("1.2.100.0", "1.1.6.27644")]
+[assembly: CompatibleVersion("1.2.100.0", "1.1.6.27644", "1.3.100.0")]
 [assembly: UsesSubsystem("MP.SkinEngine")]
 [assembly: UsesSubsystem("MP.Players.Music")]
 [assembly: UsesSubsystem("MP.DB.Music")]
