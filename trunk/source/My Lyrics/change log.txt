@@ -1,4 +1,4 @@
-Release notes to MyLyrics 1.7.0
+Release notes to MyLyrics 1.7.1
 
 MyLyrics displays the lyric of the currently played song inside MediaPortal.
 The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics. 
@@ -31,8 +31,7 @@ Screens:
 - LRC editor: enables the creation of lrc lyric from a plain lyric.
 - Translation screen. See a translated version of the lyric.
 
-Compatible with MediaPortal 1.2.0 beta
+Compatible with MediaPortal 1.4.0
 
-Changes and fixes since version 1.6.1.0
-- Add: Support for Shiron.net (Hebrew site)
-and some minor fixes
+Changes and fixes since version 1.7.0
+- Update: Compatibility for 1.4.0

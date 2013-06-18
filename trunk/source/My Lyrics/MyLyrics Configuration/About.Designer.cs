@@ -80,7 +80,7 @@ namespace MyLyrics
       this.lbInfo1.Name = "lbInfo1";
       this.lbInfo1.Size = new System.Drawing.Size(197, 18);
       this.lbInfo1.TabIndex = 3;
-      this.lbInfo1.Text = "MyLyrics plugin, version 1.7.0";
+      this.lbInfo1.Text = "MyLyrics plugin, version 1.7.1";
       // 
       // label2
       // 
