@@ -30,7 +30,7 @@
         <Author>mackey</Author>
         <HomePage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</HomePage>
         <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
-        <UpdateUrl>http://code.google.com/p/mpmylyrics/source/browse/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
+        <UpdateUrl>https://mediaportal-mylyrics.googlecode.com/svn/trunk/scripts/MyLyrics.xml</UpdateUrl>
         <Version>
           <Major>1</Major>
           <Minor>5</Minor>
