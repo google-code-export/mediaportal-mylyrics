@@ -113,10 +113,10 @@ Changes relevant for skinners:
 * Add: allow skinner to define #MyLyrics.BlacklistedControlIDs in skin file, if any of those is focused plugin SELECT action (lrc pick select or lrc edit tag line) won't be executed
 * Add: reused control id 50 and renamed to CONTROL_TAGPICKBUTTON. button can now be used in LRC pick to pick lrc or in LRC edit to tag line. it does not have to be defined in skin file at all</VersionDescription>
         <DevelopmentStatus>Stable</DevelopmentStatus>
-        <OnlineLocation>http://mpmylyrics.googlecode.com/files/MyLyrics_1500.MPE1</OnlineLocation>
+        <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/svn/trunk/builds/MyLyrics_1500.MPE1</OnlineLocation>
         <ReleaseDate>2010-03-14T19:49:03</ReleaseDate>
         <Tags>mylyrics,lyrics,lrcs,music</Tags>
-        <Location>C:\Users\saamand\Desktop\MyLyrics_1500.MPE1</Location>
+        <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
         <Params>
           <Items>
             <SectionParam Name="Icon">
@@ -181,7 +181,7 @@ Changes relevant for skinners:
         <Author>mackey</Author>
         <HomePage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</HomePage>
         <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
-        <UpdateUrl>http://mpmylyrics.googlecode.com/svn/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
+        <UpdateUrl>http://mediaportal-mylyrics.googlecode.com/svn/trunk/scripts/MyLyrics.xml</UpdateUrl>
         <Version>
           <Major>1</Major>
           <Minor>5</Minor>
@@ -238,10 +238,10 @@ Changes and fixes since version 1.5.0.0
 * and some smaller fixes
 </VersionDescription>
         <DevelopmentStatus>Stable</DevelopmentStatus>
-        <OnlineLocation>http://mpmylyrics.googlecode.com/files/MyLyrics_1510.MPE1</OnlineLocation>
+        <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/svn/trunk/builds/MyLyrics_1510.MPE1</OnlineLocation>
         <ReleaseDate>2010-08-04T19:49:03</ReleaseDate>
         <Tags>mylyrics,lyrics,lrcs,music</Tags>
-        <Location>C:\Users\saamand\Desktop\MyLyrics_1510.MPE1</Location>
+        <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
         <Params>
           <Items>
             <SectionParam Name="Icon">
@@ -311,7 +311,7 @@ Changes and fixes since version 1.5.0.0
         <Author>mackey</Author>
         <HomePage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</HomePage>
         <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
-        <UpdateUrl>http://mpmylyrics.googlecode.com/svn/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
+        <UpdateUrl>http://mediaportal-mylyrics.googlecode.com/svn/trunk/scripts/MyLyrics.xml</UpdateUrl>
         <Version>
           <Major>1</Major>
           <Minor>5</Minor>
@@ -363,10 +363,10 @@ Changes and fixes since version 1.5.1.0
 - Rem: LyricWiki didn't work and could not be fixed.
 </VersionDescription>
         <DevelopmentStatus>Stable</DevelopmentStatus>
-        <OnlineLocation>http://mpmylyrics.googlecode.com/files/MyLyrics_1520.MPE1</OnlineLocation>
+        <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/svn/trunk/builds/MyLyrics_1520.MPE1</OnlineLocation>
         <ReleaseDate>2010-10-03T19:49:03</ReleaseDate>
         <Tags>mylyrics,lyrics,lrcs,music</Tags>
-        <Location>C:\Users\saamand\Desktop\MyLyrics_1520.MPE1</Location>
+        <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
         <Params>
           <Items>
             <SectionParam Name="Icon">
@@ -436,7 +436,7 @@ Changes and fixes since version 1.5.1.0
         <Author>mackey</Author>
         <HomePage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</HomePage>
         <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
-        <UpdateUrl>http://mpmylyrics.googlecode.com/svn/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
+        <UpdateUrl>http://mediaportal-mylyrics.googlecode.com/svn/trunk/scripts/MyLyrics.xml</UpdateUrl>
         <Version>
           <Major>1</Major>
           <Minor>5</Minor>
@@ -490,10 +490,10 @@ Changes and fixes since version 1.5.1.0
 - Fix: Lyrics007 which didn't return valid result.
 - Rem: LyricWiki didn't work and could not be fixed.</VersionDescription>
         <DevelopmentStatus>Stable</DevelopmentStatus>
-        <OnlineLocation>http://mpmylyrics.googlecode.com/files/MyLyrics_1530.MPE1</OnlineLocation>
+        <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/svn/trunk/builds/MyLyrics_1530.MPE1</OnlineLocation>
         <ReleaseDate>2010-10-05T19:49:03</ReleaseDate>
         <Tags>mylyrics,lyrics,lrcs,music</Tags>
-        <Location>C:\Users\saamand\Desktop\MyLyrics_1530.MPE1</Location>
+        <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
         <Params>
           <Items>
             <SectionParam Name="Icon">
@@ -563,7 +563,7 @@ Changes and fixes since version 1.5.1.0
         <Author>mackey</Author>
         <HomePage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</HomePage>
         <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
-        <UpdateUrl>http://mpmylyrics.googlecode.com/svn/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
+        <UpdateUrl>http://mediaportal-mylyrics.googlecode.com/svn/trunk/scripts/MyLyrics.xml</UpdateUrl>
         <Version>
           <Major>1</Major>
           <Minor>5</Minor>
@@ -614,10 +614,10 @@ Changes and fixes since version 1.5.3.0
 - Fix: LRC tagging offset value wasn't saved in version 1.5.2.0
 - Fix: Minor fixes in configuration</VersionDescription>
         <DevelopmentStatus>Stable</DevelopmentStatus>
-        <OnlineLocation>http://mpmylyrics.googlecode.com/files/MyLyrics_1540.MPE1</OnlineLocation>
+        <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/svn/trunk/builds/MyLyrics_1540.MPE1</OnlineLocation>
         <ReleaseDate>2010-11-21T19:49:03</ReleaseDate>
         <Tags>mylyrics,lyrics,lrcs,music</Tags>
-        <Location>C:\Users\saamand\Desktop\MyLyrics_1540.MPE1</Location>
+        <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
         <Params>
           <Items>
             <SectionParam Name="Icon">
@@ -687,7 +687,7 @@ Changes and fixes since version 1.5.3.0
         <Author>mackey</Author>
         <HomePage>http://wiki.team-mediaportal.com/1_MEDIAPORTAL_1/17_Extensions/3_Plugins/MyLyrics</HomePage>
         <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
-        <UpdateUrl>http://mpmylyrics.googlecode.com/svn/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
+        <UpdateUrl>http://mediaportal-mylyrics.googlecode.com/svn/trunk/scripts/MyLyrics.xml</UpdateUrl>
         <Version>
           <Major>1</Major>
           <Minor>5</Minor>
@@ -736,10 +736,10 @@ Compatible with MediaPortal 1.2.0 beta
 Changes and fixes since version 1.5.5.0
 - Add: Now compatible with MediaPotal 1.2.0 beta </VersionDescription>
         <DevelopmentStatus>Stable</DevelopmentStatus>
-        <OnlineLocation>http://mpmylyrics.googlecode.com/files/MyLyrics_1600.MPE1</OnlineLocation>
+        <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/svn/trunk/builds/MyLyrics_1600.MPE1</OnlineLocation>
         <ReleaseDate>2011-03-09T19:49:03</ReleaseDate>
         <Tags>mylyrics,lyrics,lrcs,music</Tags>
-        <Location>C:\Users\saamand\Desktop\MyLyrics_1600.MPE1</Location>
+        <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
         <Params>
           <Items>
             <SectionParam Name="Icon">
@@ -809,7 +809,7 @@ Changes and fixes since version 1.5.5.0
         <Author>mackey</Author>
         <HomePage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</HomePage>
         <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
-        <UpdateUrl>http://mpmylyrics.googlecode.com/svn/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
+        <UpdateUrl>http://mediaportal-mylyrics.googlecode.com/svn/trunk/scripts/MyLyrics.xml</UpdateUrl>
         <Version>
           <Major>1</Major>
           <Minor>5</Minor>
@@ -860,10 +860,10 @@ Changes and fixes since version 1.5.3.0
 - Fix: LRC tagging offset value wasn't saved in version 1.5.2.0
 - Fix: Minor fixes in configuration</VersionDescription>
         <DevelopmentStatus>Stable</DevelopmentStatus>
-        <OnlineLocation>http://mpmylyrics.googlecode.com/files/MyLyrics_1550.MPE1</OnlineLocation>
+        <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/svn/trunk/builds/MyLyrics_1550.MPE1</OnlineLocation>
         <ReleaseDate>2010-11-21T19:49:03</ReleaseDate>
         <Tags>mylyrics,lyrics,lrcs,music</Tags>
-        <Location>C:\Users\saamand\Desktop\MyLyrics_1550.MPE1</Location>
+        <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
         <Params>
           <Items>
             <SectionParam Name="Icon">
@@ -933,7 +933,7 @@ Changes and fixes since version 1.5.3.0
         <Author>mackey</Author>
         <HomePage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</HomePage>
         <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
-        <UpdateUrl>http://mpmylyrics.googlecode.com/svn/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
+        <UpdateUrl>http://mediaportal-mylyrics.googlecode.com/svn/trunk/scripts/MyLyrics.xml</UpdateUrl>
         <Version>
           <Major>1</Major>
           <Minor>5</Minor>
@@ -984,10 +984,10 @@ Changes and fixes since version 1.5.3.0
 - Fix: LRC tagging offset value wasn't saved in version 1.5.2.0
 - Fix: Minor fixes in configuration</VersionDescription>
         <DevelopmentStatus>Stable</DevelopmentStatus>
-        <OnlineLocation>http://mpmylyrics.googlecode.com/files/MyLyrics_1550.MPE1</OnlineLocation>
+        <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/svn/trunk/builds/MyLyrics_1550.MPE1</OnlineLocation>
         <ReleaseDate>2010-11-21T19:49:03</ReleaseDate>
         <Tags>mylyrics,lyrics,lrcs,music</Tags>
-        <Location>C:\Users\saamand\Desktop\MyLyrics_1550.MPE1</Location>
+        <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
         <Params>
           <Items>
             <SectionParam Name="Icon">
@@ -1077,7 +1077,7 @@ Changes and fixes since version 1.5.3.0
         <Author>mackey</Author>
         <HomePage>http://wiki.team-mediaportal.com/1_MEDIAPORTAL_1/17_Extensions/3_Plugins/MyLyrics</HomePage>
         <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
-        <UpdateUrl>http://mpmylyrics.googlecode.com/svn/trunk/mpmylyrics/MyLyrics_MPE1_stable.xml</UpdateUrl>
+        <UpdateUrl>http://mediaportal-mylyrics.googlecode.com/svn/trunk/scripts/MyLyrics.xml</UpdateUrl>
         <Version>
           <Major>1</Major>
           <Minor>6</Minor>
@@ -1126,10 +1126,10 @@ Compatible with MediaPortal 1.2.0 beta
 Changes and fixes since version 1.6.1.0
 - Add: Support for Shiron.net (Hebrew site)</VersionDescription>
         <DevelopmentStatus>Stable</DevelopmentStatus>
-        <OnlineLocation>http://mpmylyrics.googlecode.com/files/MyLyrics_1611.MPE1</OnlineLocation>
+        <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/svn/trunk/builds/MyLyrics_1611.MPE1</OnlineLocation>
         <ReleaseDate>2011-03-09T19:49:03</ReleaseDate>
         <Tags>mylyrics,lyrics,lrcs,music</Tags>
-        <Location>C:\Users\DellStudio\Desktop\MyLyrics_1611.MPE1</Location>
+        <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
         <Params>
           <Items>
             <SectionParam Name="Online Icon">
