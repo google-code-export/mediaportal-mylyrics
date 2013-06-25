@@ -4,7 +4,9 @@ Title Creating MediaPortal MyLyrics Installer
 
 :: Check for modification
 svn status ..\source | findstr "^M"
-if ERRORLEVEL 0 (
+if ERRORLEVEL 1 (
+	echo No modifications in source folder.
+) else (
 	echo There are modifications in source folder. Aborting.
 	pause
 	exit 1
