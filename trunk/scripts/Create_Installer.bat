@@ -2,6 +2,14 @@
 cls
 Title Creating MediaPortal MyLyrics Installer
 
+:: Check for modification
+svn status ..\source | findstr "^M"
+if ERRORLEVEL 0 (
+	echo There are modifications in source folder. Aborting.
+	pause
+	exit 1
+)
+
 if "%programfiles(x86)%XXX"=="XXX" goto 32BIT
 	:: 64-bit
 	set PROGS=%programfiles(x86)%
