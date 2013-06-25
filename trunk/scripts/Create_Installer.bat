@@ -16,8 +16,20 @@ FOR /F "tokens=1-3" %%i IN ('Tools\sigcheck.exe "..\source\My Lyrics\bin\Release
 :: trim version
 SET version=%version:~0,-1%
 
+:: Temp xmp2 file
+copy MyLyrics.xmp2 MyLyricsTemp.xmp2
+
+:: Sed "update-{VERSION}.xml" from xmp2 file
+Tools\sed.exe -i "s/update-{VERSION}.xml/update-%version%.xml/g" MyLyricsTemp.xmp2
+
 :: Build MPE1
-"%PROGS%\Team MediaPortal\MediaPortal\MPEMaker.exe" MyLyrics.xmp2 /B /V=%version%
+"%PROGS%\Team MediaPortal\MediaPortal\MPEMaker.exe" MyLyricsTemp.xmp2 /B /V=%version% /UpdateXML
+
+:: Cleanup
+del MyLyricsTemp.xmp2
+
+:: Sed "MyLyrics-{VERSION}.MPE1" from update.xml
+Tools\sed.exe -i "s/MyLyrics-{VERSION}.MPE1/MyLyrics-%version%.MPE1/g" update-%version%.xml
 
 :: Parse version (Might be needed in the futute)
 FOR /F "tokens=1-4 delims=." %%i IN ("%version%") DO ( 
@@ -30,3 +42,5 @@ FOR /F "tokens=1-4 delims=." %%i IN ("%version%") DO (
 :: Rename MPE1
 if exist "..\builds\MyLyrics-%major%.%minor%.%build%.%revision%.MPE1" del "..\builds\MyLyrics-%major%.%minor%.%build%.%revision%.MPE1"
 rename ..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1 "MyLyrics-%major%.%minor%.%build%.%revision%.MPE1"
+
+
