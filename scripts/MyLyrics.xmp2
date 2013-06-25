@@ -209,13 +209,32 @@ Click Next to continue or Cancel to exit Setup.</Value>
         </MinVersion>
         <MaxVersion>
           <Major>1</Major>
+          <Minor>1</Minor>
+          <Build>6</Build>
+          <Revision>27644</Revision>
+        </MaxVersion>
+        <WarnOnly>true</WarnOnly>
+        <Message>This version of MyLyrics requires MediaPortal 1.2.0 Beta or higher!</Message>
+        <Name>MediaPortal</Name>
+      </DependencyItem>
+      <DependencyItem>
+        <Type>Skin</Type>
+        <Id />
+        <MinVersion>
+          <Major>1</Major>
+          <Minor>4</Minor>
+          <Build>0</Build>
+          <Revision>0</Revision>
+        </MinVersion>
+        <MaxVersion>
+          <Major>1</Major>
           <Minor>4</Minor>
           <Build>0</Build>
           <Revision>0</Revision>
         </MaxVersion>
-        <WarnOnly>false</WarnOnly>
-        <Message>requires MediaPortal version 1.1.6.27644 to 1.2.100.0.</Message>
-        <Name>MediaPortal</Name>
+        <WarnOnly>true</WarnOnly>
+        <Message>requires Skin version 1.4.0.0 to 1.4.0.0.</Message>
+        <Name>Skin</Name>
       </DependencyItem>
     </Items>
   </Dependencies>
@@ -278,8 +297,8 @@ Screens:
 Compatible with MediaPortal 1.4.0
 </VersionDescription>
     <DevelopmentStatus>Stable</DevelopmentStatus>
-    <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/files/MyLyrics-1.7.0.0.MPE1</OnlineLocation>
-    <ReleaseDate>2013-06-18T21:22:51.7663104+03:00</ReleaseDate>
+    <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/files/MyLyrics-{VERSION}.MPE1</OnlineLocation>
+    <ReleaseDate>2013-06-25T21:07:35.5259868+03:00</ReleaseDate>
     <Tags>mylyrics,lyrics,lrcs,music</Tags>
     <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
     <Params>
@@ -405,7 +424,7 @@ Compatible with MediaPortal 1.4.0
   <ProjectSettings>
     <FolderGroups />
     <ProjectFilename>MyLyrics.xmp2</ProjectFilename>
-    <UpdatePath1>MyLyrics.xml</UpdatePath1>
+    <UpdatePath1>update-{VERSION}.xml</UpdatePath1>
     <UpdatePath2 />
     <UpdatePath3 />
   </ProjectSettings>
