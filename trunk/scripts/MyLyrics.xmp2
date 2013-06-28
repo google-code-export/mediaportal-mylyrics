@@ -251,14 +251,17 @@ Click Next to continue or Cancel to exit Setup.</Value>
     <Version>
       <Major>1</Major>
       <Minor>7</Minor>
-      <Build>2</Build>
+      <Build>3</Build>
       <Revision>0</Revision>
     </Version>
     <ExtensionDescription>MyLyrics displays the lyric of the currently played song inside MediaPortal.
 
 The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics.
 </ExtensionDescription>
-    <VersionDescription>Release notes to MyLyrics 1.7.2
+    <VersionDescription>Release notes to MyLyrics 1.7.3
+
+Change log since 1.7.2:
+- Fixed Lyrics007 (rewritten)
 
 Change log since 1.7.1:
 - Fixed LRC finder
