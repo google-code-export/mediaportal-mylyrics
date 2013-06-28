@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="MpLrcTest.cs" />
     <Compile Include="MyLyricsLrcFinderTest.cs" />
+    <Compile Include="MyLyricsLyrDbTest.cs" />
     <Compile Include="MyLyricsLyricsOnDemandTest.cs" />
     <Compile Include="MyLyricsLyrics007Test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
