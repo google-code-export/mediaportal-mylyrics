@@ -17,8 +17,8 @@ namespace MyLyricsTests
 
       var u2StaringAtTheSun = new Lyrics007("U2", "Staring At The Sun", new ManualResetEvent(false), 10000);
       var splitUsats = u2StaringAtTheSun.Lyric.Split(' ');
-      Assert.AreEqual("Staring", splitUsats[0]);
-      Assert.AreEqual("blind", splitUsats[splitUsats.Length - 1]);
+      Assert.AreEqual("Summer", splitUsats[0]);
+      Assert.AreEqual("I", splitUsats[splitUsats.Length - 1]);
     }
 
     [TestMethod]
