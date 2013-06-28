@@ -2,173 +2,208 @@ using System;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Timers;
 using Timer = System.Timers.Timer;
 
 namespace LyricsEngine.LyricsSites
 {
-  public class Lyrics007
-  {
-    private bool complete;
-    private string lyric = "";
-    private int timeLimit;
-    private Timer timer;
-
-    public Lyrics007(string artist, string title, ManualResetEvent m_EventStop_SiteSearches, int timeLimit)
+    public class Lyrics007
     {
-      this.timeLimit = timeLimit / 2;
-      timer = new Timer();
+        # region const
 
-      artist = LyricUtil.RemoveFeatComment(artist);
-      artist = artist.Replace("#", "");
-      title = LyricUtil.TrimForParenthesis(title);
-      title = title.Replace("#", "");
+        // base url
+        private const string Lyrics007Com = "http://www.lyrics007.com/";
+        // Not found
+        private const string NotFound = "Not found";
 
-      // Cannot find lyrics contaning non-English letters!
+        # endregion const
 
-      string urlString = "http://www.lyrics007.com/" + artist + " Lyrics/" + title + " Lyrics.html";
+        # region patterns
 
-      timer.Enabled = true;
-      timer.Interval = timeLimit;
-      timer.Elapsed += new ElapsedEventHandler(timer_Elapsed);
-      timer.Start();
+        // artist/title for validation
 
-      Uri uri = new Uri(urlString);
-      LyricsWebClient client = new LyricsWebClient();
-      client.OpenReadCompleted += new OpenReadCompletedEventHandler(callbackMethod);
-      client.OpenReadAsync(uri);
+        // lyrics mark pattern 
+        private const string LyricsMarkPattern = @"data-artist=""(?<artist>.*)"" data-song=""(?<song>.*)"" data-search";
+        private readonly string _artist;
+        private readonly string _title;
 
-      while (complete == false)
-      {
-        if (m_EventStop_SiteSearches.WaitOne(500, true))
+        # endregion patterns
+
+        private readonly Timer _timer;
+        private bool _complete;
+        private string _lyric = "";
+        private readonly int _timeLimit;
+
+        public Lyrics007(string artist, string title, ManualResetEvent mEventStopSiteSearches, int timeLimit)
         {
-          complete = true;
-        }
-      }
-    }
+            _artist = artist;
+            _title = title;
 
-    public string Lyric
-    {
-      get { return lyric; }
-    }
+            _timeLimit = timeLimit/2;
+            _timer = new Timer();
 
+            artist = LyricUtil.RemoveFeatComment(artist);
+            artist = artist.Replace("#", "");
+            title = LyricUtil.TrimForParenthesis(title);
+            title = title.Replace("#", "");
 
-    private void callbackMethod(object sender, OpenReadCompletedEventArgs e)
-    {
-      bool thisMayBeTheCorrectLyric = true;
-      StringBuilder lyricTemp = new StringBuilder();
-      LyricsWebClient client = (LyricsWebClient)sender;
-      Stream reply = null;
-      StreamReader sr = null;
+            // Cannot find lyrics contaning non-English letters!
 
-      try
-      {
-        reply = (Stream)e.Result;
-        sr = new StreamReader(reply, Encoding.Default);
+            var urlString = Lyrics007Com + artist + " Lyrics/" + title + " Lyrics.html";
 
-        //string line = sr.ReadToEnd();
-        string line = sr.ReadLine();
+            _timer.Enabled = true;
+            _timer.Interval = _timeLimit;
+            _timer.Elapsed += timer_Elapsed;
+            _timer.Start();
 
-        // Replace the new line stuff in the result, as the regex might have problems
-        //line = line.Replace("\n", "");
-        //line = line.Replace("\r", "");
-        //line = line.Replace("\t", "");
+            var uri = new Uri(urlString);
+            var client = new LyricsWebClient();
+            client.OpenReadCompleted += CallbackMethod;
+            client.OpenReadAsync(uri);
 
-        //string pat = @"<script\s*type=""text/javascript""\s*src=""http://www2\.ringtonematcher\.com/jsstatic/lyrics007\.js""></script>.*?</div>(.*?)<div.*";
-        //string pat = @"src=""/images/phone2.gif""><br><br><br></div>(.*?)<div align=center>";
-        //string pat = @"<br><br><br></div>(.*?)<div.*";
-
-        string pat = @"rtm.js""></scr' + 'ipt>');";
-
-        while (line.IndexOf(pat) == -1)
-        {
-          if (sr.EndOfStream)
-          {
-            thisMayBeTheCorrectLyric = false;
-            break;
-          }
-          else
-          {
-            line = sr.ReadLine();
-          }
-        }
-
-        if (thisMayBeTheCorrectLyric)
-        {
-          line = sr.ReadLine();
-          line = line.Replace("</script><br><br><br>", string.Empty);
-
-          while (line.IndexOf("<script") == -1)
-          {
-            if (line.IndexOf("<fb:like") == -1)
+            while (_complete == false)
             {
-              lyricTemp.Append(line);
+                if (mEventStopSiteSearches.WaitOne(500, true))
+                {
+                    _complete = true;
+                }
             }
-            if (sr.EndOfStream)
+        }
+
+        public string Lyric
+        {
+            get { return _lyric; }
+        }
+
+
+        private void CallbackMethod(object sender, OpenReadCompletedEventArgs e)
+        {
+            var lyricTemp = new StringBuilder();
+            // ReSharper disable UnusedVariable
+            var client = (LyricsWebClient) sender;
+            // ReSharper restore UnusedVariable
+            Stream reply = null;
+            StreamReader reader = null;
+
+            try
             {
-              thisMayBeTheCorrectLyric = false;
-              break;
+                // ReSharper disable RedundantCast
+                reply = (Stream)e.Result;
+                // ReSharper restore RedundantCast
+                reader = new StreamReader(reply, Encoding.Default);
+
+                // Look for start
+                var inLyrics = false;
+                while (true)
+                {
+                    if (reader.EndOfStream)
+                    {
+                        break;
+                    }
+
+                    // Read next line
+                    var line = reader.ReadLine() ?? "";
+
+                    // Find lyrics mark
+                    var match = Regex.Match(line, LyricsMarkPattern, RegexOptions.IgnoreCase);
+
+                    // Handle line
+                    if (!inLyrics) // before lyrics started
+                    {
+                        // mark start of lyrics
+                        if (match.Success)
+                        {
+                            if (match.Groups.Count == 3)
+                            {
+                                if (match.Groups[1].Value.Equals(_artist, StringComparison.OrdinalIgnoreCase) &&
+                                    match.Groups[2].Value.Equals(_title, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    inLyrics = true;
+                                }
+                                else
+                                {
+                                    _lyric = NotFound;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else // after lyrics started
+                    {
+                        // end of lyrics
+                        if (match.Success)
+                        {
+                            break;
+                        }
+
+                        // Add line
+                        lyricTemp.Append(line);
+                    }
+                }
+
+                _lyric = lyricTemp.ToString();
+
+                if (_lyric.Length > 0)
+                {
+                    CleanLyrics();
+                }
+                else
+                    _lyric = NotFound;
             }
-            else
+            catch
             {
-              line = sr.ReadLine();
+                _lyric = NotFound;
             }
-          }
+            finally
+            {
+                if (reader != null)
+                {
+                    reader.Close();
+                }
+
+                if (reply != null)
+                {
+                    reply.Close();
+                }
+                _complete = true;
+            }
         }
 
-        lyric = lyricTemp.ToString();
-
-        if (lyric.Length > 0)
+        // Cleans the lyrics
+        private void CleanLyrics()
         {
-          lyric = lyric.Replace("</script>", "");
-          lyric = lyric.Replace("??s", "'s");
-          lyric = lyric.Replace("??t", "'t");
-          lyric = lyric.Replace("??m", "'m");
-          lyric = lyric.Replace("??l", "'l");
-          lyric = lyric.Replace("??v", "'v");
-          lyric = lyric.Replace("?s", "'s");
-          lyric = lyric.Replace("?t", "'t");
-          lyric = lyric.Replace("?m", "'m");
-          lyric = lyric.Replace("?l", "'l");
-          lyric = lyric.Replace("?v", "'v");
-          lyric = lyric.Replace("<br>", "\r\n");
-          lyric = lyric.Replace("<br />", "\r\n");
-          lyric = lyric.Replace("<BR>", "\r\n");
-          lyric = lyric.Replace("&amp;", "&");
-          lyric = lyric.Trim();
-        }
-        else
-          lyric = "Not found";
-      }
-      catch
-      {
-        lyric = "Not found";
-      }
-      finally
-      {
-        if (sr != null)
-        {
-          sr.Close();
+            _lyric = _lyric.Replace("</script>", "");
+            _lyric = _lyric.Replace("??s", "'s");
+            _lyric = _lyric.Replace("??t", "'t");
+            _lyric = _lyric.Replace("??m", "'m");
+            _lyric = _lyric.Replace("??l", "'l");
+            _lyric = _lyric.Replace("??v", "'v");
+            _lyric = _lyric.Replace("?s", "'s");
+            _lyric = _lyric.Replace("?t", "'t");
+            _lyric = _lyric.Replace("?m", "'m");
+            _lyric = _lyric.Replace("?l", "'l");
+            _lyric = _lyric.Replace("?v", "'v");
+            _lyric = _lyric.Replace("<br>", "\r\n");
+            _lyric = _lyric.Replace("<br />", "\r\n");
+            _lyric = _lyric.Replace("<BR>", "\r\n");
+            _lyric = _lyric.Replace("&amp;", "&");
+            _lyric = Regex.Replace(_lyric, @"<span.*</span>", "", RegexOptions.Singleline);
+            _lyric = Regex.Replace(_lyric, @"<.*?>", "", RegexOptions.Singleline);
+            _lyric = Regex.Replace(_lyric, @"<!--.*-->", "", RegexOptions.Singleline);
+            _lyric = _lyric.Trim();
         }
 
-        if (reply != null)
+        private void timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-          reply.Close();
+            _timer.Stop();
+            _timer.Close();
+            _timer.Dispose();
+
+            _lyric = NotFound;
+            _complete = true;
+            Thread.CurrentThread.Abort();
         }
-        complete = true;
-      }
     }
-
-    private void timer_Elapsed(object sender, ElapsedEventArgs e)
-    {
-      timer.Stop();
-      timer.Close();
-      timer.Dispose();
-
-      lyric = "Not found";
-      complete = true;
-      Thread.CurrentThread.Abort();
-    }
-  }
 }
