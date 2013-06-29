@@ -1033,7 +1033,7 @@
             // cbLyricsPluginSite
             // 
             this.cbLyricsPluginSite.AutoSize = true;
-            this.cbLyricsPluginSite.Checked = true;
+            this.cbLyricsPluginSite.Checked = false;
             this.cbLyricsPluginSite.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cbLyricsPluginSite.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.cbLyricsPluginSite.Location = new System.Drawing.Point(20, 40);
@@ -1042,6 +1042,7 @@
             this.cbLyricsPluginSite.TabIndex = 9;
             this.cbLyricsPluginSite.Text = "LyricsPlugin";
             this.cbLyricsPluginSite.UseVisualStyleBackColor = true;
+            this.cbLyricsPluginSite.Visible = false;
             this.cbLyricsPluginSite.Leave += new System.EventHandler(this.WriteMediaPortalXML);
             // 
             // cbShironet

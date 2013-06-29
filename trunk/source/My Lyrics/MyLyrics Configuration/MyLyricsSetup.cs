@@ -1107,7 +1107,7 @@ namespace MyLyrics
             if (trackBar.Value == 0)
             {
                 cbLyricsOnDemand.Checked = true;
-                cbLyricsPluginSite.Checked = true;
+                cbLyricsPluginSite.Checked = false;
                 cbShironet.Checked = true;
                 cbLyrics007.Checked = false;
                 cbLrcFinder.Checked = false;
@@ -1118,7 +1118,7 @@ namespace MyLyrics
             else if (trackBar.Value == 1)
             {
                 cbLyricsOnDemand.Checked = true;
-                cbLyricsPluginSite.Checked = true;
+                cbLyricsPluginSite.Checked = false;
                 cbShironet.Checked = true;
                 cbLrcFinder.Checked = true;
                 cbLyrics007.Checked = true;
@@ -1129,7 +1129,7 @@ namespace MyLyrics
             else if (trackBar.Value == 2)
             {
                 cbLyricsOnDemand.Checked = true;
-                cbLyricsPluginSite.Checked = true;
+                cbLyricsPluginSite.Checked = false;
                 cbShironet.Checked = true;
                 cbLyrics007.Checked = true;
                 cbLrcFinder.Checked = true;
@@ -1145,7 +1145,7 @@ namespace MyLyrics
                 cbHotLyrics.Checked = true;
                 cbLyrDB.Checked = true;
                 cbActionext.Checked = true;
-                cbLyricsPluginSite.Checked = true;
+                cbLyricsPluginSite.Checked = false;
                 cbShironet.Checked = true;
             }
 
@@ -1163,7 +1163,7 @@ namespace MyLyrics
                 cbLyrics007.Checked = true;
                 cbLrcFinder.Checked = true;
                 cbHotLyrics.Checked = true;
-                cbLyricsPluginSite.Checked = true;
+                cbLyricsPluginSite.Checked = false;
                 cbShironet.Checked = true;
 
                 trackBar.Value = 2;
@@ -1197,7 +1197,7 @@ namespace MyLyrics
                 cbLyricsOnDemand.Enabled = true;
                 cbLyrics007.Enabled = true;
                 cbLrcFinder.Enabled = true;
-                cbLyricsPluginSite.Enabled = true;
+                cbLyricsPluginSite.Enabled = false;
                 cbShironet.Enabled = true;
                 cbHotLyrics.Enabled = true;
                 cbActionext.Enabled = true;
