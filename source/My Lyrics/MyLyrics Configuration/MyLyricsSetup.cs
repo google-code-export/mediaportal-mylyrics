@@ -268,6 +268,12 @@ namespace MyLyrics
 
                     trackBar.Value = ((int) xmlreader.GetValueAsInt("myLyrics", "defaultSitesModeValue", 2));
 
+                    // Update the search sites according to trackbar
+                    if (rdLyricsMode.Checked)
+                    {
+                        trackBar_Scroll(null, null);
+                    }
+
                     comboBoxLanguages.SelectedItem =
                         ((string) xmlreader.GetValueAsString("myLyrics", "translationLanguage", "English (en)"));
 
