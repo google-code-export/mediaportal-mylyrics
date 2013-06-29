@@ -1108,7 +1108,7 @@ namespace MyLyrics
             {
                 cbLyricsOnDemand.Checked = true;
                 cbLyricsPluginSite.Checked = false;
-                cbShironet.Checked = true;
+                cbShironet.Checked = false;
                 cbLyrics007.Checked = false;
                 cbLrcFinder.Checked = false;
                 cbHotLyrics.Checked = false;
@@ -1119,7 +1119,7 @@ namespace MyLyrics
             {
                 cbLyricsOnDemand.Checked = true;
                 cbLyricsPluginSite.Checked = false;
-                cbShironet.Checked = true;
+                cbShironet.Checked = false;
                 cbLrcFinder.Checked = true;
                 cbLyrics007.Checked = true;
                 cbHotLyrics.Checked = false;
@@ -1152,21 +1152,6 @@ namespace MyLyrics
             if (sender != null)
             {
                 WriteMediaPortalXML(null, null);
-            }
-        }
-
-        private void trackBar_ValueChanged(object sender, EventArgs e)
-        {
-            if (trackBar.Value == 3)
-            {
-                cbLyricsOnDemand.Checked = true;
-                cbLyrics007.Checked = true;
-                cbLrcFinder.Checked = true;
-                cbHotLyrics.Checked = true;
-                cbLyricsPluginSite.Checked = false;
-                cbShironet.Checked = true;
-
-                trackBar.Value = 2;
             }
         }
 
