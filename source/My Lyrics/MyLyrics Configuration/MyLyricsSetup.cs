@@ -437,6 +437,9 @@ namespace MyLyrics
             lbStep1a.Text = "The collecting of songs has started.";
             lbStep2a.Text = "";
 
+            lbStep2a.Visible = false;
+            lbStep2.Visible = false;
+
             // Reset text in textboxes
             lbLastActivity2.Text = "";
             lbMessage.Text = "";
@@ -941,8 +944,25 @@ namespace MyLyrics
             {
                 lbStep1a.Text = "Completed";
                 lbStep2a.Text = "The search for lyrics has started.";
+
                 int disregardedSongs = m_TotalTitles - m_SongsWithLyric - m_SongsWithMark - m_SongsToSearch;
                 lbDisregardedSongs2.Text = disregardedSongs.ToString();
+
+                if (m_SongsToSearch > 0)
+                {
+                    lbStep2a.Visible = true;
+                    lbStep2.Visible = true;
+
+                    progressBar.Value = 0;
+                    progressBar.Maximum = m_SongsToSearch;
+                    
+                }
+                else
+                {
+                    progressBar.Maximum = progressBar.Maximum - disregardedSongs;
+                }
+                
+                Update();
             }
         }
 
@@ -989,6 +1009,8 @@ namespace MyLyrics
             progressBar.ResetText();
             progressBar.Value = 0;
             m_LyricControllerThread = null;
+
+            Update();
         }
 
         private void DeserializeBothDB()
