@@ -30,6 +30,13 @@ The plugin can show LRC's and plain lyrics. It uses both musictags and online se
             <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
               <Param1 />
               <UpdateOption>AlwaysOverwrite</UpdateOption>
+              <LocalFileName>..\source\Skin\Default\myLyrics.common.play.fanart.xml</LocalFileName>
+              <ZipFileName>Installer{CopyFile}\{a01111fe-2c8e-4902-9eaa-466eeb037905}-myLyrics.common.play.fanart.xml</ZipFileName>
+              <DestinationFilename>%Skin%\Default\myLyrics.common.play.fanart.xml</DestinationFilename>
+            </FileItem>
+            <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+              <Param1 />
+              <UpdateOption>AlwaysOverwrite</UpdateOption>
               <LocalFileName>..\source\Skin\Default\Media\hover_my lyrics.png</LocalFileName>
               <ZipFileName>Installer{CopyFile}\{a89f2ec6-7180-4951-b343-296e620a0109}-hover_my lyrics.png</ZipFileName>
               <DestinationFilename>%Skin%\Default\Media\hover_my lyrics.png</DestinationFilename>
@@ -355,6 +362,13 @@ Compatible with MediaPortal 1.4.0
         <LocalFileName>..\source\Skin\Default\myLyrics.hiddenmenu.xml</LocalFileName>
         <ZipFileName>Installer{CopyFile}\{3d8b873f-112c-4743-8920-66eaa544e471}-myLyrics.hiddenmenu.xml</ZipFileName>
         <DestinationFilename>%Skin%\Default\myLyrics.hiddenmenu.xml</DestinationFilename>
+      </FileItem>
+      <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+        <Param1 />
+        <UpdateOption>AlwaysOverwrite</UpdateOption>
+        <LocalFileName>..\source\Skin\Default\myLyrics.common.play.fanart.xml</LocalFileName>
+        <ZipFileName>Installer{CopyFile}\{a01111fe-2c8e-4902-9eaa-466eeb037905}-myLyrics.common.play.fanart.xml</ZipFileName>
+        <DestinationFilename>%Skin%\Default\myLyrics.common.play.fanart.xml</DestinationFilename>
       </FileItem>
       <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
         <Param1 />
