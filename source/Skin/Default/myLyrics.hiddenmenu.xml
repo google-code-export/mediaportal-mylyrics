@@ -21,22 +21,30 @@
 		  <defaultcontrol>1957</defaultcontrol>
 		  <onexit>20</onexit>
 		  <buttonX>0</buttonX>
-		  <buttonY>-60</buttonY>
-		  <buttonwidth>59</buttonwidth>
-                  <buttonheight>576</buttonheight>
+		  <buttonY>-50</buttonY>
+		  <buttonwidth>79</buttonwidth>
+                  <buttonheight>570</buttonheight>
                   <textureFocus>-</textureFocus>
                   <textureNoFocus>Action_nofocus.png</textureNoFocus>
-		  <width>170</width>
-		  <height>520</height>
+		  <width>206</width>
+		  <height>570</height>
 		  <dimColor>00ffffff</dimColor>
+                  <control>
+                    <type>image</type>
+                    <id>0</id>
+                    <width>960</width>
+                    <height>720</height>
+                    <texture>white.png</texture>
+                    <colordiffuse>201e90ff</colordiffuse>
+                  </control>
 			<control>
 				<type>image</type>
-				<posX>14</posX>
-				<posY>62</posY>
-				<width>230</width>
-				<height>370</height>
+				<posX>19</posX>
+				<posY>78</posY>
+				<width>280</width>
+				<height>490</height>
 				<texture>Backslide.png</texture>
-				<colorDiffuse>ivoryf</colorDiffuse>
+				<colorDiffuse>ffffffff</colorDiffuse>
 				<visible>!Control.HasFocus(901)</visible>
 				<animation effect="slide" time="70" start="-300,0" reversible="false">visible</animation>
 				<animation effect="slide" time="70" end="-300,0" reversible="false">hidden</animation>
@@ -52,8 +60,8 @@
 					<type>group</type>
 					<animation effect="slide" time="70" start="-300,0" reversible="false">visible</animation>
 					<animation effect="slide" time="70" end="-300,0" reversible="false">hidden</animation>
-					<posX>39</posX>
-					<posY>96</posY>					
+					<posX>37</posX>
+					<posY>121</posY>					
 					<layout>StackLayout</layout>
 					<visible>!Control.HasFocus(901)</visible>
 					<control>
