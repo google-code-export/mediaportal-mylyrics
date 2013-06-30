@@ -1068,19 +1068,19 @@ namespace MyLyrics
         {
             if (cbSearchOnlyForMarkedSongs.Checked)
             {
-                cbDontSearchSongsInLyricDB.Enabled = false;
-                cbDisregardSongsWithNoLyric.Enabled = false;
-                cbDontSearchSongsWithLyricInTag.Enabled = false;
-                cbDontSearchVariousArtist.Enabled = false;
-                cbMarkSongsWithNoLyrics.Enabled = false;
+                cbDontSearchSongsInLyricDB.Visible = false;
+                cbDisregardSongsWithNoLyric.Visible = false;
+                cbDontSearchSongsWithLyricInTag.Visible = false;
+                cbDontSearchVariousArtist.Visible = false;
+                cbMarkSongsWithNoLyrics.Visible = false;
             }
             else
             {
-                cbDontSearchSongsInLyricDB.Enabled = true;
-                cbDisregardSongsWithNoLyric.Enabled = true;
-                cbDontSearchSongsWithLyricInTag.Enabled = true;
-                cbDontSearchVariousArtist.Enabled = true;
-                cbMarkSongsWithNoLyrics.Enabled = true;
+                cbDontSearchSongsInLyricDB.Visible = true;
+                cbDisregardSongsWithNoLyric.Visible = true;
+                cbDontSearchSongsWithLyricInTag.Visible = true;
+                cbDontSearchVariousArtist.Visible = true;
+                cbMarkSongsWithNoLyrics.Visible = true;
             }
         }
 
