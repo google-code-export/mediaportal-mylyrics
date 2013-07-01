@@ -454,6 +454,11 @@ namespace MyLyrics
 
       if (_lyricsFound)
       {
+        if (string.IsNullOrEmpty(GUIPropertyManager.GetProperty("#Play.Current.Lyrics")))
+        {
+        	GUIPropertyManager.SetProperty("#Play.Current.Lyrics", _LyricText);
+		}
+
         if (_selectedScreen == (int)MyLyricsSettings.Screen.LRC
             || _selectedScreen == (int)MyLyricsSettings.Screen.LRC_PICK)
         {
