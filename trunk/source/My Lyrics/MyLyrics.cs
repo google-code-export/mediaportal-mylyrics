@@ -185,11 +185,11 @@ namespace MyLyrics
       if (_NextTrackTag != null)
       {
         GUIPropertyManager.SetProperty("#Play.Next.Title", _NextTrackTag.Title);
-        GUIPropertyManager.SetProperty("#Play.Next.Track", _NextTrackTag.Track > 0 ? _NextTrackTag.Track : string.Empty);
+        GUIPropertyManager.SetProperty("#Play.Next.Track", _NextTrackTag.Track > 0 ? _NextTrackTag.Track.ToString() : string.Empty);
         GUIPropertyManager.SetProperty("#Play.Next.Album", _NextTrackTag.Album);
         GUIPropertyManager.SetProperty("#Play.Next.Artist", _NextTrackTag.Artist);
         GUIPropertyManager.SetProperty("#Play.Next.Genre", _NextTrackTag.Genre);
-        GUIPropertyManager.SetProperty("#Play.Next.Year", _NextTrackTag.Year > 1900 ? strYear : string.Empty);
+        GUIPropertyManager.SetProperty("#Play.Next.Year", _NextTrackTag.Year > 1900 ? _NextTrackTag.Year.ToString() : string.Empty);
         GUIPropertyManager.SetProperty("#Play.Next.Rating", (Convert.ToDecimal(2 * _NextTrackTag.Rating + 1)).ToString());
       }
       else
@@ -289,11 +289,11 @@ namespace MyLyrics
           if (!g_Player.IsRadio)
           {
             GUIPropertyManager.SetProperty("#Play.Current.Title", _CurrentTrackTag.Title);
-            GUIPropertyManager.SetProperty("#Play.Current.Track", _CurrentTrackTag.Track > 0 ? _CurrentTrackTag.Track : string.Empty);
+            GUIPropertyManager.SetProperty("#Play.Current.Track", _CurrentTrackTag.Track > 0 ? _CurrentTrackTag.Track.ToString() : string.Empty);
             GUIPropertyManager.SetProperty("#Play.Current.Album", _CurrentTrackTag.Album);
             GUIPropertyManager.SetProperty("#Play.Current.Artist", _CurrentTrackTag.Artist);
             GUIPropertyManager.SetProperty("#Play.Current.Genre", _CurrentTrackTag.Genre);
-            GUIPropertyManager.SetProperty("#Play.Current.Year", _CurrentTrackTag.Year > 1900 ? _CurrentTrackTag.Year : string.Empty);
+            GUIPropertyManager.SetProperty("#Play.Current.Year", _CurrentTrackTag.Year > 1900 ? _CurrentTrackTag.Year.ToString() : string.Empty);
             GUIPropertyManager.SetProperty("#Play.Current.Rating", (Convert.ToDecimal(2 * _CurrentTrackTag.Rating + 1)).ToString());
             GUIPropertyManager.SetProperty("#duration", MediaPortal.Util.Utils.SecondsToHMSString(_CurrentTrackTag.Duration));
 
