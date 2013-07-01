@@ -288,24 +288,12 @@ namespace MyLyrics
         {
           if (!g_Player.IsRadio)
           {
-            string strTrack = String.Format("{0} {1}", GUILocalizeStrings.Get(435), _CurrentTrackTag.Track); //	"Track"
-            if (_CurrentTrackTag.Track <= 0)
-            {
-              strTrack = string.Empty;
-            }
-
-            string strYear = String.Format("{0} {1}", GUILocalizeStrings.Get(436), _CurrentTrackTag.Year); //	"Year: "
-            if (_CurrentTrackTag.Year <= 1900)
-            {
-              strYear = string.Empty;
-            }
-
             GUIPropertyManager.SetProperty("#Play.Current.Title", _CurrentTrackTag.Title);
-            GUIPropertyManager.SetProperty("#Play.Current.Track", strTrack);
+            GUIPropertyManager.SetProperty("#Play.Current.Track", _CurrentTrackTag.Track > 0 ? _CurrentTrackTag.Track : string.Empty);
             GUIPropertyManager.SetProperty("#Play.Current.Album", _CurrentTrackTag.Album);
             GUIPropertyManager.SetProperty("#Play.Current.Artist", _CurrentTrackTag.Artist);
             GUIPropertyManager.SetProperty("#Play.Current.Genre", _CurrentTrackTag.Genre);
-            GUIPropertyManager.SetProperty("#Play.Current.Year", strYear);
+            GUIPropertyManager.SetProperty("#Play.Current.Year", _CurrentTrackTag.Year > 1900 ? _CurrentTrackTag.Year : string.Empty);
             GUIPropertyManager.SetProperty("#Play.Current.Rating", (Convert.ToDecimal(2 * _CurrentTrackTag.Rating + 1)).ToString());
             GUIPropertyManager.SetProperty("#duration", MediaPortal.Util.Utils.SecondsToHMSString(_CurrentTrackTag.Duration));
 
@@ -2794,7 +2782,6 @@ namespace MyLyrics
       {
         strButtonText = (xmlreader.GetValueAsString("myLyrics", "pluginsName", "My Lyrics"));
       }
-      //strButtonText = "Myrics";//GUILocalizeStrings.Get(9); // My News
       strButtonImage = String.Empty;
       strButtonImageFocus = String.Empty;
       strPictureImage = "hover_my lyrics.png";
