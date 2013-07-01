@@ -184,24 +184,12 @@ namespace MyLyrics
     {
       if (_NextTrackTag != null)
       {
-        string strNextTrack = String.Format("{0} {1}", GUILocalizeStrings.Get(435), _NextTrackTag.Track); //	"Track: "
-        if (_NextTrackTag.Track <= 0)
-        {
-          strNextTrack = string.Empty;
-        }
-
-        string strYear = String.Format("{0} {1}", GUILocalizeStrings.Get(436), _NextTrackTag.Year); //	"Year: "
-        if (_NextTrackTag.Year <= 1900)
-        {
-          strYear = string.Empty;
-        }
-
         GUIPropertyManager.SetProperty("#Play.Next.Title", _NextTrackTag.Title);
-        GUIPropertyManager.SetProperty("#Play.Next.Track", strNextTrack);
+        GUIPropertyManager.SetProperty("#Play.Next.Track", _NextTrackTag.Track > 0 ? _NextTrackTag.Track : string.Empty);
         GUIPropertyManager.SetProperty("#Play.Next.Album", _NextTrackTag.Album);
         GUIPropertyManager.SetProperty("#Play.Next.Artist", _NextTrackTag.Artist);
         GUIPropertyManager.SetProperty("#Play.Next.Genre", _NextTrackTag.Genre);
-        GUIPropertyManager.SetProperty("#Play.Next.Year", strYear);
+        GUIPropertyManager.SetProperty("#Play.Next.Year", _NextTrackTag.Year > 1900 ? strYear : string.Empty);
         GUIPropertyManager.SetProperty("#Play.Next.Rating", (Convert.ToDecimal(2 * _NextTrackTag.Rating + 1)).ToString());
       }
       else
