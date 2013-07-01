@@ -37,9 +37,19 @@ namespace LyricsEngine.LyricsSites
         ///////////////////////////
         // Second phase patterns //
         ///////////////////////////
-        // Title RegEx
-        private const string TitleSearchPattern = @"<title>(?<title>.*?)</title>";
+        
+        // Validation RegEx - Either TitleAndArtist or Title & Artist should be valid
+        // Title+Artist RegEx
+        private const string TitleAndArtistSearchPattern = @"<title>(?<titleartist>.*?)</title>";
+        // Title RegEx (multiline)
+        private const string TitleSearchStartPattern = @"<span class=""artist_song_name_txt"">";
+        private const string TitleSearchEndPattern = @"</span>";
+        private const string TitleSearchPattern = @"<span class=""artist_song_name_txt"">(?<title>.*?)</span>";
+        // Artist RegEx
+        private const string ArtistSearchPattern = @"<a class=""artist_singer_title"" href=""/artist\?prfid=?\d+&lang=?\d+"">(?<artist>.*?)</a>";
 
+
+        // Lyrics RegEx
         // Lyrics start RegEx
         private const string LyricsStartSearchPattern = @"<span class=""artist_lyrics_text"">(?<lyricsStart>.*)";
         // Lyrics end RegEx
@@ -209,7 +219,15 @@ namespace LyricsEngine.LyricsSites
                 reply = e.Result;
                 reader = new StreamReader(reply, Encoding.UTF8);
 
-                var titleLine = "";
+                // Validation
+                var titleAndArtistInPage = string.Empty;
+                var inTitle = false;
+                var titleInPage = string.Empty;
+                var artistInPage = string.Empty;
+                var validateArtistAndTitle = false;
+                var validateArtist = false;
+                var validateTitle = false;
+
                 var foundStart = false;
 
                 while (!_complete)
@@ -219,20 +237,73 @@ namespace LyricsEngine.LyricsSites
                     {
                         break;
                     }
-                    var line = reader.ReadLine() ?? "";
+                    var line = reader.ReadLine() ?? string.Empty;
 
                     // Find artist + title in <title> line and validate correct artist/title
-                    if (titleLine == "")
+                    if (titleAndArtistInPage == string.Empty)
                     {
-                        var findLyricsPageMatch = Regex.Match(line, TitleSearchPattern, RegexOptions.IgnoreCase);
-                        if (findLyricsPageMatch.Groups.Count == 2)
+                        var findTitleAndArtistMatch = Regex.Match(line, TitleAndArtistSearchPattern, RegexOptions.IgnoreCase);
+                        if (findTitleAndArtistMatch.Groups.Count == 2)
                         {
-                            titleLine = findLyricsPageMatch.Groups[1].Value;
+                            titleAndArtistInPage = findTitleAndArtistMatch.Groups[1].Value;
 
-                            // validation
-                            if (!ValidateArtistAndTitle(titleLine))
+                            // validation ArtistAndTitle
+                            if (ValidateArtistAndTitle(titleAndArtistInPage))
                             {
-                                throw new ArgumentException(CannotFindExactMatch);
+                                validateArtistAndTitle = true;
+                            }
+                        }
+                    }
+
+                    //Find title in <span class="artist_song_name_txt">(?.*)</span> line
+                    if (titleInPage == String.Empty)
+                    {
+                        var findTitleStartMatch = Regex.Match(line, TitleSearchStartPattern, RegexOptions.IgnoreCase);
+                        if (findTitleStartMatch.Success)
+                        {
+                            inTitle = true;
+                        }
+                    }
+                    if (inTitle) // title found in page
+                    {
+                        titleInPage += line;
+                    
+                        // Search for ending of title 
+                        var findTitleEndMatch = Regex.Match(line, TitleSearchEndPattern, RegexOptions.IgnoreCase);
+                        if (findTitleEndMatch.Success)
+                        {
+                            inTitle = false;
+                        }
+                    }
+                    // Finish and validate
+                    if (titleInPage != string.Empty && !inTitle)
+                    {
+                        // Search for ending of artist 
+                        var findTitleMatch = Regex.Match(titleInPage, TitleSearchPattern, RegexOptions.IgnoreCase | RegexOptions.Singleline);
+                        if (findTitleMatch.Groups.Count == 2)
+                        {
+                            titleInPage = findTitleMatch.Groups[1].Value;
+
+                            // validation Title
+                            if (IgnoreSpecialChars(_title).Equals(IgnoreSpecialChars(titleInPage).Trim()))
+                            {
+                                validateTitle = true;
+                            }
+                        }
+                    }
+
+                    // Find artist in <a class="artist_singer_title" href="/artist?prfid=975&lang=1">()</a>
+                    if (artistInPage == string.Empty)
+                    {
+                        var findArtistMatch = Regex.Match(line, ArtistSearchPattern, RegexOptions.IgnoreCase);
+                        if (findArtistMatch.Groups.Count == 2)
+                        {
+                            artistInPage = findArtistMatch.Groups[1].Value;
+
+                            // validation Artist
+                            if (IgnoreSpecialChars(_artist).Equals(IgnoreSpecialChars(artistInPage).Trim()))
+                            {
+                                validateArtist = true;
                             }
                         }
                     }
@@ -245,6 +316,12 @@ namespace LyricsEngine.LyricsSites
                         if (findLyricsPageMatch.Groups.Count == 2)
                         {
                             foundStart = true;
+
+                            // Here's where we use the data from the validation - just when we hit the first lyrics row
+                            if (!((validateArtist && validateTitle) || validateArtistAndTitle))
+                            {
+                                throw new ArgumentException(CannotFindExactMatch);
+                            }
 
                             // Initialize with first line
                             lyricTemp.Append(findLyricsPageMatch.Groups[1].Value).Append(Environment.NewLine);
