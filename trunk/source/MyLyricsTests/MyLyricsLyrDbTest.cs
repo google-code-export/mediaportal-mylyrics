@@ -15,7 +15,7 @@ namespace MyLyricsTests
         {
             _stopwatch.Reset();
             _stopwatch.Start();
-            var withOrWithoutYou = new LyrDB("U2", "With Or Without You", new ManualResetEvent(false), 120000);
+            var withOrWithoutYou = new LyrDB("U2", "With Or Without You", new ManualResetEvent(false), 30000);
             _stopwatch.Stop();
             Debug.WriteLine("Test duration: " + _stopwatch.Elapsed);
             var splitMam = withOrWithoutYou.Lyric.Split(' ');
@@ -26,7 +26,7 @@ namespace MyLyricsTests
         [TestMethod]
         public void TestLyrDbNotFound()
         {
-            var notFound = new LyrDB("Foo", "Bar", new ManualResetEvent(false), 120000);
+            var notFound = new LyrDB("Foo", "Bar", new ManualResetEvent(false), 30000);
             var splitNf = notFound.Lyric.Split(' ');
             Assert.AreEqual("Not", splitNf[0]);
             Assert.AreEqual("found", splitNf[splitNf.Length - 1]);
