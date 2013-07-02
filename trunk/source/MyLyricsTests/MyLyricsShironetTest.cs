@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Diagnostics;
+using System.Threading;
 using LyricsEngine.LyricsSites;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -41,6 +42,19 @@ namespace MyLyricsTests
             var splitEbjl = efratGoshTamid.Lyric.Split(' ');
             Assert.AreEqual("תמיד", splitEbjl[0]);
             Assert.AreEqual("באמת", splitEbjl[splitEbjl.Length - 1]);
+        }
+
+        [TestMethod]
+        public void TestLoadShironet()
+        {
+            for (var i = 0; i < 100; i++)
+            {
+                Debug.WriteLine(string.Format("Iteration {0}", i));
+                var mashinaAtidMatok = new Shironet("משינה", "עתיד מתוק", new ManualResetEvent(false), 3000);
+                var splitMam = mashinaAtidMatok.Lyric.Split(' ');
+                Assert.AreEqual("כולם", splitMam[0]);
+                Assert.AreEqual("טוב...", splitMam[splitMam.Length - 1]);
+            }
         }
 
         [TestMethod]
