@@ -1,221 +1,228 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
-using System.Timers;
-using Timer = System.Timers.Timer;
 
 namespace LyricsEngine.LyricsSites
 {
-  internal class HotLyrics
-  {
-    private bool complete;
-    private string lyric = "";
-    private int timeLimit;
-    private Timer timer;
-
-    public HotLyrics(string artist, string title, ManualResetEvent m_EventStop_SiteSearches, int timeLimit)
+    public class HotLyrics : AbstractSite
     {
-      this.timeLimit = timeLimit / 2;
-      timer = new Timer();
+        # region const
 
-      artist = LyricUtil.RemoveFeatComment(artist);
-      artist = LyricUtil.CapatalizeString(artist);
+        // Name
+        private const string SiteName = "HotLyrics";
 
-      artist = artist.Replace(" ", "_");
-      artist = artist.Replace(",", "_");
-      artist = artist.Replace(".", "_");
-      artist = artist.Replace("'", "_");
-      artist = artist.Replace("(", "%28");
-      artist = artist.Replace(")", "%29");
-      artist = artist.Replace(",", "");
-      artist = artist.Replace("#", "");
-      artist = artist.Replace("%", "");
-      artist = artist.Replace("+", "%2B");
-      artist = artist.Replace("=", "%3D");
-      artist = artist.Replace("-", "_");
+        // Base url
+        private const string SiteBaseUrl = "http://www.hotlyrics.net/lyrics/";
 
-      // French letters
-      artist = artist.Replace("é", "%E9");
+        # endregion
 
-      title = LyricUtil.TrimForParenthesis(title);
-      title = LyricUtil.CapatalizeString(title);
-
-      title = title.Replace(" ", "_");
-      title = title.Replace(",", "_");
-      title = title.Replace(".", "_");
-      title = title.Replace("'", "_");
-      title = title.Replace("(", "%28");
-      title = title.Replace(")", "%29");
-      title = title.Replace(",", "_");
-      title = title.Replace("#", "_");
-      title = title.Replace("%", "_");
-      title = title.Replace("?", "_");
-      title = title.Replace("+", "%2B");
-      title = title.Replace("=", "%3D");
-      title = title.Replace("-", "_");
-      title = title.Replace(":", "_");
-
-      // German letters
-      artist = artist.Replace("ü", "%FC");
-      artist = artist.Replace("Ü", "%DC");
-      artist = artist.Replace("ä", "%E4");
-      artist = artist.Replace("Ä", "%C4");
-      artist = artist.Replace("ö", "%F6");
-      artist = artist.Replace("Ö", "%D6");
-      artist = artist.Replace("ß", "%DF");
-
-      // Danish letters
-      title = title.Replace("å", "%E5");
-      title = title.Replace("Å", "%C5");
-      title = title.Replace("æ", "%E6");
-      title = title.Replace("ø", "%F8");
-
-      // French letters
-      title = title.Replace("é", "%E9");
-
-      if (string.IsNullOrEmpty(artist) || string.IsNullOrEmpty(title))
-      {
-        return;
-      }
-
-      string firstLetter = artist[0].ToString();
-
-      string urlString = "http://www.hotlyrics.net/lyrics/" + firstLetter + "/" + artist + "/" + title + ".html";
-
-      LyricsWebClient client = new LyricsWebClient();
-
-      timer.Enabled = true;
-      timer.Interval = timeLimit;
-      timer.Elapsed += new ElapsedEventHandler(timer_Elapsed);
-      timer.Start();
-
-      Uri uri = new Uri(urlString);
-      client.OpenReadCompleted += new OpenReadCompletedEventHandler(callbackMethod);
-      client.OpenReadAsync(uri);
-
-      while (complete == false)
-      {
-        if (m_EventStop_SiteSearches.WaitOne(1, true))
+        public HotLyrics(string artist, string title, WaitHandle mEventStopSiteSearches, int timeLimit) : base(artist, title, mEventStopSiteSearches, timeLimit)
         {
-          complete = true;
-        }
-        else
-        {
-          Thread.Sleep(300);
-        }
-      }
-    }
-
-    public string Lyric
-    {
-      get { return lyric; }
-    }
-
-    private void callbackMethod(object sender, OpenReadCompletedEventArgs e)
-    {
-      bool thisMayBeTheCorrectLyric = true;
-      StringBuilder lyricTemp = new StringBuilder();
-
-      LyricsWebClient client = (LyricsWebClient)sender;
-      Stream reply = null;
-      StreamReader sr = null;
-
-      try
-      {
-        reply = (Stream)e.Result;
-        sr = new StreamReader(reply, Encoding.Default);
-
-        string line = "";
-
-        while (line.IndexOf("GOOGLE END") == -1)
-        {
-          if (sr.EndOfStream)
-          {
-            thisMayBeTheCorrectLyric = false;
-            break;
-          }
-          else
-          {
-            line = sr.ReadLine();
-          }
         }
 
-        if (thisMayBeTheCorrectLyric)
-        {
-          lyricTemp = new StringBuilder();
-          line = sr.ReadLine();
+        #region interface implemetation
 
-          while (line.IndexOf("<script type") == -1)
-          {
-            lyricTemp.Append(line);
-            if (sr.EndOfStream)
+        protected override void FindLyricsWithTimer()
+        {
+            var artist = LyricUtil.RemoveFeatComment(Artist);
+            artist = LyricUtil.CapatalizeString(artist);
+
+            artist = artist.Replace(" ", "_");
+            artist = artist.Replace(",", "_");
+            artist = artist.Replace(".", "_");
+            artist = artist.Replace("'", "_");
+            artist = artist.Replace("(", "%28");
+            artist = artist.Replace(")", "%29");
+            artist = artist.Replace(",", "");
+            artist = artist.Replace("#", "");
+            artist = artist.Replace("%", "");
+            artist = artist.Replace("+", "%2B");
+            artist = artist.Replace("=", "%3D");
+            artist = artist.Replace("-", "_");
+
+            // French letters
+            artist = artist.Replace("é", "%E9");
+
+            var title = LyricUtil.TrimForParenthesis(Title);
+            title = LyricUtil.CapatalizeString(title);
+
+            title = title.Replace(" ", "_");
+            title = title.Replace(",", "_");
+            title = title.Replace(".", "_");
+            title = title.Replace("'", "_");
+            title = title.Replace("(", "%28");
+            title = title.Replace(")", "%29");
+            title = title.Replace(",", "_");
+            title = title.Replace("#", "_");
+            title = title.Replace("%", "_");
+            title = title.Replace("?", "_");
+            title = title.Replace("+", "%2B");
+            title = title.Replace("=", "%3D");
+            title = title.Replace("-", "_");
+            title = title.Replace(":", "_");
+
+            // German letters
+            artist = artist.Replace("ü", "%FC");
+            artist = artist.Replace("Ü", "%DC");
+            artist = artist.Replace("ä", "%E4");
+            artist = artist.Replace("Ä", "%C4");
+            artist = artist.Replace("ö", "%F6");
+            artist = artist.Replace("Ö", "%D6");
+            artist = artist.Replace("ß", "%DF");
+
+            // Danish letters
+            title = title.Replace("å", "%E5");
+            title = title.Replace("Å", "%C5");
+            title = title.Replace("æ", "%E6");
+            title = title.Replace("ø", "%F8");
+
+            // French letters
+            title = title.Replace("é", "%E9");
+
+            // Validation
+            if (string.IsNullOrEmpty(artist) || string.IsNullOrEmpty(title))
             {
-              thisMayBeTheCorrectLyric = false;
-              break;
+                return;
             }
-            else
+
+            var firstLetter = artist[0].ToString(CultureInfo.InvariantCulture);
+
+            var urlString = SiteBaseUrl + firstLetter + "/" + artist + "/" + title + ".html";
+
+            var client = new LyricsWebClient();
+
+            var uri = new Uri(urlString);
+            client.OpenReadCompleted += CallbackMethod;
+            client.OpenReadAsync(uri);
+
+            while (Complete == false)
             {
-              line = sr.ReadLine();
+                if (MEventStopSiteSearches.WaitOne(1, true))
+                {
+                    Complete = true;
+                }
+                else
+                {
+                    Thread.Sleep(300);
+                }
             }
-          }
-
-          lyricTemp.Replace("?s", "'s");
-          lyricTemp.Replace("?t", "'t");
-          lyricTemp.Replace("?m", "'m");
-          lyricTemp.Replace("?l", "'l");
-          lyricTemp.Replace("?v", "'v");
-          lyricTemp.Replace("<br>", "\r\n");
-          lyricTemp.Replace("<br />", "\r\n");
-          lyricTemp.Replace("&quot;", "\"");
-          lyricTemp.Replace("</p>", "");
-          lyricTemp.Replace("<BR>", "");
-          lyricTemp.Replace("<br/>", "\r\n");
-          lyricTemp.Replace("&amp;", "&");
-
-          lyric = lyricTemp.ToString().Trim();
-
-          if (lyric.Contains("<td"))
-          {
-            lyric = "Not found";
-          }
         }
-      }
-      catch
-      {
-        lyric = "Not found";
-      }
-      finally
-      {
-        if (sr != null)
+
+        public override LyricType GetLyricType()
         {
-          sr.Close();
+            return LyricType.UnsyncedLyrics;
         }
 
-        if (reply != null)
+        public override SiteType GetSiteType()
         {
-          reply.Close();
+            return SiteType.Scrapper;
         }
 
-        if (timer != null)
+        public override SiteComplexity GetSiteComplexity()
         {
-          timer.Stop();
-          timer.Close();
+            return SiteComplexity.OneStep;
         }
-        complete = true;
-      }
+
+        public override bool SiteActive()
+        {
+            return true;
+        }
+
+        public override string Name
+        {
+            get { return SiteName; }
+        }
+
+        public override string BaseUrl
+        {
+            get { return SiteBaseUrl; }
+        }
+
+        #endregion interface implemetation
+
+        #region private methods
+
+        private void CallbackMethod(object sender, OpenReadCompletedEventArgs e)
+        {
+            var thisMayBeTheCorrectLyric = true;
+
+            Stream reply = null;
+            StreamReader reader = null;
+
+            try
+            {
+                reply = e.Result;
+                reader = new StreamReader(reply, Encoding.Default);
+
+                string line = "";
+
+                while (line.IndexOf("GOOGLE END", StringComparison.Ordinal) == -1)
+                {
+                    if (reader.EndOfStream)
+                    {
+                        thisMayBeTheCorrectLyric = false;
+                        break;
+                    }
+                    line = reader.ReadLine() ?? "";
+                }
+
+                if (thisMayBeTheCorrectLyric)
+                {
+                    var lyricTemp = new StringBuilder();
+                    line = reader.ReadLine() ?? "";
+
+                    while (line.IndexOf("<script type", StringComparison.Ordinal) == -1)
+                    {
+                        lyricTemp.Append(line);
+                        if (reader.EndOfStream)
+                        {
+                            break;
+                        }
+                        line = reader.ReadLine() ?? "";
+                    }
+
+                    lyricTemp.Replace("?s", "'s");
+                    lyricTemp.Replace("?t", "'t");
+                    lyricTemp.Replace("?m", "'m");
+                    lyricTemp.Replace("?l", "'l");
+                    lyricTemp.Replace("?v", "'v");
+                    lyricTemp.Replace("<br>", "\r\n");
+                    lyricTemp.Replace("<br />", "\r\n");
+                    lyricTemp.Replace("&quot;", "\"");
+                    lyricTemp.Replace("</p>", "");
+                    lyricTemp.Replace("<BR>", "");
+                    lyricTemp.Replace("<br/>", "\r\n");
+                    lyricTemp.Replace("&amp;", "&");
+
+                    LyricText = lyricTemp.ToString().Trim();
+
+                    if (LyricText.Contains("<td"))
+                    {
+                        LyricText = NotFound;
+                    }
+                }
+            }
+            catch
+            {
+                LyricText = NotFound;
+            }
+            finally
+            {
+                if (reader != null)
+                {
+                    reader.Close();
+                }
+                if (reply != null)
+                {
+                    reply.Close();
+                }
+                Complete = true;
+            }
+        }
+
+        #endregion private methods
     }
-
-    private void timer_Elapsed(object sender, ElapsedEventArgs e)
-    {
-      timer.Stop();
-      timer.Close();
-      timer.Dispose();
-
-      lyric = "Not found";
-      complete = true;
-      Thread.CurrentThread.Abort();
-    }
-  }
 }
