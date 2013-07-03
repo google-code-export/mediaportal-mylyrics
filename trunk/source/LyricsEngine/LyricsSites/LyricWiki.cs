@@ -3,160 +3,170 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
-using System.Timers;
-using Timer = System.Timers.Timer;
 
 namespace LyricsEngine.LyricsSites
 {
-  internal class LyricWiki
-  {
-    private bool complete;
-    private string lyric = "";
-    private int timeLimit;
-    private Timer timer;
-
-    public LyricWiki(string artist, string title, ManualResetEvent m_EventStop_SiteSearches, int timeLimit)
+    public class LyricWiki : AbstractSite
     {
-      this.timeLimit = timeLimit / 2;
-      timer = new Timer();
+        private const string SiteName = "LyricWiki";
 
-      artist = LyricUtil.RemoveFeatComment(artist);
-      artist = LyricUtil.CapatalizeString(artist);
-      artist = artist.Replace(" ", "_");
+        // Base url
+        private const string SiteBaseUrl = "http://lyricwiki.org/";
 
-      title = LyricUtil.TrimForParenthesis(title);
-      title = LyricUtil.CapatalizeString(title);
-      title = title.Replace(" ", "_");
-      title = title.Replace("?", "%3F");
+        const string StartString = "class='lyricbox' >";
 
-      if (string.IsNullOrEmpty(artist) || string.IsNullOrEmpty(title))
-      {
-        return;
-      }
-
-      string urlString = "http://lyricwiki.org/" + artist + ":" + title;
-
-      LyricsWebClient client = new LyricsWebClient();
-
-      timer.Enabled = true;
-      timer.Interval = timeLimit;
-      timer.Elapsed += new ElapsedEventHandler(timer_Elapsed);
-      timer.Start();
-
-      Uri uri = new Uri(urlString);
-      client.OpenReadCompleted += new OpenReadCompletedEventHandler(callbackMethod);
-      client.OpenReadAsync(uri);
-
-      while (complete == false)
-      {
-        if (m_EventStop_SiteSearches.WaitOne(1, true))
+        public LyricWiki(string artist, string title, WaitHandle mEventStopSiteSearches, int timeLimit)
+            : base(artist, title, mEventStopSiteSearches, timeLimit)
         {
-          complete = true;
         }
-        else
+
+        #region interface implemetation
+
+        protected override void FindLyricsWithTimer()
         {
-          Thread.Sleep(300);
+            // Clean artist name
+            var artist = LyricUtil.RemoveFeatComment(Artist);
+            artist = LyricUtil.CapatalizeString(artist);
+            artist = artist.Replace(" ", "_");
+
+            // Clean title name
+            var title = LyricUtil.TrimForParenthesis(Title);
+            title = LyricUtil.CapatalizeString(title);
+            title = title.Replace(" ", "_");
+            title = title.Replace("?", "%3F");
+
+            // Validate not empty
+            if (string.IsNullOrEmpty(artist) || string.IsNullOrEmpty(title))
+            {
+                return;
+            }
+
+            var urlString = SiteBaseUrl + artist + ":" + title;
+
+            var client = new LyricsWebClient();
+
+            var uri = new Uri(urlString);
+            client.OpenReadCompleted += CallbackMethod;
+            client.OpenReadAsync(uri);
+
+            while (Complete == false)
+            {
+                if (MEventStopSiteSearches.WaitOne(1, true))
+                {
+                    Complete = true;
+                }
+                else
+                {
+                    Thread.Sleep(300);
+                }
+            }
         }
-      }
+
+        public override string Name
+        {
+            get { return SiteName; }
+        }
+
+        public override string BaseUrl
+        {
+            get { return SiteBaseUrl; }
+        }
+
+        public override LyricType GetLyricType()
+        {
+            return LyricType.UnsyncedLyrics;
+        }
+
+        public override SiteType GetSiteType()
+        {
+            return SiteType.Scrapper;
+        }
+
+        public override SiteComplexity GetSiteComplexity()
+        {
+            return SiteComplexity.OneStep;
+        }
+
+        public override bool SiteActive()
+        {
+            return false;
+        }
+
+        #endregion interface implemetation
+
+        
+        #region private methods
+
+        private void CallbackMethod(object sender, OpenReadCompletedEventArgs e)
+        {
+            var thisMayBeTheCorrectLyric = true;
+
+            Stream reply = null;
+            StreamReader reader = null;
+
+            try
+            {
+                reply = e.Result;
+                reader = new StreamReader(reply, Encoding.Default);
+
+                var line = "";
+
+                while (line.IndexOf(StartString, StringComparison.Ordinal) == -1)
+                {
+                    if (reader.EndOfStream)
+                    {
+                        thisMayBeTheCorrectLyric = false;
+                        break;
+                    }
+                    line = reader.ReadLine() ?? "";
+                }
+
+                if (thisMayBeTheCorrectLyric)
+                {
+                    var cutIndex = line.IndexOf(StartString, StringComparison.Ordinal);
+
+                    if (cutIndex != -1)
+                    {
+                        LyricText = line.Substring(cutIndex + StartString.Length);
+                    }
+
+                    var iso8859 = Encoding.GetEncoding("ISO-8859-1");
+                    LyricText = Encoding.UTF8.GetString(iso8859.GetBytes(LyricText));
+
+                    LyricText = LyricText.Replace("<br />", "\r\n");
+                    LyricText = LyricText.Replace("<i>", "");
+                    LyricText = LyricText.Replace("</i>", "");
+                    LyricText = LyricText.Replace("<b>", "");
+                    LyricText = LyricText.Replace("</b>", "");
+                    LyricText = LyricText.Replace("&amp;", "&");
+
+                    LyricText = LyricText.Trim();
+
+                    if (LyricText.Contains("<"))
+                    {
+                        LyricText = NotFound;
+                    }
+                }
+            }
+            catch
+            {
+                LyricText = NotFound;
+            }
+            finally
+            {
+                if (reader != null)
+                {
+                    reader.Close();
+                }
+
+                if (reply != null)
+                {
+                    reply.Close();
+                }
+                Complete = true;
+            }
+        }
+
+        #endregion private methods
     }
-
-    public string Lyric
-    {
-      get { return lyric; }
-    }
-
-
-    private void callbackMethod(object sender, OpenReadCompletedEventArgs e)
-    {
-      bool thisMayBeTheCorrectLyric = true;
-
-      LyricsWebClient client = (LyricsWebClient)sender;
-      Stream reply = null;
-      StreamReader sr = null;
-
-      try
-      {
-        reply = (Stream)e.Result;
-        sr = new StreamReader(reply, Encoding.Default);
-
-        string line = "";
-
-        while (line.IndexOf("class='lyricbox' >") == -1)
-        {
-          if (sr.EndOfStream)
-          {
-            thisMayBeTheCorrectLyric = false;
-            break;
-          }
-          else
-          {
-            line = sr.ReadLine();
-          }
-        }
-
-        if (thisMayBeTheCorrectLyric)
-        {
-          string cutString = "class='lyricbox' >";
-
-          int cutIndex = line.IndexOf(cutString);
-
-          if (cutIndex != -1)
-          {
-            lyric = line.Substring(cutIndex + cutString.Length);
-          }
-
-          Encoding iso8859 = Encoding.GetEncoding("ISO-8859-1");
-          lyric = Encoding.UTF8.GetString(iso8859.GetBytes(lyric));
-
-          lyric = lyric.Replace("<br />", "\r\n");
-          lyric = lyric.Replace("<i>", "");
-          lyric = lyric.Replace("</i>", "");
-          lyric = lyric.Replace("<b>", "");
-          lyric = lyric.Replace("</b>", "");
-          lyric = lyric.Replace("&amp;", "&");
-
-          lyric = lyric.Trim();
-
-          if (lyric.Contains("<"))
-          {
-            lyric = "Not found";
-          }
-        }
-      }
-      catch
-      {
-        lyric = "Not found";
-      }
-      finally
-      {
-        if (sr != null)
-        {
-          sr.Close();
-        }
-
-        if (reply != null)
-        {
-          reply.Close();
-        }
-
-        if (timer != null)
-        {
-          timer.Stop();
-          timer.Close();
-        }
-        complete = true;
-      }
-    }
-
-    private void timer_Elapsed(object sender, ElapsedEventArgs e)
-    {
-      timer.Stop();
-      timer.Close();
-      timer.Dispose();
-
-      lyric = "Not found";
-      complete = true;
-      Thread.CurrentThread.Abort();
-    }
-  }
 }

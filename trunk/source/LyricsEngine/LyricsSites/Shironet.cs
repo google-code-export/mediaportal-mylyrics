@@ -12,9 +12,10 @@ namespace LyricsEngine.LyricsSites
     {
         # region const
 
+        // Name
         private const string SiteName = "Shironet";
 
-        // base url - todo - move to Abstract too
+        // Base url
         private const string SiteBaseUrl = "http://shironet.mako.co.il";
 
         // Cannot find exact match
@@ -105,11 +106,11 @@ namespace LyricsEngine.LyricsSites
             findLyricsWebClient.OpenReadCompleted += SecondCallbackMethod;
             findLyricsWebClient.OpenReadAsync(new Uri(secondUrlString));
 
-            while (_complete == false)
+            while (Complete == false)
             {
                 if (MEventStopSiteSearches.WaitOne(1, true))
                 {
-                    _complete = true;
+                    Complete = true;
                 }
                 else
                 {
@@ -142,6 +143,11 @@ namespace LyricsEngine.LyricsSites
         public override SiteComplexity GetSiteComplexity()
         {
             return SiteComplexity.TwoSteps;
+        }
+
+        public override bool SiteActive()
+        {
+            return true;
         }
 
         #endregion interface implemetation
@@ -236,7 +242,7 @@ namespace LyricsEngine.LyricsSites
 
                 var foundStart = false;
 
-                while (!_complete)
+                while (!Complete)
                 {
                     // Read line
                     if (reader.EndOfStream)
@@ -376,7 +382,7 @@ namespace LyricsEngine.LyricsSites
                 {
                     reply.Close();
                 }
-                _complete = true;
+                Complete = true;
             }
         }
 

@@ -10,14 +10,24 @@ namespace MyLyricsTests
     {
         private readonly Stopwatch _stopwatch = new Stopwatch();
 
-        [TestMethod]
-        public void TestLyrDb()
+        [TestInitialize]
+        public void SetUp()
         {
             _stopwatch.Reset();
             _stopwatch.Start();
-            var withOrWithoutYou = new LyrDB("U2", "With Or Without You", new ManualResetEvent(false), 30000);
+        }
+
+        [TestCleanup]
+        public void TearDown()
+        {
             _stopwatch.Stop();
             Debug.WriteLine("Test duration: " + _stopwatch.Elapsed);
+        }
+
+        [TestMethod]
+        public void TestLyrDb()
+        {
+            var withOrWithoutYou = new LyrDB("U2", "With Or Without You", new ManualResetEvent(false), 30000);
             var splitMam = withOrWithoutYou.Lyric.Split(' ');
             Assert.AreEqual("See", splitMam[0]);
             Assert.AreEqual("you", splitMam[splitMam.Length - 1]);
