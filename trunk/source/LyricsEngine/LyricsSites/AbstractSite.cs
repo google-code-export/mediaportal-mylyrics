@@ -19,40 +19,39 @@ namespace LyricsEngine.LyricsSites
         protected readonly string Artist;
         // Title
         protected readonly string Title;
+        // Stop event
+        protected WaitHandle MEventStopSiteSearches;
+        // Time Limit
+        protected readonly int TimeLimit;
 
         // Lyrics
         protected string LyricText = "";
 
         // Complete
         protected bool _complete;
-
-        // Timer
-        protected readonly Timer SearchTimer;
-        // Stop event
-        protected WaitHandle MEventStopSiteSearches;
+        private Timer _searchTimer;
 
         #endregion members
 
 
         protected AbstractSite(string artist, string title, WaitHandle mEventStopSiteSearches, int timeLimit)
         {
-            // artist
+            // Artist
             Artist = artist;
-            // title
+            // Title
             Title = title;
-            
-            // timer
-            SearchTimer = new Timer {Enabled = false, Interval = timeLimit};
-            SearchTimer.Elapsed += TimerElapsed;
-            
+            // Stop search event
             MEventStopSiteSearches = mEventStopSiteSearches;
+            // Time Limit
+            TimeLimit = timeLimit;
         }
+
 
         private void TimerElapsed(object sender, ElapsedEventArgs e)
         {
-            SearchTimer.Stop();
-            SearchTimer.Close();
-            SearchTimer.Dispose();
+            _searchTimer.Stop();
+            _searchTimer.Close();
+            _searchTimer.Dispose();
 
             LyricText = NotFound;
             _complete = true;
@@ -73,7 +72,10 @@ namespace LyricsEngine.LyricsSites
         public abstract string BaseUrl { get; }
         public void FindLyrics()
         {
-            SearchTimer.Start();
+            // timer
+            _searchTimer = new Timer { Enabled = false, Interval = TimeLimit };
+            _searchTimer.Elapsed += TimerElapsed;
+            _searchTimer.Start();
             FindLyricsWithTimer();
         }
         
