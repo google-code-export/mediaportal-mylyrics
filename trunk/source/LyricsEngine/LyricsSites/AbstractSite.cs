@@ -42,7 +42,7 @@ namespace LyricsEngine.LyricsSites
             Title = title;
             
             // timer
-            SearchTimer = new Timer {Enabled = true, Interval = timeLimit};
+            SearchTimer = new Timer {Enabled = false, Interval = timeLimit};
             SearchTimer.Elapsed += TimerElapsed;
             
             MEventStopSiteSearches = mEventStopSiteSearches;
