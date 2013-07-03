@@ -4,20 +4,19 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Timers;
-using Timer = System.Timers.Timer;
 
 namespace LyricsEngine.LyricsSites
 {
     // This class searches www.shiron.net for Hebrew lyrics
-    public class Shironet
+    public class Shironet : AbstractSite
     {
         # region const
 
-        // base url
-        private const string HttpWwwShironNet = "http://shironet.mako.co.il";
-        // Not found
-        private const string NotFound = "Not found";
+        private const string SiteName = "Shironet";
+
+        // base url - todo - move to Abstract too
+        private const string SiteBaseUrl = "http://shironet.mako.co.il";
+
         // Cannot find exact match
         private const string CannotFindExactMatch = "Cannot find exact match";
         // space
@@ -32,12 +31,13 @@ namespace LyricsEngine.LyricsSites
         //////////////////////////
 
         // RegEx to find lyrics page
-        private const string FindLyricsPagePattern = @"<a href=""/artist\?type=lyrics&lang=1&prfid=(?<prfid>\d+)&wrkid=(?<wrkid>\d+)"" class=""search_link_name_big"">";
+        private const string FindLyricsPagePattern =
+            @"<a href=""/artist\?type=lyrics&lang=1&prfid=(?<prfid>\d+)&wrkid=(?<wrkid>\d+)"" class=""search_link_name_big"">";
 
         ///////////////////////////
         // Second phase patterns //
         ///////////////////////////
-        
+
         // Validation RegEx - Either TitleAndArtist or Title & Artist should be valid
         // Title+Artist RegEx
         private const string TitleAndArtistSearchPattern = @"<title>(?<titleartist>.*?)</title>";
@@ -46,7 +46,8 @@ namespace LyricsEngine.LyricsSites
         private const string TitleSearchEndPattern = @"</span>";
         private const string TitleSearchPattern = @"<span class=""artist_song_name_txt"">(?<title>.*?)</span>";
         // Artist RegEx
-        private const string ArtistSearchPattern = @"<a class=""artist_singer_title"" href=""/artist\?prfid=?\d+&lang=?\d+"">(?<artist>.*?)</a>";
+        private const string ArtistSearchPattern =
+            @"<a class=""artist_singer_title"" href=""/artist\?prfid=?\d+&lang=?\d+"">(?<artist>.*?)</a>";
 
 
         // Lyrics RegEx
@@ -57,44 +58,24 @@ namespace LyricsEngine.LyricsSites
 
         # endregion
 
-        // artist/title for validation
-        private readonly string _artist;
-        private readonly string _title;
-
-        // Lyrics
-        private string _lyric = "";
-
         // step 1 output
         private string _prfid;
         private string _wrkid;
         private bool _firstStepComplete;
-        private bool _complete;
 
-        private readonly Timer _timer;
 
         public Shironet(string artist, string title, WaitHandle mEventStopSiteSearches, int timeLimit)
+            : base(artist, title, mEventStopSiteSearches, timeLimit)
         {
-            _artist = artist;
-            _title = title;
+        }
 
-            _timer = new Timer();
+        #region interface implemetation
 
-            // Escape characters
-            artist = FixEscapeCharacters(artist);
-            title = FixEscapeCharacters(title);
-
-            // Hebrew letters
-            artist = FixHebrew(artist);
-            title = FixHebrew(title);
-
-            // timer
-            _timer.Enabled = true;
-            _timer.Interval = timeLimit;
-            _timer.Elapsed += TimerElapsed;
-            _timer.Start();
-
+        protected override void FindLyricsWithTimer()
+        {
             // 1st step - find lyrics page
-            var firstUrlString = HttpWwwShironNet + "/searchSongs?type=lyrics&q=" + artist + Space + title;
+            var firstUrlString = BaseUrl + "/searchSongs?type=lyrics&q=" + FixHebrewName(Artist) + Space +
+                                 FixHebrewName(Title);
 
             var findLyricsPageWebClient = new LyricsWebClient();
             findLyricsPageWebClient.OpenReadCompleted += FirstCallbackMethod;
@@ -102,7 +83,7 @@ namespace LyricsEngine.LyricsSites
 
             while (_firstStepComplete == false)
             {
-                if (mEventStopSiteSearches.WaitOne(1, true))
+                if (MEventStopSiteSearches.WaitOne(1, true))
                 {
                     _firstStepComplete = true;
                 }
@@ -114,11 +95,11 @@ namespace LyricsEngine.LyricsSites
 
             if (_prfid == null || _wrkid == null)
             {
-                _lyric = NotFound;
+                LyricText = NotFound;
                 return;
             }
             // 2nd step - find lyrics
-            var secondUrlString = HttpWwwShironNet + "/artist?type=lyrics&lang=1&prfid=" + _prfid + "&wrkid=" + _wrkid;
+            var secondUrlString = BaseUrl + "/artist?type=lyrics&lang=1&prfid=" + _prfid + "&wrkid=" + _wrkid;
 
             var findLyricsWebClient = new LyricsWebClient(firstUrlString);
             findLyricsWebClient.OpenReadCompleted += SecondCallbackMethod;
@@ -126,7 +107,7 @@ namespace LyricsEngine.LyricsSites
 
             while (_complete == false)
             {
-                if (mEventStopSiteSearches.WaitOne(1, true))
+                if (MEventStopSiteSearches.WaitOne(1, true))
                 {
                     _complete = true;
                 }
@@ -137,10 +118,35 @@ namespace LyricsEngine.LyricsSites
             }
         }
 
-        public string Lyric
+        public override string Name
         {
-            get { return _lyric; }
+            get { return SiteName; }
         }
+
+        public override string BaseUrl
+        {
+            get { return SiteBaseUrl;}
+        }
+
+
+        public override LyricType GetLyricType()
+        {
+            return LyricType.UnsyncedLyrics;
+        }
+
+        public override SiteType GetSiteType()
+        {
+            return SiteType.Scrapper;
+        }
+
+        public override SiteComplexity GetSiteComplexity()
+        {
+            return SiteComplexity.TwoSteps;
+        }
+
+        #endregion interface implemetation
+
+        #region private methods
 
         // Finds lyrics page
         private void FirstCallbackMethod(object sender, OpenReadCompletedEventArgs e)
@@ -183,12 +189,12 @@ namespace LyricsEngine.LyricsSites
                 // Not found
                 if (!thisMayBeTheCorrectPage)
                 {
-                    _lyric = NotFound;
+                    LyricText = NotFound;
                 }
             }
             catch
             {
-                _lyric = NotFound;
+                LyricText = NotFound;
             }
             finally
             {
@@ -267,7 +273,7 @@ namespace LyricsEngine.LyricsSites
                     if (inTitle) // title found in page
                     {
                         titleInPage += line;
-                    
+
                         // Search for ending of title 
                         var findTitleEndMatch = Regex.Match(line, TitleSearchEndPattern, RegexOptions.IgnoreCase);
                         if (findTitleEndMatch.Success)
@@ -285,7 +291,7 @@ namespace LyricsEngine.LyricsSites
                             titleInPage = findTitleMatch.Groups[1].Value;
 
                             // validation Title
-                            if (IgnoreSpecialChars(_title).Equals(IgnoreSpecialChars(titleInPage).Trim()))
+                            if (IgnoreSpecialChars(Title).Equals(IgnoreSpecialChars(titleInPage).Trim()))
                             {
                                 validateTitle = true;
                             }
@@ -301,7 +307,7 @@ namespace LyricsEngine.LyricsSites
                             artistInPage = findArtistMatch.Groups[1].Value;
 
                             // validation Artist
-                            if (IgnoreSpecialChars(_artist).Equals(IgnoreSpecialChars(artistInPage).Trim()))
+                            if (IgnoreSpecialChars(Artist).Equals(IgnoreSpecialChars(artistInPage).Trim()))
                             {
                                 validateArtist = true;
                             }
@@ -347,18 +353,17 @@ namespace LyricsEngine.LyricsSites
                 if (thisMayBeTheCorrectLyric)
                 {
                     // Clean lyrics
-                    _lyric = CleanLyrics(lyricTemp);
+                    LyricText = CleanLyrics(lyricTemp);
 
-                    if (_lyric.Length == 0 ||
-                        (_lyric.Contains("<") || _lyric.Contains(">") || _lyric.Contains("a href")))
+                    if (LyricText.Length == 0 || (LyricText.Contains("<") || LyricText.Contains(">") || LyricText.Contains("a href")))
                     {
-                        _lyric = NotFound;
+                        LyricText = NotFound;
                     }
                 }
             }
             catch
             {
-                _lyric = NotFound;
+                LyricText = NotFound;
             }
             finally
             {
@@ -387,12 +392,12 @@ namespace LyricsEngine.LyricsSites
             if (strings.Length == 2)
             {
                 // check artist
-                if (!IgnoreSpecialChars(_artist).Equals(IgnoreSpecialChars(strings[1]).Trim()))
+                if (!IgnoreSpecialChars(Artist).Equals(IgnoreSpecialChars(strings[1]).Trim()))
                 {
                     return false;
                 }
                 // check title
-                if (!IgnoreSpecialChars(_title).Equals(IgnoreSpecialChars(strings[0]).Trim()))
+                if (!IgnoreSpecialChars(Title).Equals(IgnoreSpecialChars(strings[0]).Trim()))
                 {
                     return false;
                 }
@@ -415,15 +420,10 @@ namespace LyricsEngine.LyricsSites
             return lyricTemp.ToString().Trim();
         }
 
-        private void TimerElapsed(object sender, ElapsedEventArgs e)
+        // Escape characters & Fix Hebrew letters
+        private static string FixHebrewName(string name)
         {
-            _timer.Stop();
-            _timer.Close();
-            _timer.Dispose();
-
-            _lyric = NotFound;
-            _complete = true;
-            Thread.CurrentThread.Abort();
+            return FixHebrew(FixEscapeCharacters(name));
         }
 
         private static string FixEscapeCharacters(string text)
@@ -511,5 +511,7 @@ namespace LyricsEngine.LyricsSites
 
             return text;
         }
+
+        #endregion private methods
     }
 }
