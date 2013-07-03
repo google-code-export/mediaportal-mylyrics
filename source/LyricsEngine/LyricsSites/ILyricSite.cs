@@ -32,5 +32,7 @@ namespace LyricsEngine.LyricsSites
         SiteType GetSiteType();
 
         SiteComplexity GetSiteComplexity();
+
+        bool SiteActive();
     }
 }

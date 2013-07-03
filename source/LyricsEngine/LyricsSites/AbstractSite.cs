@@ -28,7 +28,7 @@ namespace LyricsEngine.LyricsSites
         protected string LyricText = "";
 
         // Complete
-        protected bool _complete;
+        protected bool Complete;
         private Timer _searchTimer;
 
         #endregion members
@@ -54,7 +54,7 @@ namespace LyricsEngine.LyricsSites
             _searchTimer.Dispose();
 
             LyricText = NotFound;
-            _complete = true;
+            Complete = true;
             Thread.CurrentThread.Abort();
         }
 
@@ -72,16 +72,30 @@ namespace LyricsEngine.LyricsSites
         public abstract string BaseUrl { get; }
         public void FindLyrics()
         {
-            // timer
-            _searchTimer = new Timer { Enabled = false, Interval = TimeLimit };
-            _searchTimer.Elapsed += TimerElapsed;
-            _searchTimer.Start();
-            FindLyricsWithTimer();
+            try
+            {
+                // timer
+                _searchTimer = new Timer { Enabled = false, Interval = TimeLimit };
+                _searchTimer.Elapsed += TimerElapsed;
+                _searchTimer.Start();
+
+                // Find Lyrics
+                FindLyricsWithTimer();
+            }
+            finally
+            {
+                if (_searchTimer != null)
+                {
+                    _searchTimer.Stop();
+                    _searchTimer.Close();
+                }
+            }
         }
         
         public abstract LyricType GetLyricType();
         public abstract SiteType GetSiteType();
         public abstract SiteComplexity GetSiteComplexity();
+        public abstract bool SiteActive();
 
         #endregion interface abstract methods
     }
