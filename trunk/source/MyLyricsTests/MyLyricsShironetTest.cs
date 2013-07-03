@@ -8,6 +8,23 @@ namespace MyLyricsTests
     [TestClass]
     public class MyLyricsShironetTest
     {
+        private readonly Stopwatch _stopwatch = new Stopwatch();
+
+        [TestInitialize]
+        public void SetUp()
+        {
+            _stopwatch.Reset();
+            _stopwatch.Start();
+        }
+
+        [TestCleanup]
+        public void TearDown()
+        {
+            _stopwatch.Stop();
+            Debug.WriteLine("Test duration: " + _stopwatch.Elapsed);
+        }
+
+
         [TestMethod]
         public void TestShironet1()
         {

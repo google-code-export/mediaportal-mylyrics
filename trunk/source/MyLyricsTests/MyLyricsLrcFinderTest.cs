@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using LyricsEngine.lrcfinder;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -7,6 +8,23 @@ namespace MyLyricsTests
     [TestClass]
     public class MyLyricsLrcFinderTest
     {
+        private readonly Stopwatch _stopwatch = new Stopwatch();
+
+        [TestInitialize]
+        public void SetUp()
+        {
+            _stopwatch.Reset();
+            _stopwatch.Start();
+        }
+
+        [TestCleanup]
+        public void TearDown()
+        {
+            _stopwatch.Stop();
+            Debug.WriteLine("Test duration: " + _stopwatch.Elapsed);
+        }
+
+
         [TestMethod]
         public void TestLrcFinder()
         {
