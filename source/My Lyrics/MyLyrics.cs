@@ -100,7 +100,6 @@ namespace MyLyrics
 
     private bool _useLyrics007,
                  _useLyricsOnDemand,
-                 _useLyricsPluginSite,
                  _useShironet;
 
     private bool _ValidLrcLyric;
@@ -663,7 +662,6 @@ namespace MyLyrics
         _useLrcFinder = (xmlreader.GetValueAsString("myLyrics", "useLrcFinder", "True")).Equals("True") ? true : false;
         _useLyrics007 = (xmlreader.GetValueAsString("myLyrics", "useLyrics007", "True")).Equals("True") ? true : false;
         _useLyricsOnDemand = (xmlreader.GetValueAsString("myLyrics", "useLyricsOnDemand", "True")).Equals("True") ? true : false;
-        _useLyricsPluginSite = (xmlreader.GetValueAsString("myLyrics", "useLyricsPluginSite", "True")).Equals("True") ? true : false;
         _useShironet = (xmlreader.GetValueAsString("myLyrics", "useShironet", "True")).Equals("True") ? true : false;
         _useHotLyrics = (xmlreader.GetValueAsString("myLyrics", "useHotLyrics", "True")).Equals("True") ? true : false;
         _useActionext = (xmlreader.GetValueAsString("myLyrics", "useActionext", "True")).Equals("True") ? true : false;
@@ -776,10 +774,6 @@ namespace MyLyrics
       if (_useHotLyrics && Setup.IsMember("HotLyrics"))
       {
         sitesToSearch.Add("HotLyrics");
-      }
-      if (_useLyricsPluginSite && Setup.IsMember("LyricsPluginSite"))
-      {
-        sitesToSearch.Add("LyricsPluginSite");
       }
       if (_useShironet && Setup.IsMember("Shironet"))
       {

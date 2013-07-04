@@ -106,7 +106,6 @@
             this.cbLyrics007 = new MediaPortal.UserInterface.Controls.MPCheckBox();
             this.cbLyricsOnDemand = new MediaPortal.UserInterface.Controls.MPCheckBox();
             this.cbHotLyrics = new MediaPortal.UserInterface.Controls.MPCheckBox();
-            this.cbLyricsPluginSite = new MediaPortal.UserInterface.Controls.MPCheckBox();
             this.cbShironet = new MediaPortal.UserInterface.Controls.MPCheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.mpLabel2 = new MediaPortal.UserInterface.Controls.MPLabel();
@@ -937,7 +936,6 @@
             this.groupBox2.Controls.Add(this.cbLyrics007);
             this.groupBox2.Controls.Add(this.cbLyricsOnDemand);
             this.groupBox2.Controls.Add(this.cbHotLyrics);
-            this.groupBox2.Controls.Add(this.cbLyricsPluginSite);
             this.groupBox2.Controls.Add(this.cbShironet);
             this.groupBox2.Location = new System.Drawing.Point(229, 48);
             this.groupBox2.Name = "groupBox2";
@@ -1030,21 +1028,6 @@
             this.cbHotLyrics.UseVisualStyleBackColor = true;
             this.cbHotLyrics.Leave += new System.EventHandler(this.WriteMediaPortalXML);
             // 
-            // cbLyricsPluginSite
-            // 
-            this.cbLyricsPluginSite.AutoSize = true;
-            this.cbLyricsPluginSite.Checked = false;
-            this.cbLyricsPluginSite.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbLyricsPluginSite.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.cbLyricsPluginSite.Location = new System.Drawing.Point(20, 40);
-            this.cbLyricsPluginSite.Name = "cbLyricsPluginSite";
-            this.cbLyricsPluginSite.Size = new System.Drawing.Size(80, 17);
-            this.cbLyricsPluginSite.TabIndex = 9;
-            this.cbLyricsPluginSite.Text = "LyricsPlugin";
-            this.cbLyricsPluginSite.UseVisualStyleBackColor = true;
-            this.cbLyricsPluginSite.Visible = false;
-            this.cbLyricsPluginSite.Leave += new System.EventHandler(this.WriteMediaPortalXML);
-            // 
             // cbShironet
             // 
             this.cbShironet.AutoSize = true;
@@ -1053,7 +1036,7 @@
             this.cbShironet.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.cbShironet.Location = new System.Drawing.Point(230, 40);
             this.cbShironet.Name = "cbShironet";
-      this.cbShironet.Size = new System.Drawing.Size(80, 17);
+            this.cbShironet.Size = new System.Drawing.Size(80, 17);
             this.cbShironet.TabIndex = 11;
             this.cbShironet.Text = "Shironet";
             this.cbShironet.UseVisualStyleBackColor = true;
@@ -1309,7 +1292,6 @@
     private MediaPortal.UserInterface.Controls.MPLabel lbPluginName;
     private MediaPortal.UserInterface.Controls.MPGroupBox gbLyricSites;
     internal MediaPortal.UserInterface.Controls.MPCheckBox cbHotLyrics;
-    internal MediaPortal.UserInterface.Controls.MPCheckBox cbLyricsPluginSite;
     internal MediaPortal.UserInterface.Controls.MPCheckBox cbShironet;
     internal MediaPortal.UserInterface.Controls.MPCheckBox cbLyricsOnDemand;
     internal MediaPortal.UserInterface.Controls.MPCheckBox cbLyrics007;
