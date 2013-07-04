@@ -73,6 +73,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MyLyricsActionextTest.cs" />
     <Compile Include="MyLyricsHotLyricsTest.cs" />
     <Compile Include="MyLyricsLyricWikiTest.cs" />
     <Compile Include="MpLrcTest.cs" />
