@@ -100,6 +100,7 @@
     <Compile Include="LyricsSites\HotLyrics.cs" />
     <Compile Include="LyricsSites\Lyrics007.cs" />
     <Compile Include="LyricsSites\LyricsOnDemand.cs" />
+    <Compile Include="LyricsSites\LyricsSiteFactory.cs" />
     <Compile Include="LyricsSites\Shironet.cs" />
     <Compile Include="LyricsWebClient.cs">
       <SubType>Component</SubType>
