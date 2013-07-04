@@ -530,8 +530,6 @@ namespace MyLyrics
                     sitesToSearch.Add("LyricsOnDemand");
                 if (((string) xmlreader.GetValueAsString("myLyrics", "useHotLyrics", "True")).ToString().Equals("True"))
                     sitesToSearch.Add("HotLyrics");
-                if (((string) xmlreader.GetValueAsString("myLyrics", "useLyricsPluginSite", "True")).ToString().Equals("True"))
-                    sitesToSearch.Add("LyricsPluginSite");
                 if (((string)xmlreader.GetValueAsString("myLyrics", "useShironet", "True")).ToString().Equals("True"))
                     sitesToSearch.Add("Shironet");
 

@@ -49,7 +49,6 @@ namespace MyLyrics
       this.cbHotLyrics = new MediaPortal.UserInterface.Controls.MPCheckBox();
       this.cbLyricsOnDemand = new MediaPortal.UserInterface.Controls.MPCheckBox();
       this.cbLyrics007 = new MediaPortal.UserInterface.Controls.MPCheckBox();
-      this.cbLyricsPluginSite = new MediaPortal.UserInterface.Controls.MPCheckBox();
       this.cbShironet = new MediaPortal.UserInterface.Controls.MPCheckBox();
       this.btClose = new System.Windows.Forms.Button();
       this.btUpdate = new System.Windows.Forms.Button();
@@ -195,7 +194,6 @@ namespace MyLyrics
       this.gbLyricSites.Controls.Add(this.cbHotLyrics);
       this.gbLyricSites.Controls.Add(this.cbLyricsOnDemand);
       this.gbLyricSites.Controls.Add(this.cbLyrics007);
-      this.gbLyricSites.Controls.Add(this.cbLyricsPluginSite);
       this.gbLyricSites.Controls.Add(this.cbShironet);
       this.gbLyricSites.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
       this.gbLyricSites.Location = new System.Drawing.Point(9, 115);
@@ -283,19 +281,6 @@ namespace MyLyrics
       this.cbLyrics007.Text = "Lyrics 007";
       this.cbLyrics007.UseVisualStyleBackColor = true;
       // 
-      // cbLyricsPluginSite
-      // 
-      this.cbLyricsPluginSite.AutoSize = true;
-      this.cbLyricsPluginSite.Checked = true;
-      this.cbLyricsPluginSite.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.cbLyricsPluginSite.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.cbLyricsPluginSite.Location = new System.Drawing.Point(131, 21);
-      this.cbLyricsPluginSite.Name = "cbLyricsPluginSite";
-      this.cbLyricsPluginSite.Size = new System.Drawing.Size(80, 17);
-      this.cbLyricsPluginSite.TabIndex = 15;
-      this.cbLyricsPluginSite.Text = "LyricsPlugin";
-      this.cbLyricsPluginSite.UseVisualStyleBackColor = true;
-      // 
       // cbShironet
       // 
       this.cbShironet.AutoSize = true;
@@ -375,7 +360,6 @@ namespace MyLyrics
     internal MediaPortal.UserInterface.Controls.MPCheckBox cbHotLyrics;
     internal MediaPortal.UserInterface.Controls.MPCheckBox cbLyricsOnDemand;
     internal MediaPortal.UserInterface.Controls.MPCheckBox cbLyrics007;
-    internal MediaPortal.UserInterface.Controls.MPCheckBox cbLyricsPluginSite;
     internal MediaPortal.UserInterface.Controls.MPCheckBox cbShironet;
     private System.Windows.Forms.ListView lvSearchResults;
     private System.Windows.Forms.ColumnHeader cbSite;
