@@ -3,156 +3,168 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
-using System.Timers;
-using Timer = System.Timers.Timer;
 
 namespace LyricsEngine.LyricsSites
 {
-  internal class Actionext
-  {
-    private bool complete;
-    private string lyric = "";
-    private int timeLimit;
-    private Timer timer;
-
-    public Actionext(string artist, string title, ManualResetEvent m_EventStop_SiteSearches, int timeLimit)
+    public class Actionext : AbstractSite
     {
-      this.timeLimit = timeLimit;
-      timer = new Timer();
+        # region const
 
-      artist = LyricUtil.RemoveFeatComment(artist);
-      artist = artist.Replace(" ", "_");
-      title = LyricUtil.TrimForParenthesis(title);
-      title = title.Replace(" ", "_");
+        // Name
+        private const string SiteName = "Actionext";
 
-      if (string.IsNullOrEmpty(artist) || string.IsNullOrEmpty(title))
-      {
-        return;
-      }
+        // Base url
+        private const string SiteBaseUrl = "http://www.actionext.com";
 
-      string urlString = "http://www.actionext.com/names_" + artist[0] + "/" + artist + "_lyrics/" + title +
-                         ".html";
-      urlString = urlString.ToLower();
+        # endregion
 
-      LyricsWebClient client = new LyricsWebClient();
-
-      timer.Enabled = true;
-      timer.Interval = timeLimit;
-      timer.Elapsed += new ElapsedEventHandler(timer_Elapsed);
-      timer.Start();
-
-      Uri uri = new Uri(urlString);
-      client.OpenReadCompleted += new OpenReadCompletedEventHandler(callbackMethod);
-      client.OpenReadAsync(uri);
-
-      while (complete == false)
-      {
-        if (m_EventStop_SiteSearches.WaitOne(1, true))
+        public Actionext(string artist, string title, WaitHandle mEventStopSiteSearches, int timeLimit) : base(artist, title, mEventStopSiteSearches, timeLimit)
         {
-          complete = true;
-        }
-        else
-        {
-          Thread.Sleep(300);
-        }
-      }
-    }
-
-    public string Lyric
-    {
-      get { return lyric; }
-    }
-
-    private void callbackMethod(object sender, OpenReadCompletedEventArgs e)
-    {
-      bool thisMayBeTheCorrectLyric = true;
-      StringBuilder lyricTemp = new StringBuilder();
-
-      LyricsWebClient client = (LyricsWebClient)sender;
-      Stream reply = null;
-      StreamReader sr = null;
-
-      try
-      {
-        reply = (Stream)e.Result;
-        sr = new StreamReader(reply, Encoding.Default);
-
-        string line = "";
-        int noOfLinesCount = 0;
-
-        while (line.IndexOf(@"<div class=""lyrics-text"">") == -1)
-        {
-          if (sr.EndOfStream || ++noOfLinesCount > 300)
-          {
-            thisMayBeTheCorrectLyric = false;
-            break;
-          }
-          else
-          {
-            line = sr.ReadLine();
-          }
         }
 
-        if (thisMayBeTheCorrectLyric)
-        {
-          lyricTemp = new StringBuilder();
-          line = sr.ReadLine();
+        #region interface implemetation
 
-          while (line.IndexOf("</div>") == -1)
-          {
-            lyricTemp.Append(line);
-            if (sr.EndOfStream)
+        protected override void FindLyricsWithTimer()
+        {
+            // clean artist
+            var artist = LyricUtil.RemoveFeatComment(Artist);
+            artist = artist.Replace(" ", "_");
+            // Clean title
+            var title = LyricUtil.TrimForParenthesis(Title);
+            title = title.Replace(" ", "_");
+
+            // Validation
+            if (string.IsNullOrEmpty(artist) || string.IsNullOrEmpty(title))
             {
-              thisMayBeTheCorrectLyric = false;
-              break;
+                return;
             }
-            else
+
+            var urlString = SiteBaseUrl + "/names_" + artist[0] + "/" + artist + "_lyrics/" + title + ".html";
+            urlString = urlString.ToLower();
+
+            var client = new LyricsWebClient();
+            var uri = new Uri(urlString);
+            client.OpenReadCompleted += CallbackMethod;
+            client.OpenReadAsync(uri);
+
+            while (Complete == false)
             {
-              line = sr.ReadLine();
+                if (MEventStopSiteSearches.WaitOne(1, true))
+                {
+                    Complete = true;
+                }
+                else
+                {
+                    Thread.Sleep(300);
+                }
             }
-          }
-
-          lyricTemp.Replace("<br>", Environment.NewLine);
-          lyricTemp.Replace(",<br />", Environment.NewLine);
-          lyricTemp.Replace("<br />", Environment.NewLine);
-          lyricTemp.Replace("&amp;", "&");
-
-          lyric = lyricTemp.ToString().Trim();
-
-          if (lyric.Contains("but we do not have the lyrics"))
-          {
-            lyric = "Not found";
-          }
         }
-      }
-      catch
-      {
-        lyric = "Not found";
-      }
-      finally
-      {
-        if (sr != null)
+
+        public override LyricType GetLyricType()
         {
-          sr.Close();
+            return LyricType.UnsyncedLyrics;
         }
 
-        if (reply != null)
+        public override SiteType GetSiteType()
         {
-          reply.Close();
+            return SiteType.Scrapper;
         }
-        complete = true;
-      }
-    }
 
-    private void timer_Elapsed(object sender, ElapsedEventArgs e)
-    {
-      timer.Stop();
-      timer.Close();
-      timer.Dispose();
+        public override SiteComplexity GetSiteComplexity()
+        {
+            return SiteComplexity.OneStep;
+        }
 
-      lyric = "Not found";
-      complete = true;
-      Thread.CurrentThread.Abort();
+        public override bool SiteActive()
+        {
+            return true;
+        }
+
+        public override string Name
+        {
+            get { return SiteName; }
+        }
+
+        public override string BaseUrl
+        {
+            get { return SiteBaseUrl; }
+        }
+
+        #endregion interface implemetation
+
+        #region private methods
+
+        private void CallbackMethod(object sender, OpenReadCompletedEventArgs e)
+        {
+            var thisMayBeTheCorrectLyric = true;
+
+            Stream reply = null;
+            StreamReader reader = null;
+
+            try
+            {
+                reply = e.Result;
+                reader = new StreamReader(reply, Encoding.Default);
+
+                var line = "";
+                var noOfLinesCount = 0;
+
+                while (line.IndexOf(@"<div class=""lyrics-text"">", StringComparison.Ordinal) == -1)
+                {
+                    if (reader.EndOfStream || ++noOfLinesCount > 300)
+                    {
+                        thisMayBeTheCorrectLyric = false;
+                        break;
+                    }
+                    line = reader.ReadLine() ?? "";
+                }
+
+                if (thisMayBeTheCorrectLyric)
+                {
+                    var lyricTemp = new StringBuilder();
+                    line = reader.ReadLine() ?? "";
+
+                    while (line.IndexOf("</div>", StringComparison.Ordinal) == -1)
+                    {
+                        lyricTemp.Append(line);
+                        if (reader.EndOfStream)
+                        {
+                            break;
+                        }
+                        line = reader.ReadLine() ?? "";
+                    }
+
+                    lyricTemp.Replace("<br>", Environment.NewLine);
+                    lyricTemp.Replace(",<br />", Environment.NewLine);
+                    lyricTemp.Replace("<br />", Environment.NewLine);
+                    lyricTemp.Replace("&amp;", "&");
+
+                    LyricText = lyricTemp.ToString().Trim();
+
+                    if (LyricText.Contains("but we do not have the lyrics"))
+                    {
+                        LyricText = NotFound;
+                    }
+                }
+            }
+            catch
+            {
+                LyricText = NotFound;
+            }
+            finally
+            {
+                if (reader != null)
+                {
+                    reader.Close();
+                }
+                if (reply != null)
+                {
+                    reply.Close();
+                }
+                Complete = true;
+            }
+        }
+
+        #endregion private methods
     }
-  }
 }
