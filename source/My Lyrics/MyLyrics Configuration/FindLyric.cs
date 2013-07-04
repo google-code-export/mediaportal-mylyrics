@@ -106,11 +106,6 @@ namespace MyLyrics
                         "True")
                         ? true
                         : false;
-                cbLyricsPluginSite.Checked =
-                    ((string) xmlreader.GetValueAsString("myLyrics", "useLyricsPluginSite", "True")).ToString().Equals(
-                        "True")
-                        ? true
-                        : false;
                 cbShironet.Checked =
                     ((string)xmlreader.GetValueAsString("myLyrics", "useShironet", "True")).ToString().Equals(
                         "True")
@@ -206,10 +201,6 @@ namespace MyLyrics
             if (cbLyricsOnDemand.Checked)
             {
                 sitesToSearch.Add("LyricsOnDemand");
-            }
-            if (cbLyricsPluginSite.Checked)
-            {
-                sitesToSearch.Add("LyricsPluginSite");
             }
             if (cbShironet.Checked)
             {
