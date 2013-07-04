@@ -19,7 +19,7 @@ namespace LyricsEngine.LyricsSites
         TwoSteps = 2
     }
 
-    interface ILyricSite
+    public interface ILyricSite
     {
         string Name { get; }
 
