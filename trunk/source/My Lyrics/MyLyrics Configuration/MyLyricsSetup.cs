@@ -224,7 +224,6 @@ namespace MyLyrics
                         cbLyrics007.Checked = xmlreader.GetValue("myLyrics", "useLyrics007").Equals("True");
                         cbLyricsOnDemand.Checked = xmlreader.GetValue("myLyrics", "useLyricsOnDemand").Equals("True");
                         cbHotLyrics.Checked = xmlreader.GetValue("myLyrics", "useHotLyrics").Equals("True");
-                        cbLyricsPluginSite.Checked = xmlreader.GetValue("myLyrics", "useLyricsPluginSite").Equals("True");
                         cbShironet.Checked = xmlreader.GetValue("myLyrics", "useShironet").Equals("True");
                     }
                     else
@@ -507,8 +506,6 @@ namespace MyLyrics
                 sitesToSearch.Add("LyricsOnDemand");
             if (cbHotLyrics.Checked)
                 sitesToSearch.Add("HotLyrics");
-            if (cbLyricsPluginSite.Checked)
-                sitesToSearch.Add("LyricsPluginSite");
             if (cbShironet.Checked)
                 sitesToSearch.Add("Shironet");
 
@@ -1113,7 +1110,6 @@ namespace MyLyrics
             if (trackBar.Value == 0)
             {
                 cbLyricsOnDemand.Checked = true;
-                cbLyricsPluginSite.Checked = false;
                 cbShironet.Checked = false;
                 cbLyrics007.Checked = false;
                 cbLrcFinder.Checked = false;
@@ -1124,7 +1120,6 @@ namespace MyLyrics
             else if (trackBar.Value == 1)
             {
                 cbLyricsOnDemand.Checked = true;
-                cbLyricsPluginSite.Checked = false;
                 cbShironet.Checked = false;
                 cbLrcFinder.Checked = true;
                 cbLyrics007.Checked = true;
@@ -1135,7 +1130,6 @@ namespace MyLyrics
             else if (trackBar.Value == 2)
             {
                 cbLyricsOnDemand.Checked = true;
-                cbLyricsPluginSite.Checked = false;
                 cbShironet.Checked = true;
                 cbLyrics007.Checked = true;
                 cbLrcFinder.Checked = true;
@@ -1151,7 +1145,6 @@ namespace MyLyrics
                 cbHotLyrics.Checked = true;
                 cbLyrDB.Checked = true;
                 cbActionext.Checked = true;
-                cbLyricsPluginSite.Checked = false;
                 cbShironet.Checked = true;
             }
 
@@ -1169,7 +1162,6 @@ namespace MyLyrics
                 cbLyricsOnDemand.Enabled = false;
                 cbLyrics007.Enabled = false;
                 cbLrcFinder.Enabled = false;
-                cbLyricsPluginSite.Enabled = false;
                 cbShironet.Enabled = false;
                 cbHotLyrics.Enabled = false;
                 cbActionext.Enabled = false;
@@ -1188,7 +1180,6 @@ namespace MyLyrics
                 cbLyricsOnDemand.Enabled = true;
                 cbLyrics007.Enabled = true;
                 cbLrcFinder.Enabled = true;
-                cbLyricsPluginSite.Enabled = false;
                 cbShironet.Enabled = true;
                 cbHotLyrics.Enabled = true;
                 cbActionext.Enabled = true;
@@ -1204,13 +1195,11 @@ namespace MyLyrics
                 cbHotLyrics.Checked = false;
                 cbActionext.Checked = false;
                 cbLyrDB.Checked = false;
-                cbLyricsPluginSite.Checked = false;
                 cbShironet.Checked = false;
 
                 cbLyricsOnDemand.Enabled = false;
                 cbLyrics007.Enabled = false;
                 cbLrcFinder.Enabled = false;
-                cbLyricsPluginSite.Enabled = false;
                 cbShironet.Enabled = false;
                 cbHotLyrics.Enabled = false;
                 cbActionext.Enabled = false;
@@ -1253,7 +1242,6 @@ namespace MyLyrics
                 xmlwriter.SetValue("myLyrics", "useLyrics007", cbLyrics007.Checked.ToString());
                 xmlwriter.SetValue("myLyrics", "useLyricsOnDemand", cbLyricsOnDemand.Checked.ToString());
                 xmlwriter.SetValue("myLyrics", "useHotLyrics", cbHotLyrics.Checked.ToString());
-                xmlwriter.SetValue("myLyrics", "useLyricsPluginSite", cbLyricsPluginSite.Checked.ToString());
                 xmlwriter.SetValue("myLyrics", "useShironet", cbShironet.Checked.ToString());
                 xmlwriter.SetValueAsBool("myLyrics", "useAutoscroll", cbUseAutoScrollAsDefault.Checked);
                 xmlwriter.SetValueAsBool("myLyrics", "uploadLrcToLrcFinder", cbUploadLrcAutomatically.Checked);
