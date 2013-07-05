@@ -1165,9 +1165,8 @@ namespace MyLyrics
 
       if (_selectedScreen != (int)MyLyricsSettings.Screen.LRC_PICK)
       {
-        LrcFinder lrcFinder = new LrcFinder();
-        _LrcTable = lrcFinder.FindLRCs(_artist, _title);
-        //_LrcTable = lrcFinder.FindLRCs("madonna", "like a virgin");
+        var lrcFinder = new LrcFinder(_artist, _title, null, 0);
+        _LrcTable = lrcFinder.FindLRCs();
 
         if (_LrcTable != null && _LrcTable.Rows.Count > 0)
         {
@@ -1991,18 +1990,16 @@ namespace MyLyrics
 
     private void UploadLrcFile(string lrcFile)
     {
-      LrcFinder lrcFinder = new LrcFinder();
-
-      bool lrcUploaded = lrcFinder.SaveLrcWithGuid(lrcFile, _guid);
+      var lrcUploaded = LrcFinder.SaveLrcWithGuid(lrcFile, _guid);
 
       if (lrcUploaded)
       {
-        string status = "Your LRC was successfully uploaded";
+        var status = "Your LRC was successfully uploaded";
         GUIControl.SetControlLabel(GetID, (int)GUI_LRC_Controls.CONTROL_LRCPICK_STATUS, status);
       }
       else
       {
-        string status = "LrcFinder could not be reached";
+        var status = "LrcFinder could not be reached";
         GUIControl.SetControlLabel(GetID, (int)GUI_LRC_Controls.CONTROL_LRCPICK_STATUS, status);
       }
     }
