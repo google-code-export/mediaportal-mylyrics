@@ -225,7 +225,7 @@
             this.tbLimit.TabIndex = 37;
             this.tbLimit.Text = "1000";
             this.tbLimit.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.tbLimit.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.tbLimit.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // lbSongsLimit
             // 
@@ -651,7 +651,7 @@
             this.comboBoxLanguages.Name = "comboBoxLanguages";
             this.comboBoxLanguages.Size = new System.Drawing.Size(121, 21);
             this.comboBoxLanguages.TabIndex = 16;
-            this.comboBoxLanguages.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.comboBoxLanguages.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // mpLabel1
             // 
@@ -697,7 +697,7 @@
             this.tbLrcTaggingName.Name = "tbLrcTaggingName";
             this.tbLrcTaggingName.Size = new System.Drawing.Size(122, 20);
             this.tbLrcTaggingName.TabIndex = 18;
-            this.tbLrcTaggingName.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.tbLrcTaggingName.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // lbLrcTaggingName
             // 
@@ -720,7 +720,7 @@
             this.tbLrcTaggingOffset.Size = new System.Drawing.Size(33, 20);
             this.tbLrcTaggingOffset.TabIndex = 15;
             this.tbLrcTaggingOffset.Text = "0";
-            this.tbLrcTaggingOffset.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.tbLrcTaggingOffset.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // cbUploadLrcAutomatically
             // 
@@ -732,7 +732,7 @@
             this.cbUploadLrcAutomatically.TabIndex = 7;
             this.cbUploadLrcAutomatically.Text = "Upload manual added LRC to LrcFinder automatically";
             this.cbUploadLrcAutomatically.UseVisualStyleBackColor = true;
-            this.cbUploadLrcAutomatically.MouseLeave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.cbUploadLrcAutomatically.MouseLeave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // lbLrcTaggingOffset
             // 
@@ -764,7 +764,7 @@
             this.cbUseAutoScrollAsDefault.TabIndex = 6;
             this.cbUseAutoScrollAsDefault.Text = "Use autoscroll mode as default";
             this.cbUseAutoScrollAsDefault.UseVisualStyleBackColor = true;
-            this.cbUseAutoScrollAsDefault.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.cbUseAutoScrollAsDefault.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // gbTag
             // 
@@ -788,7 +788,7 @@
             this.cbMusicTagAlwaysCheck.TabIndex = 7;
             this.cbMusicTagAlwaysCheck.Text = "Always use plain lyric from tag (if available)";
             this.cbMusicTagAlwaysCheck.UseVisualStyleBackColor = true;
-            this.cbMusicTagAlwaysCheck.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.cbMusicTagAlwaysCheck.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // cbMusicTagWrite
             // 
@@ -800,7 +800,7 @@
             this.cbMusicTagWrite.TabIndex = 6;
             this.cbMusicTagWrite.Text = "Write newly found lyrics to music tag";
             this.cbMusicTagWrite.UseVisualStyleBackColor = true;
-            this.cbMusicTagWrite.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.cbMusicTagWrite.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // mpGroupBox3
             // 
@@ -825,7 +825,7 @@
             this.cbAutomaticUpdate.TabIndex = 8;
             this.cbAutomaticUpdate.Text = "Automatic update after first postive search";
             this.cbAutomaticUpdate.UseVisualStyleBackColor = true;
-            this.cbAutomaticUpdate.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.cbAutomaticUpdate.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // cbMoveSongFrom
             // 
@@ -839,7 +839,7 @@
             this.cbMoveSongFrom.TabIndex = 7;
             this.cbMoveSongFrom.Text = "Move lyrics from marked to lyrics database when updated";
             this.cbMoveSongFrom.UseVisualStyleBackColor = true;
-            this.cbMoveSongFrom.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.cbMoveSongFrom.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // cbAutoFetch
             // 
@@ -853,7 +853,7 @@
             this.cbAutoFetch.TabIndex = 6;
             this.cbAutoFetch.Text = "Automatic fetch lyrics";
             this.cbAutoFetch.UseVisualStyleBackColor = true;
-            this.cbAutoFetch.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.cbAutoFetch.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // mpGroupBox2
             // 
@@ -878,7 +878,7 @@
             this.cbEnableLogging.TabIndex = 11;
             this.cbEnableLogging.Text = "Enable logging";
             this.cbEnableLogging.UseVisualStyleBackColor = true;
-            this.cbEnableLogging.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.cbEnableLogging.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // tbPluginName
             // 
@@ -889,7 +889,7 @@
             this.tbPluginName.Size = new System.Drawing.Size(129, 20);
             this.tbPluginName.TabIndex = 13;
             this.tbPluginName.Text = "My Lyrics";
-            this.tbPluginName.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.tbPluginName.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // lbPluginName
             // 
@@ -925,7 +925,7 @@
             this.rbLrcMode.Tag = "LRC mode";
             this.rbLrcMode.Text = "LRC mode";
             this.rbLrcMode.UseVisualStyleBackColor = true;
-            this.rbLrcMode.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.rbLrcMode.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             this.rbLrcMode.CheckedChanged += new System.EventHandler(this.rdTrackBar_CheckedChanged);
             // 
             // groupBox2
@@ -956,7 +956,7 @@
             this.cbLrcFinder.TabIndex = 10;
             this.cbLrcFinder.Text = "LrcFinder";
             this.cbLrcFinder.UseVisualStyleBackColor = true;
-            this.cbLrcFinder.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.cbLrcFinder.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // cbLyrDB
             // 
@@ -970,7 +970,7 @@
             this.cbLyrDB.TabIndex = 9;
             this.cbLyrDB.Text = "LyrDB";
             this.cbLyrDB.UseVisualStyleBackColor = true;
-            this.cbLyrDB.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.cbLyrDB.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // cbActionext
             // 
@@ -984,7 +984,7 @@
             this.cbActionext.TabIndex = 8;
             this.cbActionext.Text = "Actionext";
             this.cbActionext.UseVisualStyleBackColor = true;
-            this.cbActionext.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.cbActionext.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // cbLyrics007
             // 
@@ -998,7 +998,7 @@
             this.cbLyrics007.TabIndex = 4;
             this.cbLyrics007.Text = "Lyrics 007";
             this.cbLyrics007.UseVisualStyleBackColor = true;
-            this.cbLyrics007.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.cbLyrics007.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // cbLyricsOnDemand
             // 
@@ -1012,7 +1012,7 @@
             this.cbLyricsOnDemand.TabIndex = 5;
             this.cbLyricsOnDemand.Text = "Lyrics OnDemand";
             this.cbLyricsOnDemand.UseVisualStyleBackColor = true;
-            this.cbLyricsOnDemand.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.cbLyricsOnDemand.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // cbHotLyrics
             // 
@@ -1026,7 +1026,7 @@
             this.cbHotLyrics.TabIndex = 7;
             this.cbHotLyrics.Text = "Hot Lyrics";
             this.cbHotLyrics.UseVisualStyleBackColor = true;
-            this.cbHotLyrics.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.cbHotLyrics.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // cbShironet
             // 
@@ -1040,7 +1040,7 @@
             this.cbShironet.TabIndex = 11;
             this.cbShironet.Text = "Shironet";
             this.cbShironet.UseVisualStyleBackColor = true;
-            this.cbShironet.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.cbShironet.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // groupBox1
             // 
@@ -1075,7 +1075,7 @@
             this.trackBar.TabIndex = 25;
             this.trackBar.TickStyle = System.Windows.Forms.TickStyle.Both;
             this.trackBar.Value = 2;
-            this.trackBar.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.trackBar.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             this.trackBar.Scroll += new System.EventHandler(this.trackBar_Scroll);
             // 
             // lbSpeed
@@ -1098,7 +1098,7 @@
             this.rdLyricsMode.Tag = "LyricsMode";
             this.rdLyricsMode.Text = "Lyrics mode";
             this.rdLyricsMode.UseVisualStyleBackColor = true;
-            this.rdLyricsMode.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.rdLyricsMode.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             this.rdLyricsMode.CheckedChanged += new System.EventHandler(this.rdTrackBar_CheckedChanged);
             // 
             // rbUserSelectMode
@@ -1111,7 +1111,7 @@
             this.rbUserSelectMode.Tag = "Custom mode";
             this.rbUserSelectMode.Text = "Custom mode";
             this.rbUserSelectMode.UseVisualStyleBackColor = true;
-            this.rbUserSelectMode.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.rbUserSelectMode.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             this.rbUserSelectMode.CheckedChanged += new System.EventHandler(this.rdTrackBar_CheckedChanged);
             // 
             // tabPageReplace
@@ -1156,7 +1156,7 @@
             this.dbGridView.Name = "dbGridView";
             this.dbGridView.Size = new System.Drawing.Size(244, 386);
             this.dbGridView.TabIndex = 0;
-            this.dbGridView.Leave += new System.EventHandler(this.WriteMediaPortalXML);
+            this.dbGridView.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // Find
             // 
