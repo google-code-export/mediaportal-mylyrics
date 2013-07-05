@@ -132,8 +132,8 @@ namespace MyLyrics
             tabPageAbout.Controls.Add(informationUC);
 
             // initialize delegates
-            m_DelegateLyricFound = new DelegateLyricFound(lyricFoundMethod);
-            m_DelegateLyricNotFound = new DelegateLyricNotFound(lyricNotFoundMethod);
+            m_DelegateLyricFound = new DelegateLyricFound(LyricFoundMethod);
+            m_DelegateLyricNotFound = new DelegateLyricNotFound(LyricNotFoundMethod);
             m_DelegateThreadFinished = new DelegateThreadFinished(ThreadFinishedMethod);
             m_DelegateThreadException = new DelegateThreadException(ThreadExceptionMethod);
 
@@ -459,8 +459,7 @@ namespace MyLyrics
             m_DisregardKnownLyric = cbDontSearchSongsInLyricDB.Enabled && cbDontSearchSongsInLyricDB.Checked;
             m_MarkSongsWhenNoLyricFound = cbMarkSongsWithNoLyrics.Enabled && cbMarkSongsWithNoLyrics.Checked;
             m_DisregardMarkedLyric = cbDisregardSongsWithNoLyric.Enabled && cbDisregardSongsWithNoLyric.Checked;
-            m_DisregardSongWithLyricInTag = cbDontSearchSongsWithLyricInTag.Enabled &&
-                                            cbDontSearchSongsWithLyricInTag.Checked;
+            m_DisregardSongWithLyricInTag = cbDontSearchSongsWithLyricInTag.Enabled && cbDontSearchSongsWithLyricInTag.Checked;
             m_DisregardVariousArtist = cbDontSearchVariousArtist.Enabled && cbDontSearchVariousArtist.Checked;
             m_SearchOnlyMarkedSongs = cbSearchOnlyForMarkedSongs.Enabled && cbSearchOnlyForMarkedSongs.Checked;
 
@@ -492,7 +491,7 @@ namespace MyLyrics
             lbSongsToSearch2.Text = "-";
             lbDisregardedSongs2.Text = "-";
 
-            ArrayList sitesToSearch = new ArrayList();
+            var sitesToSearch = new ArrayList();
 
             if (cbLrcFinder.Checked)
                 sitesToSearch.Add("LrcFinder");
@@ -511,7 +510,7 @@ namespace MyLyrics
 
             if (sitesToSearch.Count == 0)
             {
-                ThreadFinished = new string[] {"", "", "You haven't selected any sites to search", "error"};
+                ThreadFinished = new[] {"", "", "You haven't selected any sites to search", "error"};
                 return;
             }
 
@@ -527,7 +526,7 @@ namespace MyLyrics
         }
 
 
-        private void lyricFoundMethod(String lyricStrings, String artist, String track, String site)
+        private void LyricFoundMethod(String lyricStrings, String artist, String track, String site)
         {
             m_LyricText = lyricStrings;
             m_artist = artist;
@@ -542,8 +541,8 @@ namespace MyLyrics
             lbSongsWithLyric2.Text = m_SongsWithLyric.ToString();
             lbLyricsFound2.Text = m_LyricsFound.ToString();
 
-            string capArtist = LyricUtil.CapatalizeString(m_artist);
-            string capTitle = LyricUtil.CapatalizeString(m_track);
+            var capArtist = LyricUtil.CapatalizeString(m_artist);
+            var capTitle = LyricUtil.CapatalizeString(m_track);
 
             DatabaseUtil.WriteToLyricsDatabase(MyLyricsSettings.LyricsDB, MyLyricsSettings.LyricsMarkedDB, capArtist,
                                                capTitle, lyricStrings, site);
@@ -557,7 +556,7 @@ namespace MyLyrics
 
             if (m_enableLogging)
             {
-                string logText = capArtist + " - " + capTitle + " has a match at " + site;
+                var logText = capArtist + " - " + capTitle + " has a match at " + site;
                 lbLastActivity2.Text = logText;
 
                 LyricDiagnostics.TraceSource.TraceEvent(TraceEventType.Information, ++logIdCounter,
@@ -568,7 +567,7 @@ namespace MyLyrics
             Update();
         }
 
-        private void lyricNotFoundMethod(String artist, String title, String message, String site)
+        private void LyricNotFoundMethod(String artist, String title, String message, String site)
         {
             m_LyricsNotFound += 1;
 
@@ -687,7 +686,9 @@ namespace MyLyrics
 
                 m_noOfArtistsToSearch = artists.Count;
 
-                for (int albumIndex = 0; albumIndex < artists.Count; albumIndex++)
+                var canStartSearch = false;
+
+                foreach (var artist in artists)
                 {
                     // If the user has cancelled the search => end this
                     if (stopCollectingOfTitles)
@@ -696,14 +697,21 @@ namespace MyLyrics
                         return;
                     }
 
-                    string currentArtist = (string) artists[albumIndex];
+                    // Reached the limit
+                    if (canStartSearch)
+                    {
+                        break;
+                    }
+
+                    var currentArtist = (string) artist;
                     mDB.GetSongsByArtist(currentArtist, ref songs);
 
-                    for (int i = 0; i < songs.Count; i++)
+                    foreach (var song in songs)
                     {
-                        // if song isn't known in lyric database the progressbar should not be incremented
-                        int songNotKnown = -1;
-                        Song song = (Song) songs[i];
+                        if (canStartSearch)
+                        {
+                            break;
+                        }
 
                         /* Don't include song if one of the following is true
                          * 1. The artist is unknown or empty
@@ -711,7 +719,7 @@ namespace MyLyrics
                          * 3. Various artister should not be considered and the artist is "various artist"
                          * 4. Song with a lyric in the tag should not be considered, but instead include the file to the database right away */
 
-                        MusicTag tag = null;
+                        MusicTag tag;
 
                         if (song.Artist.Equals("unknown") || string.IsNullOrEmpty(song.Artist) ||
                             string.IsNullOrEmpty(song.Title)
@@ -719,17 +727,16 @@ namespace MyLyrics
                         {
                             m_DisregardedSongs += 1;
                         }
-                        else if ((m_DisregardSongWithLyricInTag == true &&
-                                  ((tag = TagReader.ReadTag(song.FileName)) != null) && tag.Lyrics.Length > 0))
+                        else if ((m_DisregardSongWithLyricInTag && ((tag = TagReader.ReadTag(song.FileName)) != null) && tag.Lyrics.Length > 0))
                         {
                             m_SongsWithLyric += 1;
 
-                            string capArtist = LyricUtil.CapatalizeString(tag.Artist);
-                            string capTitle = LyricUtil.CapatalizeString(tag.Title);
+                            var capArtist = LyricUtil.CapatalizeString(tag.Artist);
+                            var capTitle = LyricUtil.CapatalizeString(tag.Title);
 
                             if (
                                 DatabaseUtil.IsSongInLyricsDatabase(MyLyricsSettings.LyricsDB, capArtist, capTitle).
-                                    Equals(DatabaseUtil.LYRIC_NOT_FOUND))
+                                             Equals(DatabaseUtil.LYRIC_NOT_FOUND))
                             {
                                 MyLyricsSettings.LyricsDB.Add(DatabaseUtil.CorrectKeyFormat(capArtist, capTitle),
                                                               new LyricsItem(capArtist, capTitle, tag.Lyrics,
@@ -746,36 +753,31 @@ namespace MyLyrics
                         }
                         else
                         {
-                            int status = DatabaseUtil.IsSongInLyricsDatabase(MyLyricsSettings.LyricsDB, song.Artist,
-                                                                             song.Title);
-                            bool isTrackInLyricsMarkedDatabase = true;
+                            var status = DatabaseUtil.IsSongInLyricsDatabase(MyLyricsSettings.LyricsDB, song.Artist, song.Title);
 
                             if (!m_DisregardKnownLyric && status.Equals(DatabaseUtil.LYRIC_FOUND)
                                 ||
                                 (!m_DisregardMarkedLyric &&
-                                 ((isTrackInLyricsMarkedDatabase =
-                                   DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsSettings.LyricsMarkedDB,
+                                 ((DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsSettings.LyricsMarkedDB,
                                                                              song.Artist, song.Title).Equals(
-                                       DatabaseUtil.LYRIC_MARKED)) || status.Equals(DatabaseUtil.LYRIC_MARKED)))
+                                                                                 DatabaseUtil.LYRIC_MARKED)) || status.Equals(DatabaseUtil.LYRIC_MARKED)))
                                 ||
                                 (status.Equals(DatabaseUtil.LYRIC_NOT_FOUND) &&
                                  !DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsSettings.LyricsMarkedDB,
                                                                             song.Artist, song.Title).Equals(
-                                      DatabaseUtil.LYRIC_MARKED)))
+                                                                                DatabaseUtil.LYRIC_MARKED)))
                             {
-                                songNotKnown = 1;
                                 if (++m_SongsNotKnown > m_Limit)
                                 {
-                                    songNotKnown = 0;
-                                    bgWorkerSearch.ReportProgress(songNotKnown);
-                                    goto startSearch;
+                                    bgWorkerSearch.ReportProgress(0);
+                                    canStartSearch = true;
+                                    continue;
                                 }
 
-                                string[] lyricId = new string[2] {song.Artist, song.Title};
+                                var lyricId = new[] {song.Artist, song.Title};
                                 lyricConfigInfosQueue.Enqueue(lyricId);
 
                                 m_SongsToSearch = lyricConfigInfosQueue.Count;
-                                bgWorkerSearch.ReportProgress(songNotKnown);
                             }
                             else if (status.Equals(DatabaseUtil.LYRIC_FOUND))
                             {
@@ -786,33 +788,28 @@ namespace MyLyrics
                                 m_SongsWithMark += 1;
                             }
                         }
-                        bgWorkerSearch.ReportProgress(songNotKnown);
+                        bgWorkerSearch.ReportProgress(-1);
                     }
                 }
-
-                bgWorkerSearch.ReportProgress(0);
             }
             else
             {
                 foreach (KeyValuePair<string, LyricsItem> kvp in MyLyricsSettings.LyricsMarkedDB)
                 {
-                    int songNotKnown = 1;
                     if (++m_SongsNotKnown > m_Limit)
                     {
-                        songNotKnown = 0;
-                        bgWorkerSearch.ReportProgress(-1);
-                        goto startSearch;
+                        break;
                     }
-                    string[] lyricId = new string[2] {kvp.Value.Artist, kvp.Value.Title};
+                    var lyricId = new[] {kvp.Value.Artist, kvp.Value.Title};
                     lyricConfigInfosQueue.Enqueue(lyricId);
                     m_SongsToSearch = lyricConfigInfosQueue.Count;
-                    bgWorkerSearch.ReportProgress(songNotKnown);
+
+                    bgWorkerSearch.ReportProgress(-1);
                 }
             }
+            bgWorkerSearch.ReportProgress(0);
 
             #endregion
-
-            startSearch:
 
             #region 2. Search music tags for lyrics
 
@@ -1150,7 +1147,7 @@ namespace MyLyrics
 
             if (sender != null)
             {
-                WriteMediaPortalXML(null, null);
+                WriteMediaPortalXml(null, null);
             }
         }
 
@@ -1213,11 +1210,11 @@ namespace MyLyrics
             }
         }
 
-        private void WriteMediaPortalXML(object sender, EventArgs e)
+        private void WriteMediaPortalXml(object sender, EventArgs e)
         {
-            using (Settings xmlwriter = new Settings("MediaPortal.xml"))
+            using (var xmlwriter = new Settings("MediaPortal.xml"))
             {
-                string sitesMode = string.Empty;
+                string sitesMode;
                 if (rdLyricsMode.Checked)
                 {
                     sitesMode = rdLyricsMode.Tag as string;
@@ -1255,7 +1252,7 @@ namespace MyLyrics
                 xmlwriter.SetValue("myLyrics", "LrcTaggingOffset", tbLrcTaggingOffset.Text);
 
 
-                string text = comboBoxLanguages.SelectedItem as string;
+                var text = comboBoxLanguages.SelectedItem as string;
                 if (!string.IsNullOrEmpty(text))
                 {
                     xmlwriter.SetValue("myLyrics", "translationLanguage", text);
@@ -1266,8 +1263,8 @@ namespace MyLyrics
 
                 try
                 {
-                    StringBuilder find = new StringBuilder();
-                    StringBuilder replace = new StringBuilder();
+                    var find = new StringBuilder();
+                    var replace = new StringBuilder();
 
                     dbGridView.EndEdit();
 
