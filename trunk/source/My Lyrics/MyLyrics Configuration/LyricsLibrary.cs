@@ -353,11 +353,10 @@ namespace MyLyrics
                 }
             }
 
-            SimpleLRC lrc = new SimpleLRC(capArtist, capTitle, lyrics);
+            var lrc = new SimpleLRC(capArtist, capTitle, lyrics);
             if (lrc.IsValid && parent.cbUploadLrcAutomatically.Checked)
             {
-                LrcFinder lrcFinder = new LrcFinder();
-                lrcFinder.SaveLrcWithGuid(lyrics, parent.m_guid);
+                LrcFinder.SaveLrcWithGuid(lyrics, parent.m_guid);
             }
 
             btSave.Enabled = false;
