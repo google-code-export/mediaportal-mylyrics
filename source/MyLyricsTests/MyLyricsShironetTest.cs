@@ -71,7 +71,6 @@ namespace MyLyricsTests
         {
             for (var i = 0; i < 100; i++)
             {
-                Debug.WriteLine(string.Format("Iteration {0}", i));
                 var mashinaAtidMatok = new Shironet("משינה", "עתיד מתוק", new ManualResetEvent(false), 3000);
                 mashinaAtidMatok.FindLyrics();
                 var splitMam = mashinaAtidMatok.Lyric.Split(' ');
@@ -88,6 +87,18 @@ namespace MyLyricsTests
             var splitNf = notFound.Lyric.Split(' ');
             Assert.AreEqual("Not", splitNf[0]);
             Assert.AreEqual("found", splitNf[splitNf.Length - 1]);
+        }
+
+        [TestMethod]
+        public void TestHebrewInput()
+        {
+            const string hebrewText = "אבגדהוזחטיכךלמםנןסעפףצץקרשת";
+            const string englishText = "abcdefghijklmnopqrstuvwxyz";
+            const string mixedText = "abcdeאfghijk";
+
+            Assert.IsTrue(Shironet.IsHebrew(hebrewText));
+            Assert.IsFalse(Shironet.IsHebrew(englishText));
+            Assert.IsTrue(Shironet.IsHebrew(mixedText));
         }
     }
 }

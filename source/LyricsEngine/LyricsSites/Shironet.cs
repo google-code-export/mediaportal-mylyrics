@@ -23,6 +23,11 @@ namespace LyricsEngine.LyricsSites
         // space
         private const string Space = "%20";
 
+        private const string SearchPathQuery = "/searchSongs?type=lyrics&q=";
+        private const string LyricsPath = "/artist?type=lyrics&lang=1";
+        private const string Prfid = "&prfid=";
+        private const string Wrkid = "&wrkid=";
+
         # endregion
 
         # region patterns
@@ -30,6 +35,9 @@ namespace LyricsEngine.LyricsSites
         //////////////////////////
         // First phase patterns //
         //////////////////////////
+
+        // Hebrew pattern
+        private const string HebrewPattern = @"[\xE0-\xFA\u0590-\u05FF]";
 
         // RegEx to find lyrics page
         private const string FindLyricsPagePattern =
@@ -74,9 +82,18 @@ namespace LyricsEngine.LyricsSites
 
         protected override void FindLyricsWithTimer()
         {
+            var fixHebrewArtist = FixHebrewName(Artist);
+            var fixedHebrewTitle = FixHebrewName(Title);
+
+            // Check there's at least one Hebrew letter in either artist or title. We skip test if not
+            if (!IsHebrew(fixHebrewArtist) && !IsHebrew(fixedHebrewTitle))
+            {
+                LyricText = NotFound;
+                return;
+            }
+
             // 1st step - find lyrics page
-            var firstUrlString = BaseUrl + "/searchSongs?type=lyrics&q=" + FixHebrewName(Artist) + Space +
-                                 FixHebrewName(Title);
+            var firstUrlString = BaseUrl + SearchPathQuery + fixHebrewArtist + Space + fixedHebrewTitle;
 
             var findLyricsPageWebClient = new LyricsWebClient();
             findLyricsPageWebClient.OpenReadCompleted += FirstCallbackMethod;
@@ -100,7 +117,7 @@ namespace LyricsEngine.LyricsSites
                 return;
             }
             // 2nd step - find lyrics
-            var secondUrlString = BaseUrl + "/artist?type=lyrics&lang=1&prfid=" + _prfid + "&wrkid=" + _wrkid;
+            var secondUrlString = BaseUrl + LyricsPath + Prfid + _prfid + Wrkid + _wrkid;
 
             var findLyricsWebClient = new LyricsWebClient(firstUrlString);
             findLyricsWebClient.OpenReadCompleted += SecondCallbackMethod;
@@ -151,6 +168,17 @@ namespace LyricsEngine.LyricsSites
         }
 
         #endregion interface implemetation
+
+        #region public methods
+
+        public static bool IsHebrew(string str)
+        {
+            var myRegex = new Regex(HebrewPattern, RegexOptions.None);
+            var matchCollection = myRegex.Match(str);
+            return matchCollection.Success;
+        }
+
+        #endregion
 
         #region private methods
 
