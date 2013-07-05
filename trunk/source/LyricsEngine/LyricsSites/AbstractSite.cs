@@ -9,7 +9,7 @@ namespace LyricsEngine.LyricsSites
         #region const
 
         // Not found
-        protected const string NotFound = "Not found";
+        public const string NotFound = "Not found";
 
         #endregion const
 
