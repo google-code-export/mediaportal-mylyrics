@@ -243,7 +243,8 @@ namespace MyLyrics
         if (useID3)
         {
           tag = TagReader.ReadTag(strFile);
-          if (tag != null && tag.Title != GUILocalizeStrings.Get(4543)) // Track information not available
+            var currentTitle = GUIPropertyManager.GetProperty("#Play.Current.Title");
+            if (tag != null && tag.Title != currentTitle) // Track information not available
           {
             return tag;
           }
