@@ -10,10 +10,15 @@ namespace LyricsEngine.LyricsSites
 {
     public static class LyricsSiteFactory
     {
-        // Strings
+        #region strings
+
         private const string NoPaymentprocessorHasBeenRegisteredWithTheIdentifier = "No PaymentProcessor has been registered with the identifier: ";
         private const string IdentifierCanNotBeNullOrEmpty = "identifier can not be null or empty";
         private const string Createinstance = "CreateInstance";
+
+        #endregion strings
+
+        #region reflection
 
         private static readonly Type ClassType = typeof (AbstractSite);
         private static readonly Type[] ConstructorArgs = new[] {typeof (string), typeof (string), typeof(WaitHandle), typeof (int)};
@@ -22,6 +27,10 @@ namespace LyricsEngine.LyricsSites
         private static readonly Dictionary<string, ConstructorDelegate> ClassConstructors = new Dictionary<string, ConstructorDelegate>();
 
         private delegate AbstractSite ConstructorDelegate(string artist, string title, WaitHandle mEventStopSiteSearches, int timeLimit);
+
+        #endregion reflection
+
+        #region constructors
 
         static LyricsSiteFactory()
         {
@@ -35,11 +44,28 @@ namespace LyricsEngine.LyricsSites
             }
         }
 
+        #endregion constructors
+
+        #region public methods
+
+        /// <summary>
+        /// Gets the list of lyrics search sites
+        /// </summary>
+        /// <returns>List of lyrics search sites</returns>
         public static List<string> LyricsSitesNames()
         {
             return new List<string>(ClassRegistry.Keys);
         }
 
+        /// <summary>
+        /// Create a Lyrics search site object by name
+        /// </summary>
+        /// <param name="identifier">Lyrics site name</param>
+        /// <param name="artist">Artist</param>
+        /// <param name="title">Title</param>
+        /// <param name="mEventStopSiteSearches">Stop event</param>
+        /// <param name="timeLimit">Time limit</param>
+        /// <returns>Lyrics site object (implements ILyricSite)</returns>
         public static AbstractSite Create(string identifier, string artist, string title, WaitHandle mEventStopSiteSearches, int timeLimit)
         {
             if (String.IsNullOrEmpty(identifier))
@@ -52,6 +78,10 @@ namespace LyricsEngine.LyricsSites
             }
             return Create(ClassRegistry[identifier], artist, title, mEventStopSiteSearches, timeLimit);
         }
+
+        #endregion public methods
+
+        #region private methods
 
         private static AbstractSite Create(Type type, string artist, string title, WaitHandle mEventStopSiteSearches, int timeLimit)
         {
@@ -82,5 +112,7 @@ namespace LyricsEngine.LyricsSites
             ClassConstructors.Add(type.Name, del);
             return del(artist, title, mEventStopSiteSearches, timeLimit);
         }
+
+        #endregion private methods
     }
 }
