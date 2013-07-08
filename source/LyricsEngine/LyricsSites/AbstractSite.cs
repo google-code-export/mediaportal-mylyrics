@@ -95,6 +95,7 @@ namespace LyricsEngine.LyricsSites
         public abstract LyricType GetLyricType();
         public abstract SiteType GetSiteType();
         public abstract SiteComplexity GetSiteComplexity();
+        public abstract SiteSpeed GetSiteSpeed();
         public abstract bool SiteActive();
 
         #endregion interface abstract methods

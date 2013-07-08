@@ -54,7 +54,27 @@ namespace LyricsEngine.LyricsSites
         /// <returns>List of lyrics search sites</returns>
         public static List<string> LyricsSitesNames()
         {
-            return new List<string>(ClassRegistry.Keys);
+            return ClassRegistry.Keys.Where(identifier => Create(ClassRegistry[identifier], "", "", null, 0).SiteActive()).ToList();
+        }
+
+        /// <summary>
+        /// Return all LRC sites
+        /// </summary>
+        /// <returns>List of LRC sites</returns>
+        public static List<string> LrcLyricsSiteNames()
+        {
+            return LyricsSitesNames().Where(identifier => Create(ClassRegistry[identifier], "", "", null, 0).GetLyricType() == LyricType.Lrc).ToList();
+        }
+
+
+        /// <summary>
+        /// Returns list of sites according to specific speed
+        /// </summary>
+        /// <param name="speed">site speed</param>
+        /// <returns>List of sites with a speed at least as requested</returns>
+        public static List<string> LyricsSitesBySpeed(SiteSpeed speed)
+        {
+            return LyricsSitesNames().Where(identifier => Create(ClassRegistry[identifier], "", "", null, 0).GetSiteSpeed() <= speed).ToList();
         }
 
         /// <summary>

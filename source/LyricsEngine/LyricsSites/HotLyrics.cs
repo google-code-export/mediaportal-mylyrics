@@ -126,6 +126,11 @@ namespace LyricsEngine.LyricsSites
             return SiteComplexity.OneStep;
         }
 
+        public override SiteSpeed GetSiteSpeed()
+        {
+            return SiteSpeed.VerySlow;
+        }
+
         public override bool SiteActive()
         {
             return true;
