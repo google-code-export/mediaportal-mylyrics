@@ -19,6 +19,14 @@ namespace LyricsEngine.LyricsSites
         TwoSteps = 2
     }
 
+    public enum SiteSpeed
+    {
+        Fast = 0,
+        Medium = 1,
+        Slow = 2,
+        VerySlow = 3
+    }
+
     public interface ILyricSite
     {
         string Name { get; }
