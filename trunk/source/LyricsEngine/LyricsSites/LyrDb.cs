@@ -11,7 +11,7 @@ namespace LyricsEngine.LyricsSites
         # region const
 
         // Name
-        private const string SiteName = "Shironet";
+        private const string SiteName = "LyrDb";
 
         // Base url
         private const string SiteBaseUrl = "http://webservices.lyrdb.com";

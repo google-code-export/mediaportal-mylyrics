@@ -30,35 +30,35 @@ namespace MyLyrics
 
         #endregion
 
-        public DelegateLyricFound m_DelegateLyricFound;
-        public DelegateLyricNotFound m_DelegateLyricNotFound;
-        public DelegateStatusUpdate m_DelegateStatusUpdate;
-        public DelegateStringUpdate m_DelegateStringUpdate;
+        public DelegateLyricFound MDelegateLyricFound;
+        public DelegateLyricNotFound MDelegateLyricNotFound;
+        public DelegateStatusUpdate MDelegateStatusUpdate;
+        public DelegateStringUpdate MDelegateStringUpdate;
 
-        public DelegateThreadException m_DelegateThreadException;
-        public DelegateThreadFinished m_DelegateThreadFinished;
-        private ManualResetEvent m_EventStopThread;
-        private string m_find = string.Empty;
-        private LyricsController m_lc;
-        private Thread m_LyricControllerThread;
-        private MusicDatabase m_mDB = null;
+        public DelegateThreadException MDelegateThreadException;
+        public DelegateThreadFinished MDelegateThreadFinished;
+        private ManualResetEvent _mEventStopThread;
+        private string _mFind = string.Empty;
+        private LyricsController _lyricsController;
+        private Thread _mLyricControllerThread;
+        private MusicDatabase _mMDb;
 
-        private int m_NO_OF_SEARCHES_ALLOWED = 5;
-        private int m_noOfCurrentlySearches = 0;
-        private int m_noOfSearchesCompleted = 0;
-        private int m_noOfSearchesToComplete = 0;
-        private MyLyricsSetup m_Parent;
-        private string m_replace = string.Empty;
+        private const int MNoOfSearchesAllowed = 5;
+        private int _mNoOfCurrentlySearches;
+        private int _mNoOfSearchesCompleted;
+        private int _mNoOfSearchesToComplete;
+        private readonly MyLyricsSetup _mParent;
+        private string _mReplace = string.Empty;
 
-        private bool m_Searching = false;
-        private string m_SelectedArtist = String.Empty;
+        private bool _mSearching;
+        private string _mSelectedArtist = String.Empty;
 
-        private Queue<string[]> m_Songs = null;
-        private string[] m_strippedPrefixStrings = null;
+        private Queue<string[]> _mSongs;
+        private string[] _mStrippedPrefixStrings;
 
         public MusicDatabaseBrowse(MyLyricsSetup parent)
         {
-            m_Parent = parent;
+            _mParent = parent;
             InitializeComponent();
         }
 
@@ -82,7 +82,7 @@ namespace MyLyrics
                 {
                     try
                     {
-                        Invoke(m_DelegateLyricFound, value);
+                        Invoke(MDelegateLyricFound, value);
                     }
                     catch (InvalidOperationException)
                     {
@@ -100,7 +100,7 @@ namespace MyLyrics
                 {
                     try
                     {
-                        Invoke(m_DelegateLyricNotFound, value);
+                        Invoke(MDelegateLyricNotFound, value);
                     }
                     catch (InvalidOperationException)
                     {
@@ -118,7 +118,7 @@ namespace MyLyrics
                 {
                     try
                     {
-                        Invoke(m_DelegateThreadFinished, value);
+                        Invoke(MDelegateThreadFinished, value);
                     }
                     catch (InvalidOperationException)
                     {
@@ -136,7 +136,7 @@ namespace MyLyrics
                 {
                     try
                     {
-                        Invoke(m_DelegateThreadException);
+                        Invoke(MDelegateThreadException);
                     }
                     catch (InvalidOperationException)
                     {
@@ -199,8 +199,8 @@ namespace MyLyrics
                         }
                     }
 
-                    m_noOfCurrentlySearches -= 1;
-                    ++m_noOfSearchesCompleted;
+                    _mNoOfCurrentlySearches -= 1;
+                    ++_mNoOfSearchesCompleted;
 
                     break;
                 }
@@ -231,8 +231,8 @@ namespace MyLyrics
                     }
 
                     DatabaseUtil.SerializeLyricMarkedDB();
-                    m_noOfCurrentlySearches -= 1;
-                    ++m_noOfSearchesCompleted;
+                    _mNoOfCurrentlySearches -= 1;
+                    ++_mNoOfSearchesCompleted;
 
                     break;
                 }
@@ -246,7 +246,7 @@ namespace MyLyrics
         // Called from worker thread using delegate and Control.Invoke
         private void ThreadFinishedMethod(string artist, string title, string message, string site)
         {
-            m_Searching = false;
+            _mSearching = false;
 
             ChangeButtonsEnableState();
             RefreshSongsListView();
@@ -264,24 +264,24 @@ namespace MyLyrics
 
         private void ListboxArtistsUpdate(object sender, EventArgs e)
         {
-            m_mDB = MusicDatabase.Instance;
-            ArrayList artists = new ArrayList();
+            _mMDb = MusicDatabase.Instance;
+            var artists = new ArrayList();
             //mdb.GetArtists(0, String.Empty, ref artists);
-            m_mDB.GetAllArtists(ref artists);
+            _mMDb.GetAllArtists(ref artists);
 
             lvArtists.Items.Clear();
             lbSelectedArtist.Text = String.Empty;
 
-            m_DelegateStringUpdate = updateStringMethod;
-            m_DelegateStatusUpdate = updateStatusMethod;
-            m_DelegateLyricFound = lyricFoundMethod;
-            m_DelegateLyricNotFound = lyricNotFoundMethod;
-            m_DelegateThreadFinished = ThreadFinishedMethod;
-            m_DelegateThreadException = ThreadExceptionMethod;
+            MDelegateStringUpdate = updateStringMethod;
+            MDelegateStatusUpdate = updateStatusMethod;
+            MDelegateLyricFound = lyricFoundMethod;
+            MDelegateLyricNotFound = lyricNotFoundMethod;
+            MDelegateThreadFinished = ThreadFinishedMethod;
+            MDelegateThreadException = ThreadExceptionMethod;
 
-            foreach (object artist in artists)
+            foreach (var artist in artists)
             {
-                ListViewItem lvi = new ListViewItem((string) artist);
+                var lvi = new ListViewItem((string) artist);
                 lvArtists.Items.Add(lvi);
             }
 
@@ -327,7 +327,7 @@ namespace MyLyrics
         {
             if (lvi.ImageIndex == -1)
             {
-                ListViewItem newLvi = new ListViewItem(m_SelectedArtist);
+                var newLvi = new ListViewItem(_mSelectedArtist);
 
                 foreach (ListViewItem.ListViewSubItem lvsi in lvi.SubItems)
                 {
@@ -336,20 +336,19 @@ namespace MyLyrics
 
                 newLvi.ImageIndex = lvi.ImageIndex;
 
-                bool alreadySelected = false;
+                var alreadySelected = false;
 
                 foreach (ListViewItem item in lvSelectedSongs.Items)
                 {
-                    if (item.SubItems[0].Text.Equals(m_SelectedArtist) &&
+                    if (item.SubItems[0].Text.Equals(_mSelectedArtist) &&
                         item.SubItems[1].Text.Equals(newLvi.SubItems[1].Text))
                     {
                         alreadySelected = true;
-                        continue;
                     }
                 }
 
                 if (!alreadySelected &&
-                    !lvSelectedSongs.Items.ContainsKey(m_SelectedArtist + "-" + lvi.SubItems[0].Text))
+                    !lvSelectedSongs.Items.ContainsKey(_mSelectedArtist + "-" + lvi.SubItems[0].Text))
                 {
                     lvSelectedSongs.Items.Add(newLvi);
                 }
@@ -376,12 +375,12 @@ namespace MyLyrics
         {
             MusicDatabase mdb = MusicDatabase.Instance;
             List<Song> songs = new List<Song>();
-            m_SelectedArtist = ((ListView) (sender)).SelectedItems.Count > 0
+            _mSelectedArtist = ((ListView) (sender)).SelectedItems.Count > 0
                                    ? ((ListView) (sender)).SelectedItems[0].Text
                                    : "";
-            mdb.GetSongsByArtist(m_SelectedArtist, ref songs);
+            mdb.GetSongsByArtist(_mSelectedArtist, ref songs);
 
-            lbSelectedArtist.Text = String.Format("Artist: {0}", m_SelectedArtist);
+            lbSelectedArtist.Text = String.Format("Artist: {0}", _mSelectedArtist);
             lvSongs.Items.Clear();
 
             foreach (Song song in songs)
@@ -470,12 +469,12 @@ namespace MyLyrics
 
         private void Search_Init()
         {
-            m_Searching = true;
+            _mSearching = true;
 
             MyLyricsSetup.UpdateLibraryUI = true;
             ChangeButtonsEnableState();
 
-            m_Songs = new Queue<string[]>();
+            _mSongs = new Queue<string[]>();
 
             List<ListViewItem> items = new List<ListViewItem>();
 
@@ -486,7 +485,7 @@ namespace MyLyrics
                 ListViewItem lviClone = (ListViewItem) lvi.Clone();
                 if (lvi.ImageIndex == -1)
                 {
-                    m_Songs.Enqueue(new string[3]
+                    _mSongs.Enqueue(new string[3]
                                         {lviClone.SubItems[0].Text, lviClone.SubItems[1].Text, count.ToString()});
                     lviClone.SubItems[3].Text = "";
                     items.Add(lviClone);
@@ -497,17 +496,17 @@ namespace MyLyrics
             lvSelectedSongs.Items.Clear();
             lvSelectedSongs.Items.AddRange(items.ToArray());
 
-            m_noOfSearchesToComplete = m_Songs.Count;
-            m_noOfCurrentlySearches = 0;
-            m_noOfSearchesCompleted = 0;
+            _mNoOfSearchesToComplete = _mSongs.Count;
+            _mNoOfCurrentlySearches = 0;
+            _mNoOfSearchesCompleted = 0;
         }
 
         private void SearchOnline()
         {
             // After the tag search is completed, we now recalculate the number of lyrics to search for during online search
-            m_noOfSearchesToComplete -= m_noOfSearchesCompleted;
-            m_noOfSearchesCompleted = 0;
-            m_noOfCurrentlySearches = 0;
+            _mNoOfSearchesToComplete -= _mNoOfSearchesCompleted;
+            _mNoOfSearchesCompleted = 0;
+            _mNoOfCurrentlySearches = 0;
 
             if (bwOnlineSearch.IsBusy)
             {
@@ -523,7 +522,7 @@ namespace MyLyrics
                 if (((string) xmlreader.GetValueAsString("myLyrics", "useActionext", "True")).ToString().Equals("True"))
                     sitesToSearch.Add("Actionext");
                 if (((string) xmlreader.GetValueAsString("myLyrics", "useLyrDB", "True")).ToString().Equals("True"))
-                    sitesToSearch.Add("LyrDB");
+                    sitesToSearch.Add("LyrDb");
                 if (((string) xmlreader.GetValueAsString("myLyrics", "useLyrics007", "True")).ToString().Equals("True"))
                     sitesToSearch.Add("Lyrics007");
                 if (((string) xmlreader.GetValueAsString("myLyrics", "useLyricsOnDemand", "True")).ToString().Equals("True"))
@@ -533,26 +532,26 @@ namespace MyLyrics
                 if (((string)xmlreader.GetValueAsString("myLyrics", "useShironet", "True")).ToString().Equals("True"))
                     sitesToSearch.Add("Shironet");
 
-                m_find = xmlreader.GetValueAsString("myLyrics", "find", "");
-                m_replace = xmlreader.GetValueAsString("myLyrics", "replace", "");
+                _mFind = xmlreader.GetValueAsString("myLyrics", "find", "");
+                _mReplace = xmlreader.GetValueAsString("myLyrics", "replace", "");
             }
 
-            m_strippedPrefixStrings = MediaPortalUtil.GetStrippedPrefixStringArray();
+            _mStrippedPrefixStrings = MediaPortalUtil.GetStrippedPrefixStringArray();
 
-            m_EventStopThread = new ManualResetEvent(false);
+            _mEventStopThread = new ManualResetEvent(false);
 
             // If automaticUpdate is set then return after the first positive search
-            m_lc = new LyricsController(this, m_EventStopThread, (string[]) sitesToSearch.ToArray(), false, false,
-                                        m_find, m_replace);
+            _lyricsController = new LyricsController(this, _mEventStopThread, (string[]) sitesToSearch.ToArray(), false, false,
+                                        _mFind, _mReplace);
 
-            m_lc.NoOfLyricsToSearch = m_noOfSearchesToComplete;
+            _lyricsController.NoOfLyricsToSearch = _mNoOfSearchesToComplete;
 
-            ThreadStart job = delegate { m_lc.Run(); };
+            ThreadStart job = delegate { _lyricsController.Run(); };
 
-            m_LyricControllerThread = new Thread(job);
-            m_LyricControllerThread.Start();
+            _mLyricControllerThread = new Thread(job);
+            _mLyricControllerThread.Start();
 
-            m_lc.StopSearches = false;
+            _lyricsController.StopSearches = false;
 
             bwOnlineSearch.RunWorkerAsync();
         }
@@ -638,11 +637,11 @@ namespace MyLyrics
 
         private void ChangeButtonsEnableState()
         {
-            if (m_Searching == true)
+            if (_mSearching == true)
             {
-                m_Parent.tabControl.SelectedIndexChanged -= new EventHandler(m_Parent.tabControl_SelectedIndexChanged);
+                _mParent.tabControl.SelectedIndexChanged -= new EventHandler(_mParent.tabControl_SelectedIndexChanged);
 
-                ((MyLyricsSetup) m_Parent).btClose.Enabled = false;
+                ((MyLyricsSetup) _mParent).btClose.Enabled = false;
                 btSearch.Enabled = false;
                 btCancel.Enabled = true;
                 btAdd.Enabled = false;
@@ -656,9 +655,9 @@ namespace MyLyrics
             }
             else
             {
-                m_Parent.tabControl.SelectedIndexChanged += new EventHandler(m_Parent.tabControl_SelectedIndexChanged);
+                _mParent.tabControl.SelectedIndexChanged += new EventHandler(_mParent.tabControl_SelectedIndexChanged);
 
-                ((MyLyricsSetup) m_Parent).btClose.Enabled = true;
+                ((MyLyricsSetup) _mParent).btClose.Enabled = true;
                 btSearch.Enabled = true;
                 btCancel.Enabled = false;
                 btAdd.Enabled = true;
@@ -674,9 +673,9 @@ namespace MyLyrics
 
         private void bw_DoWork(object sender, DoWorkEventArgs e)
         {
-            while (m_Songs.Count != 0)
+            while (_mSongs.Count != 0)
             {
-                if (m_lc == null)
+                if (_lyricsController == null)
                     return;
 
                 if (bwOnlineSearch.CancellationPending)
@@ -684,18 +683,18 @@ namespace MyLyrics
                     return;
                 }
 
-                if (m_noOfCurrentlySearches < m_NO_OF_SEARCHES_ALLOWED && m_lc.StopSearches == false)
+                if (_mNoOfCurrentlySearches < MNoOfSearchesAllowed && _lyricsController.StopSearches == false)
                 {
-                    m_noOfCurrentlySearches += 1;
-                    string[] lyricID = (string[]) m_Songs.Dequeue();
+                    _mNoOfCurrentlySearches += 1;
+                    string[] lyricID = (string[]) _mSongs.Dequeue();
                     string artist = lyricID[0];
                     string title = lyricID[1];
                     int rowNumberInListView = int.Parse(lyricID[2]);
 
                     bwOnlineSearch.ReportProgress(rowNumberInListView);
 
-                    m_lc.AddNewLyricSearch(artist, title,
-                                           MediaPortalUtil.GetStrippedPrefixArtist(artist, m_strippedPrefixStrings));
+                    _lyricsController.AddNewLyricSearch(artist, title,
+                                           MediaPortalUtil.GetStrippedPrefixArtist(artist, _mStrippedPrefixStrings));
                 }
 
                 Thread.Sleep(200);
@@ -706,7 +705,7 @@ namespace MyLyrics
         {
             Song song = new Song();
 
-            m_mDB.GetSongByMusicTagInfo(artist, string.Empty, title, true, ref song);
+            _mMDb.GetSongByMusicTagInfo(artist, string.Empty, title, true, ref song);
 
             MusicTag tag = TagReader.ReadTag(song.FileName);
             if (tag != null && tag.Lyrics != string.Empty)
@@ -750,23 +749,23 @@ namespace MyLyrics
 
         private void btCancel_Click(object sender, EventArgs e)
         {
-            if (m_lc != null)
+            if (_lyricsController != null)
             {
-                m_lc.FinishThread(m_SelectedArtist, string.Empty, "The search has been cancelled by the user.", "none");
-                m_lc.Dispose();
-                m_lc = null;
+                _lyricsController.FinishThread(_mSelectedArtist, string.Empty, "The search has been cancelled by the user.", "none");
+                _lyricsController.Dispose();
+                _lyricsController = null;
             }
-            else if (m_EventStopThread != null)
+            else if (_mEventStopThread != null)
             {
-                m_EventStopThread.Set();
-                ThreadFinishedMethod(m_SelectedArtist, string.Empty, "The search has been cancelled by the user.",
+                _mEventStopThread.Set();
+                ThreadFinishedMethod(_mSelectedArtist, string.Empty, "The search has been cancelled by the user.",
                                      "none");
             }
 
             bwMusicTagSearch.CancelAsync();
             bwOnlineSearch.CancelAsync();
             ChangeButtonsEnableState();
-            m_Searching = false;
+            _mSearching = false;
             Thread.Sleep(500);
             RefreshSongsListView();
             RefreshArtistStats();
@@ -779,7 +778,7 @@ namespace MyLyrics
             Queue<string[]> m_SongsToSearchOnline = new Queue<string[]>();
             int rowNumberInListView = 0;
 
-            foreach (string[] song in m_Songs)
+            foreach (string[] song in _mSongs)
             {
                 if (bwMusicTagSearch.CancellationPending)
                 {
@@ -798,7 +797,7 @@ namespace MyLyrics
                 ++rowNumberInListView;
             }
 
-            m_Songs = m_SongsToSearchOnline;
+            _mSongs = m_SongsToSearchOnline;
         }
 
         private void bwMusicTagSearch_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -811,9 +810,9 @@ namespace MyLyrics
         private void bwMusicTagSearch_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             // If all found in music tags, then no need for online search
-            if (m_noOfSearchesCompleted == m_noOfSearchesToComplete)
+            if (_mNoOfSearchesCompleted == _mNoOfSearchesToComplete)
             {
-                m_Searching = false;
+                _mSearching = false;
                 ChangeButtonsEnableState();
                 return;
             }

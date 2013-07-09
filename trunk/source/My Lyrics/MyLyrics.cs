@@ -749,38 +749,7 @@ namespace MyLyrics
 
       _strippedPrefixStrings = MediaPortalUtil.GetStrippedPrefixStringArray();
 
-      ArrayList sitesToSearch = new ArrayList();
-      //if (_useLrcFinder && Setup.IsMember("LrcFinder"))
-      //{
-      //    sitesToSearch.Add("LrcFinder");
-      //}
-
-      if (_useActionext && Setup.IsMember("Actionext"))
-      {
-        sitesToSearch.Add("Actionext");
-      }
-      if (_useActionext && Setup.IsMember("LyrDB"))
-      {
-        sitesToSearch.Add("LyrDB");
-      }
-      if (_useLyrics007 && Setup.IsMember("Lyrics007"))
-      {
-        sitesToSearch.Add("Lyrics007");
-      }
-      if (_useLyricsOnDemand && Setup.IsMember("LyricsOnDemand"))
-      {
-        sitesToSearch.Add("LyricsOnDemand");
-      }
-      if (_useHotLyrics && Setup.IsMember("HotLyrics"))
-      {
-        sitesToSearch.Add("HotLyrics");
-      }
-      if (_useShironet && Setup.IsMember("Shironet"))
-      {
-        sitesToSearch.Add("Shironet");
-      }
-
-      _LyricSitesTosearch = (string[])sitesToSearch.ToArray(typeof(string));
+      _LyricSitesTosearch = Setup.ActiveSites.ToArray();
 
       _settingsRead = true;
 
