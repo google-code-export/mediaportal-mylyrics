@@ -26,43 +26,43 @@ namespace MyLyricsTests
 
 
         [TestMethod]
-        public void TestLyrsterLyrics()
+        public void TestLyrster()
         {
-            var vanHalenCantStopLovinYou = new Lyrster("Van Halen", "Ice Cream Man", new ManualResetEvent(false), 10000);
-            vanHalenCantStopLovinYou.FindLyrics();
-            var splitVhcslu = vanHalenCantStopLovinYou.Lyric.Split(' ');
-            Assert.AreEqual("Dedicate", splitVhcslu[4].Trim());
-            Assert.AreEqual("satis-uh-fy", splitVhcslu[splitVhcslu.Length - 1]);
+            var site = new Lyrster("Van Halen", "Ice Cream Man", new ManualResetEvent(false), 10000);
+            site.FindLyrics();
+            var splitLyrics = site.Lyric.Split(' ');
+            Assert.AreEqual("Dedicate", splitLyrics[4].Trim());
+            Assert.AreEqual("satis-uh-fy", splitLyrics[splitLyrics.Length - 1]);
         }
 
         [TestMethod]
-        public void TestLyrsterLyrics2()
+        public void TestLyrster2()
         {
-            var ericClaptonIShotTheSheriff = new Lyrster("Eric Clapton", "I Shot the Sheriff", new ManualResetEvent(false), 10000);
-            ericClaptonIShotTheSheriff.FindLyrics();
-            var splitEcists = ericClaptonIShotTheSheriff.Lyric.Split(' ');
-            Assert.AreEqual("I", splitEcists[0]);
-            Assert.AreEqual("deputy", splitEcists[splitEcists.Length - 1]);
+            var site = new Lyrster("Eric Clapton", "I Shot the Sheriff", new ManualResetEvent(false), 10000);
+            site.FindLyrics();
+            var splitLyrics = site.Lyric.Split(' ');
+            Assert.AreEqual("I", splitLyrics[0]);
+            Assert.AreEqual("deputy", splitLyrics[splitLyrics.Length - 1]);
         }
 
         [TestMethod]
-        public void TestLyrsterLyrics3()
+        public void TestLyrster3()
         {
-            var barryManilowIWriteTheSongs = new Lyrster("Barry Manilow", "I Write The Songs", new ManualResetEvent(false), 10000);
-            barryManilowIWriteTheSongs.FindLyrics();
-            var splitBmiwts = barryManilowIWriteTheSongs.Lyric.Split(' ');
-            Assert.AreEqual("I've", splitBmiwts[0]);
-            Assert.AreEqual("cry", splitBmiwts[splitBmiwts.Length - 1]);
+            var site = new Lyrster("Barry Manilow", "I Write The Songs", new ManualResetEvent(false), 10000);
+            site.FindLyrics();
+            var splitLyrics = site.Lyric.Split(' ');
+            Assert.AreEqual("I've", splitLyrics[0]);
+            Assert.AreEqual("cry", splitLyrics[splitLyrics.Length - 1]);
         }
 
         [TestMethod]
         public void TestLyrsterNotFound()
         {
-            var notFound = new Lyrster("Foo", "Bar", new ManualResetEvent(false), 10000);
-            notFound.FindLyrics();
-            var splitNf = notFound.Lyric.Split(' ');
-            Assert.AreEqual("Not", splitNf[0]);
-            Assert.AreEqual("found", splitNf[splitNf.Length - 1]);
+            var site = new Lyrster("Foo", "Bar", new ManualResetEvent(false), 10000);
+            site.FindLyrics();
+            var splitLyrics = site.Lyric.Split(' ');
+            Assert.AreEqual("Not", splitLyrics[0]);
+            Assert.AreEqual("found", splitLyrics[splitLyrics.Length - 1]);
         }
     }
 }
