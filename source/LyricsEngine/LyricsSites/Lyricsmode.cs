@@ -83,7 +83,7 @@ namespace LyricsEngine.LyricsSites
 
         public override SiteSpeed GetSiteSpeed()
         {
-            return SiteSpeed.VerySlow;
+            return SiteSpeed.Medium;
         }
 
         public override bool SiteActive()
