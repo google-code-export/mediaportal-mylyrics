@@ -11,7 +11,7 @@ namespace LyricsEngine.LyricsSites
         private const string SiteName = "LyricWiki";
 
         // Base url
-        private const string SiteBaseUrl = "http://lyricwiki.org/";
+        private const string SiteBaseUrl = "http://lyricwiki.org";
 
         const string StartString = "class='lyricbox' >";
 
@@ -41,7 +41,7 @@ namespace LyricsEngine.LyricsSites
                 return;
             }
 
-            var urlString = SiteBaseUrl + artist + ":" + title;
+            var urlString = SiteBaseUrl + "/" + artist + ":" + title;
 
             var client = new LyricsWebClient();
 

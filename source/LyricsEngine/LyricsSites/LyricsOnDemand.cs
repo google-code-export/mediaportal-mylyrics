@@ -15,7 +15,7 @@ namespace LyricsEngine.LyricsSites
         private const string SiteName = "LyricsOnDemand";
 
         // Base url
-        private const string SiteBaseUrl = "http://www.lyricsondemand.com/";
+        private const string SiteBaseUrl = "http://www.lyricsondemand.com";
 
         # endregion
 
@@ -70,7 +70,7 @@ namespace LyricsEngine.LyricsSites
                 firstLetter = "0";
             }
 
-            var urlString = SiteBaseUrl + firstLetter + "/" + artist + "lyrics/" + title + "lyrics.html";
+            var urlString = SiteBaseUrl + "/" + firstLetter + "/" + artist + "lyrics/" + title + "lyrics.html";
 
             var client = new LyricsWebClient();
 

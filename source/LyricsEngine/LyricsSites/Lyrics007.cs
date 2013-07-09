@@ -15,7 +15,7 @@ namespace LyricsEngine.LyricsSites
         private const string SiteName = "Lyrics007";
 
         // Base url
-        private const string SiteBaseUrl = "http://www.lyrics007.com/";
+        private const string SiteBaseUrl = "http://www.lyrics007.com";
 
         # endregion const
 
@@ -41,7 +41,7 @@ namespace LyricsEngine.LyricsSites
 
             // Cannot find lyrics contaning non-English letters!
 
-            var urlString = SiteBaseUrl + artist + " Lyrics/" + title + " Lyrics.html";
+            var urlString = SiteBaseUrl + "/" + artist + " Lyrics/" + title + " Lyrics.html";
 
             var uri = new Uri(urlString);
             var client = new LyricsWebClient();

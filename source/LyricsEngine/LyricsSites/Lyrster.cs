@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -15,7 +14,7 @@ namespace LyricsEngine.LyricsSites
         private const string SiteName = "Lyrster";
 
         // Base url
-        private const string SiteBaseUrl = "http://www.lyrster.com/lyrics/";
+        private const string SiteBaseUrl = "http://www.lyrster.com";
 
         # endregion
 
@@ -39,7 +38,7 @@ namespace LyricsEngine.LyricsSites
                 return;
             }
 
-            var urlString = SiteBaseUrl + title + "-lyrics-" + artist + ".html";
+            var urlString = SiteBaseUrl + "/lyrics/" + title + "-lyrics-" + artist + ".html";
 
             var client = new LyricsWebClient();
 

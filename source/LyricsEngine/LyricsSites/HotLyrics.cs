@@ -15,7 +15,7 @@ namespace LyricsEngine.LyricsSites
         private const string SiteName = "HotLyrics";
 
         // Base url
-        private const string SiteBaseUrl = "http://www.hotlyrics.net/lyrics/";
+        private const string SiteBaseUrl = "http://www.hotlyrics.net";
 
         # endregion
 
@@ -90,7 +90,7 @@ namespace LyricsEngine.LyricsSites
 
             var firstLetter = artist[0].ToString(CultureInfo.InvariantCulture);
 
-            var urlString = SiteBaseUrl + firstLetter + "/" + artist + "/" + title + ".html";
+            var urlString = SiteBaseUrl + "/lyrics/" + firstLetter + "/" + artist + "/" + title + ".html";
 
             var client = new LyricsWebClient();
 
