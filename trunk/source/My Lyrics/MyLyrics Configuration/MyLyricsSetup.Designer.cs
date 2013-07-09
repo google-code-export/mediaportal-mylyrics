@@ -1,4 +1,6 @@
-﻿namespace MyLyrics
+﻿using System.Windows.Forms;
+
+namespace MyLyrics
 {
   partial class MyLyricsSetup
   {
@@ -100,13 +102,7 @@
             this.gbLyricSites = new MediaPortal.UserInterface.Controls.MPGroupBox();
             this.rbLrcMode = new System.Windows.Forms.RadioButton();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.cbLrcFinder = new MediaPortal.UserInterface.Controls.MPCheckBox();
-            this.cbLyrDB = new MediaPortal.UserInterface.Controls.MPCheckBox();
-            this.cbActionext = new MediaPortal.UserInterface.Controls.MPCheckBox();
-            this.cbLyrics007 = new MediaPortal.UserInterface.Controls.MPCheckBox();
-            this.cbLyricsOnDemand = new MediaPortal.UserInterface.Controls.MPCheckBox();
-            this.cbHotLyrics = new MediaPortal.UserInterface.Controls.MPCheckBox();
-            this.cbShironet = new MediaPortal.UserInterface.Controls.MPCheckBox();
+            this.sitesList = new System.Windows.Forms.CheckedListBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.mpLabel2 = new MediaPortal.UserInterface.Controls.MPLabel();
             this.trackBar = new System.Windows.Forms.TrackBar();
@@ -157,7 +153,7 @@
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-      this.tabControl.Size = new System.Drawing.Size(558, 536);
+            this.tabControl.Size = new System.Drawing.Size(548, 526);
             this.tabControl.TabIndex = 1;
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
             // 
@@ -166,7 +162,7 @@
             this.tabPageLyricsDatabase.Location = new System.Drawing.Point(4, 22);
             this.tabPageLyricsDatabase.Name = "tabPageLyricsDatabase";
             this.tabPageLyricsDatabase.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPageLyricsDatabase.Size = new System.Drawing.Size(550, 510);
+            this.tabPageLyricsDatabase.Size = new System.Drawing.Size(540, 500);
             this.tabPageLyricsDatabase.TabIndex = 1;
             this.tabPageLyricsDatabase.Text = "Lyrics database";
             this.tabPageLyricsDatabase.UseVisualStyleBackColor = true;
@@ -176,7 +172,7 @@
             this.tabPageMusicDatabaseBrowse.Location = new System.Drawing.Point(4, 22);
             this.tabPageMusicDatabaseBrowse.Name = "tabPageMusicDatabaseBrowse";
             this.tabPageMusicDatabaseBrowse.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageMusicDatabaseBrowse.Size = new System.Drawing.Size(550, 510);
+            this.tabPageMusicDatabaseBrowse.Size = new System.Drawing.Size(540, 500);
             this.tabPageMusicDatabaseBrowse.TabIndex = 3;
             this.tabPageMusicDatabaseBrowse.Text = "Music database browse";
             this.tabPageMusicDatabaseBrowse.UseVisualStyleBackColor = true;
@@ -191,7 +187,7 @@
             this.tabPageDatabase.Location = new System.Drawing.Point(4, 22);
             this.tabPageDatabase.Name = "tabPageDatabase";
             this.tabPageDatabase.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageDatabase.Size = new System.Drawing.Size(550, 510);
+            this.tabPageDatabase.Size = new System.Drawing.Size(540, 500);
             this.tabPageDatabase.TabIndex = 2;
             this.tabPageDatabase.Text = "Music database batch search";
             this.tabPageDatabase.UseVisualStyleBackColor = true;
@@ -626,7 +622,7 @@
             this.tabPageSetup.Location = new System.Drawing.Point(4, 22);
             this.tabPageSetup.Name = "tabPageSetup";
             this.tabPageSetup.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageSetup.Size = new System.Drawing.Size(550, 510);
+            this.tabPageSetup.Size = new System.Drawing.Size(540, 500);
             this.tabPageSetup.TabIndex = 2;
             this.tabPageSetup.Text = "Settings";
             this.tabPageSetup.UseVisualStyleBackColor = true;
@@ -638,7 +634,7 @@
             this.mpGroupBox5.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.mpGroupBox5.Location = new System.Drawing.Point(5, 309);
             this.mpGroupBox5.Name = "mpGroupBox5";
-            this.mpGroupBox5.Size = new System.Drawing.Size(538, 42);
+            this.mpGroupBox5.Size = new System.Drawing.Size(271, 42);
             this.mpGroupBox5.TabIndex = 34;
             this.mpGroupBox5.TabStop = false;
             this.mpGroupBox5.Text = "Translation";
@@ -747,9 +743,9 @@
             // 
             this.gbGUI.Controls.Add(this.cbUseAutoScrollAsDefault);
             this.gbGUI.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.gbGUI.Location = new System.Drawing.Point(5, 196);
+            this.gbGUI.Location = new System.Drawing.Point(279, 309);
             this.gbGUI.Name = "gbGUI";
-            this.gbGUI.Size = new System.Drawing.Size(538, 42);
+            this.gbGUI.Size = new System.Drawing.Size(256, 42);
             this.gbGUI.TabIndex = 33;
             this.gbGUI.TabStop = false;
             this.gbGUI.Text = "Gui settings";
@@ -910,7 +906,7 @@
             this.gbLyricSites.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.gbLyricSites.Location = new System.Drawing.Point(5, 52);
             this.gbLyricSites.Name = "gbLyricSites";
-            this.gbLyricSites.Size = new System.Drawing.Size(538, 142);
+            this.gbLyricSites.Size = new System.Drawing.Size(538, 186);
             this.gbLyricSites.TabIndex = 28;
             this.gbLyricSites.TabStop = false;
             this.gbLyricSites.Text = "Lyrics search mode";
@@ -918,129 +914,36 @@
             // rbLrcMode
             // 
             this.rbLrcMode.AutoSize = true;
-            this.rbLrcMode.Location = new System.Drawing.Point(110, 23);
+            this.rbLrcMode.Location = new System.Drawing.Point(102, 23);
             this.rbLrcMode.Name = "rbLrcMode";
             this.rbLrcMode.Size = new System.Drawing.Size(75, 17);
             this.rbLrcMode.TabIndex = 29;
             this.rbLrcMode.Tag = "LRC mode";
             this.rbLrcMode.Text = "LRC mode";
             this.rbLrcMode.UseVisualStyleBackColor = true;
-            this.rbLrcMode.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             this.rbLrcMode.CheckedChanged += new System.EventHandler(this.rdTrackBar_CheckedChanged);
+            this.rbLrcMode.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.cbLrcFinder);
-            this.groupBox2.Controls.Add(this.cbLyrDB);
-            this.groupBox2.Controls.Add(this.cbActionext);
-            this.groupBox2.Controls.Add(this.cbLyrics007);
-            this.groupBox2.Controls.Add(this.cbLyricsOnDemand);
-            this.groupBox2.Controls.Add(this.cbHotLyrics);
-            this.groupBox2.Controls.Add(this.cbShironet);
-            this.groupBox2.Location = new System.Drawing.Point(229, 48);
+            this.groupBox2.Controls.Add(this.sitesList);
+            this.groupBox2.Location = new System.Drawing.Point(277, 19);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(301, 90);
+            this.groupBox2.Size = new System.Drawing.Size(253, 161);
             this.groupBox2.TabIndex = 28;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Selected lyric sites to search";
             // 
-            // cbLrcFinder
+            // sitesList
             // 
-            this.cbLrcFinder.AutoSize = true;
-            this.cbLrcFinder.Checked = true;
-            this.cbLrcFinder.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbLrcFinder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.cbLrcFinder.Location = new System.Drawing.Point(20, 61);
-            this.cbLrcFinder.Name = "cbLrcFinder";
-            this.cbLrcFinder.Size = new System.Drawing.Size(68, 17);
-            this.cbLrcFinder.TabIndex = 10;
-            this.cbLrcFinder.Text = "LrcFinder";
-            this.cbLrcFinder.UseVisualStyleBackColor = true;
-            this.cbLrcFinder.Leave += new System.EventHandler(this.WriteMediaPortalXml);
-            // 
-            // cbLyrDB
-            // 
-            this.cbLyrDB.AutoSize = true;
-            this.cbLyrDB.Checked = true;
-            this.cbLyrDB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbLyrDB.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.cbLyrDB.Location = new System.Drawing.Point(230, 17);
-            this.cbLyrDB.Name = "cbLyrDB";
-            this.cbLyrDB.Size = new System.Drawing.Size(53, 17);
-            this.cbLyrDB.TabIndex = 9;
-            this.cbLyrDB.Text = "LyrDB";
-            this.cbLyrDB.UseVisualStyleBackColor = true;
-            this.cbLyrDB.Leave += new System.EventHandler(this.WriteMediaPortalXml);
-            // 
-            // cbActionext
-            // 
-            this.cbActionext.AutoSize = true;
-            this.cbActionext.Checked = true;
-            this.cbActionext.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbActionext.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.cbActionext.Location = new System.Drawing.Point(137, 61);
-            this.cbActionext.Name = "cbActionext";
-            this.cbActionext.Size = new System.Drawing.Size(68, 17);
-            this.cbActionext.TabIndex = 8;
-            this.cbActionext.Text = "Actionext";
-            this.cbActionext.UseVisualStyleBackColor = true;
-            this.cbActionext.Leave += new System.EventHandler(this.WriteMediaPortalXml);
-            // 
-            // cbLyrics007
-            // 
-            this.cbLyrics007.AutoSize = true;
-            this.cbLyrics007.Checked = true;
-            this.cbLyrics007.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbLyrics007.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.cbLyrics007.Location = new System.Drawing.Point(137, 17);
-            this.cbLyrics007.Name = "cbLyrics007";
-            this.cbLyrics007.Size = new System.Drawing.Size(72, 17);
-            this.cbLyrics007.TabIndex = 4;
-            this.cbLyrics007.Text = "Lyrics 007";
-            this.cbLyrics007.UseVisualStyleBackColor = true;
-            this.cbLyrics007.Leave += new System.EventHandler(this.WriteMediaPortalXml);
-            // 
-            // cbLyricsOnDemand
-            // 
-            this.cbLyricsOnDemand.AutoSize = true;
-            this.cbLyricsOnDemand.Checked = true;
-            this.cbLyricsOnDemand.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbLyricsOnDemand.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.cbLyricsOnDemand.Location = new System.Drawing.Point(20, 17);
-            this.cbLyricsOnDemand.Name = "cbLyricsOnDemand";
-            this.cbLyricsOnDemand.Size = new System.Drawing.Size(108, 17);
-            this.cbLyricsOnDemand.TabIndex = 5;
-            this.cbLyricsOnDemand.Text = "Lyrics OnDemand";
-            this.cbLyricsOnDemand.UseVisualStyleBackColor = true;
-            this.cbLyricsOnDemand.Leave += new System.EventHandler(this.WriteMediaPortalXml);
-            // 
-            // cbHotLyrics
-            // 
-            this.cbHotLyrics.AutoSize = true;
-            this.cbHotLyrics.Checked = true;
-            this.cbHotLyrics.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbHotLyrics.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.cbHotLyrics.Location = new System.Drawing.Point(137, 40);
-            this.cbHotLyrics.Name = "cbHotLyrics";
-            this.cbHotLyrics.Size = new System.Drawing.Size(71, 17);
-            this.cbHotLyrics.TabIndex = 7;
-            this.cbHotLyrics.Text = "Hot Lyrics";
-            this.cbHotLyrics.UseVisualStyleBackColor = true;
-            this.cbHotLyrics.Leave += new System.EventHandler(this.WriteMediaPortalXml);
-            // 
-            // cbShironet
-            // 
-            this.cbShironet.AutoSize = true;
-            this.cbShironet.Checked = true;
-            this.cbShironet.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbShironet.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.cbShironet.Location = new System.Drawing.Point(230, 40);
-            this.cbShironet.Name = "cbShironet";
-            this.cbShironet.Size = new System.Drawing.Size(80, 17);
-            this.cbShironet.TabIndex = 11;
-            this.cbShironet.Text = "Shironet";
-            this.cbShironet.UseVisualStyleBackColor = true;
-            this.cbShironet.Leave += new System.EventHandler(this.WriteMediaPortalXml);
+            this.sitesList.FormattingEnabled = true;
+            this.sitesList.Location = new System.Drawing.Point(7, 20);
+            this.sitesList.MultiColumn = true;
+            this.sitesList.Name = "sitesList";
+            this.sitesList.ScrollAlwaysVisible = true;
+            this.sitesList.Size = new System.Drawing.Size(240, 124);
+            this.sitesList.TabIndex = 0;
+            this.sitesList.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // groupBox1
             // 
@@ -1049,7 +952,7 @@
             this.groupBox1.Controls.Add(this.lbSpeed);
             this.groupBox1.Location = new System.Drawing.Point(6, 48);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(217, 90);
+            this.groupBox1.Size = new System.Drawing.Size(265, 90);
             this.groupBox1.TabIndex = 27;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Search priority";
@@ -1058,7 +961,7 @@
             // 
             this.mpLabel2.AutoSize = true;
             this.mpLabel2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.mpLabel2.Location = new System.Drawing.Point(151, 21);
+            this.mpLabel2.Location = new System.Drawing.Point(216, 21);
             this.mpLabel2.Name = "mpLabel2";
             this.mpLabel2.Size = new System.Drawing.Size(43, 13);
             this.mpLabel2.TabIndex = 26;
@@ -1068,21 +971,21 @@
             // 
             this.trackBar.BackColor = System.Drawing.SystemColors.Control;
             this.trackBar.LargeChange = 3;
-            this.trackBar.Location = new System.Drawing.Point(35, 37);
+            this.trackBar.Location = new System.Drawing.Point(10, 37);
             this.trackBar.Maximum = 3;
             this.trackBar.Name = "trackBar";
-            this.trackBar.Size = new System.Drawing.Size(158, 45);
+            this.trackBar.Size = new System.Drawing.Size(249, 45);
             this.trackBar.TabIndex = 25;
             this.trackBar.TickStyle = System.Windows.Forms.TickStyle.Both;
             this.trackBar.Value = 2;
-            this.trackBar.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             this.trackBar.Scroll += new System.EventHandler(this.trackBar_Scroll);
+            this.trackBar.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // lbSpeed
             // 
             this.lbSpeed.AutoSize = true;
             this.lbSpeed.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbSpeed.Location = new System.Drawing.Point(29, 21);
+            this.lbSpeed.Location = new System.Drawing.Point(8, 21);
             this.lbSpeed.Name = "lbSpeed";
             this.lbSpeed.Size = new System.Drawing.Size(38, 13);
             this.lbSpeed.TabIndex = 24;
@@ -1098,21 +1001,21 @@
             this.rdLyricsMode.Tag = "LyricsMode";
             this.rdLyricsMode.Text = "Lyrics mode";
             this.rdLyricsMode.UseVisualStyleBackColor = true;
-            this.rdLyricsMode.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             this.rdLyricsMode.CheckedChanged += new System.EventHandler(this.rdTrackBar_CheckedChanged);
+            this.rdLyricsMode.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // rbUserSelectMode
             // 
             this.rbUserSelectMode.AutoSize = true;
-            this.rbUserSelectMode.Location = new System.Drawing.Point(208, 23);
+            this.rbUserSelectMode.Location = new System.Drawing.Point(182, 23);
             this.rbUserSelectMode.Name = "rbUserSelectMode";
             this.rbUserSelectMode.Size = new System.Drawing.Size(89, 17);
             this.rbUserSelectMode.TabIndex = 22;
             this.rbUserSelectMode.Tag = "Custom mode";
             this.rbUserSelectMode.Text = "Custom mode";
             this.rbUserSelectMode.UseVisualStyleBackColor = true;
-            this.rbUserSelectMode.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             this.rbUserSelectMode.CheckedChanged += new System.EventHandler(this.rdTrackBar_CheckedChanged);
+            this.rbUserSelectMode.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // tabPageReplace
             // 
@@ -1120,7 +1023,7 @@
             this.tabPageReplace.Location = new System.Drawing.Point(4, 22);
             this.tabPageReplace.Name = "tabPageReplace";
             this.tabPageReplace.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageReplace.Size = new System.Drawing.Size(550, 510);
+            this.tabPageReplace.Size = new System.Drawing.Size(540, 500);
             this.tabPageReplace.TabIndex = 5;
             this.tabPageReplace.Text = "Find & Replace";
             this.tabPageReplace.UseVisualStyleBackColor = true;
@@ -1173,7 +1076,7 @@
             this.tabPageAbout.Location = new System.Drawing.Point(4, 22);
             this.tabPageAbout.Name = "tabPageAbout";
             this.tabPageAbout.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageAbout.Size = new System.Drawing.Size(550, 510);
+            this.tabPageAbout.Size = new System.Drawing.Size(540, 500);
             this.tabPageAbout.TabIndex = 4;
             this.tabPageAbout.Text = "About";
             this.tabPageAbout.UseVisualStyleBackColor = true;
@@ -1193,14 +1096,14 @@
             this.bgWorkerSearch.WorkerReportsProgress = true;
             this.bgWorkerSearch.WorkerSupportsCancellation = true;
             this.bgWorkerSearch.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bgWorkerSearch_DoWork);
-            this.bgWorkerSearch.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bgWorkerSearch_RunWorkerCompleted);
             this.bgWorkerSearch.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.bgWorkerSearch_ProgressChanged);
+            this.bgWorkerSearch.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bgWorkerSearch_RunWorkerCompleted);
             // 
             // MyLyricsSetup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(558, 536);
+            this.ClientSize = new System.Drawing.Size(548, 526);
             this.ControlBox = false;
             this.Controls.Add(this.btClose);
             this.Controls.Add(this.tabControl);
@@ -1238,7 +1141,6 @@
             this.gbLyricSites.ResumeLayout(false);
             this.gbLyricSites.PerformLayout();
             this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar)).EndInit();
@@ -1291,10 +1193,6 @@
     private MediaPortal.UserInterface.Controls.MPTextBox tbPluginName;
     private MediaPortal.UserInterface.Controls.MPLabel lbPluginName;
     private MediaPortal.UserInterface.Controls.MPGroupBox gbLyricSites;
-    internal MediaPortal.UserInterface.Controls.MPCheckBox cbHotLyrics;
-    internal MediaPortal.UserInterface.Controls.MPCheckBox cbShironet;
-    internal MediaPortal.UserInterface.Controls.MPCheckBox cbLyricsOnDemand;
-    internal MediaPortal.UserInterface.Controls.MPCheckBox cbLyrics007;
     private System.Windows.Forms.RadioButton rdLyricsMode;
     private System.Windows.Forms.RadioButton rbUserSelectMode;
     private MediaPortal.UserInterface.Controls.MPLabel mpLabel2;
@@ -1320,7 +1218,6 @@
     private System.Windows.Forms.TabPage tabPageAbout;
     private MediaPortal.UserInterface.Controls.MPGroupBox gbTag;
     internal MediaPortal.UserInterface.Controls.MPCheckBox cbMusicTagWrite;
-    internal MediaPortal.UserInterface.Controls.MPCheckBox cbActionext;
     private System.Windows.Forms.TabPage tabPageReplace;
     private System.Windows.Forms.DataGridView dbGridView;
     private System.Windows.Forms.DataGridViewTextBoxColumn Find;
@@ -1329,10 +1226,8 @@
     private MediaPortal.UserInterface.Controls.MPLabel lbArtist;
     internal MediaPortal.UserInterface.Controls.MPCheckBox cbMusicTagAlwaysCheck;
     private MediaPortal.UserInterface.Controls.MPCheckBox cbDontSearchSongsWithLyricInTag;
-    internal MediaPortal.UserInterface.Controls.MPCheckBox cbLyrDB;
     private MediaPortal.UserInterface.Controls.MPGroupBox gbGUI;
     internal MediaPortal.UserInterface.Controls.MPCheckBox cbUseAutoScrollAsDefault;
-    internal MediaPortal.UserInterface.Controls.MPCheckBox cbLrcFinder;
     private System.Windows.Forms.RadioButton rbLrcMode;
     private MediaPortal.UserInterface.Controls.MPGroupBox gbLrc;
     internal MediaPortal.UserInterface.Controls.MPCheckBox cbUploadLrcAutomatically;
@@ -1346,5 +1241,6 @@
     private MediaPortal.UserInterface.Controls.MPLabel mpLabel1;
     private System.Windows.Forms.ComboBox comboBoxLanguages;
     internal MediaPortal.UserInterface.Controls.MPCheckBox cbAlwaysAskForUploadToLrcFinder;
+    private System.Windows.Forms.CheckedListBox sitesList;
   }
 }

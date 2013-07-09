@@ -10,6 +10,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Google.API.Translate;
 using LyricsEngine;
+using LyricsEngine.LyricsSites;
 using MediaPortal.Configuration;
 using MediaPortal.Music.Database;
 using MediaPortal.Profile;
@@ -160,6 +161,8 @@ namespace MyLyrics
 
             #endregion
 
+            InitSitesList();
+
             GetSettingsFromConfigurationXml();
 
             #region Serialzie/deserialize lyricsdatabases
@@ -198,6 +201,16 @@ namespace MyLyrics
             lyricsLibraryUC.updateLyricsTree(false);
         }
 
+        private void InitSitesList()
+        {
+            var lyricsSitesNames = LyricsSiteFactory.LyricsSitesNames();
+            sitesList.Items.Clear();
+            foreach (var site in lyricsSitesNames)
+            {
+                sitesList.Items.Add(site);
+            }
+        }
+
         private void GetSettingsFromConfigurationXml()
         {
             #region Get settings from in MediaPortal.xml
@@ -206,9 +219,7 @@ namespace MyLyrics
             {
                 try
                 {
-                    string sitesMode =
-                        ((string) xmlreader.GetValueAsString("myLyrics", "sitesMode", rdLyricsMode.Tag as string)).
-                            ToString();
+                    string sitesMode = xmlreader.GetValueAsString("myLyrics", "sitesMode", rdLyricsMode.Tag as string);
 
                     if (sitesMode.Equals(rdLyricsMode.Tag))
                     {
@@ -218,13 +229,10 @@ namespace MyLyrics
                     {
                         rbUserSelectMode.Checked = true;
 
-                        cbLrcFinder.Checked = xmlreader.GetValue("myLyrics", "useLrcFinder").Equals("True");
-                        cbActionext.Checked = xmlreader.GetValue("myLyrics", "useActionext").Equals("True");
-                        cbLyrDB.Checked = xmlreader.GetValue("myLyrics", "useLyrDB").Equals("True");
-                        cbLyrics007.Checked = xmlreader.GetValue("myLyrics", "useLyrics007").Equals("True");
-                        cbLyricsOnDemand.Checked = xmlreader.GetValue("myLyrics", "useLyricsOnDemand").Equals("True");
-                        cbHotLyrics.Checked = xmlreader.GetValue("myLyrics", "useHotLyrics").Equals("True");
-                        cbShironet.Checked = xmlreader.GetValue("myLyrics", "useShironet").Equals("True");
+                        for (var index = 0; index < sitesList.Items.Count; index++)
+                        {
+                            sitesList.SetItemChecked(index, "True".Equals(xmlreader.GetValue("myLyrics", "use" + (sitesList.Items[index]))));
+                        }
                     }
                     else
                     {
@@ -492,21 +500,10 @@ namespace MyLyrics
             lbDisregardedSongs2.Text = "-";
 
             var sitesToSearch = new ArrayList();
-
-            if (cbLrcFinder.Checked)
-                sitesToSearch.Add("LrcFinder");
-            if (cbActionext.Checked)
-                sitesToSearch.Add("Actionext");
-            if (cbLyrDB.Checked)
-                sitesToSearch.Add("LyrDB");
-            if (cbLyrics007.Checked)
-                sitesToSearch.Add("Lyrics007");
-            if (cbLyricsOnDemand.Checked)
-                sitesToSearch.Add("LyricsOnDemand");
-            if (cbHotLyrics.Checked)
-                sitesToSearch.Add("HotLyrics");
-            if (cbShironet.Checked)
-                sitesToSearch.Add("Shironet");
+            foreach (var site in sitesList.CheckedItems)
+            {
+                sitesToSearch.Add(site);
+            }
 
             if (sitesToSearch.Count == 0)
             {
@@ -955,13 +952,12 @@ namespace MyLyrics
 
                     progressBar.Value = 0;
                     progressBar.Maximum = m_SongsToSearch;
-                    
                 }
                 else
                 {
                     progressBar.Maximum = progressBar.Maximum - disregardedSongs;
                 }
-                
+
                 Update();
             }
         }
@@ -1104,45 +1100,36 @@ namespace MyLyrics
 
         private void trackBar_Scroll(object sender, EventArgs e)
         {
-            if (trackBar.Value == 0)
+            switch (trackBar.Value)
             {
-                cbLyricsOnDemand.Checked = true;
-                cbShironet.Checked = false;
-                cbLyrics007.Checked = false;
-                cbLrcFinder.Checked = false;
-                cbHotLyrics.Checked = false;
-                cbActionext.Checked = false;
-                cbLyrDB.Checked = false;
-            }
-            else if (trackBar.Value == 1)
-            {
-                cbLyricsOnDemand.Checked = true;
-                cbShironet.Checked = false;
-                cbLrcFinder.Checked = true;
-                cbLyrics007.Checked = true;
-                cbHotLyrics.Checked = false;
-                cbActionext.Checked = false;
-                cbLyrDB.Checked = false;
-            }
-            else if (trackBar.Value == 2)
-            {
-                cbLyricsOnDemand.Checked = true;
-                cbShironet.Checked = true;
-                cbLyrics007.Checked = true;
-                cbLrcFinder.Checked = true;
-                cbHotLyrics.Checked = true;
-                cbActionext.Checked = false;
-                cbLyrDB.Checked = false;
-            }
-            else if (trackBar.Value == 3)
-            {
-                cbLyricsOnDemand.Checked = true;
-                cbLyrics007.Checked = true;
-                cbLrcFinder.Checked = true;
-                cbHotLyrics.Checked = true;
-                cbLyrDB.Checked = true;
-                cbActionext.Checked = true;
-                cbShironet.Checked = true;
+                case 0:
+                    var lyricsSitesFast = LyricsSiteFactory.LyricsSitesBySpeed(SiteSpeed.Fast);
+                    for (var index = 0; index < sitesList.Items.Count; index++)
+                    {
+                        sitesList.SetItemChecked(index, lyricsSitesFast.Contains(sitesList.Items[index].ToString()));
+                    }
+                    break;
+                case 1:
+                    var lyricsSitesMedium = LyricsSiteFactory.LyricsSitesBySpeed(SiteSpeed.Medium);
+                    for (var index = 0; index < sitesList.Items.Count; index++)
+                    {
+                        sitesList.SetItemChecked(index, lyricsSitesMedium.Contains(sitesList.Items[index].ToString()));
+                    }
+                    break;
+                case 2:
+                    var lyricsSitesSlow = LyricsSiteFactory.LyricsSitesBySpeed(SiteSpeed.Slow);
+                    for (var index = 0; index < sitesList.Items.Count; index++)
+                    {
+                        sitesList.SetItemChecked(index, lyricsSitesSlow.Contains(sitesList.Items[index].ToString()));
+                    }
+                    break;
+                case 3:
+                    var lyricsSitesVerySlow = LyricsSiteFactory.LyricsSitesBySpeed(SiteSpeed.VerySlow);
+                    for (var index = 0; index < sitesList.Items.Count; index++)
+                    {
+                        sitesList.SetItemChecked(index, lyricsSitesVerySlow.Contains(sitesList.Items[index].ToString()));
+                    }
+                    break;
             }
 
             if (sender != null)
@@ -1156,13 +1143,8 @@ namespace MyLyrics
             if (rdLyricsMode.Checked)
             {
                 trackBar.Enabled = true;
-                cbLyricsOnDemand.Enabled = false;
-                cbLyrics007.Enabled = false;
-                cbLrcFinder.Enabled = false;
-                cbShironet.Enabled = false;
-                cbHotLyrics.Enabled = false;
-                cbActionext.Enabled = false;
-                cbLyrDB.Enabled = false;
+                sitesList.Enabled = false;
+                
                 trackBar_Scroll(null, null);
 
                 cbMusicTagAlwaysCheck.Checked = true;
@@ -1174,34 +1156,19 @@ namespace MyLyrics
             else if (rbUserSelectMode.Checked)
             {
                 trackBar.Enabled = false;
-                cbLyricsOnDemand.Enabled = true;
-                cbLyrics007.Enabled = true;
-                cbLrcFinder.Enabled = true;
-                cbShironet.Enabled = true;
-                cbHotLyrics.Enabled = true;
-                cbActionext.Enabled = true;
-                cbLyrDB.Enabled = true;
+                sitesList.Enabled = true;
             }
             else if (rbLrcMode.Checked)
             {
                 trackBar.Enabled = false;
-
-                cbLyricsOnDemand.Checked = false;
-                cbLyrics007.Checked = false;
-                cbLrcFinder.Checked = true;
-                cbHotLyrics.Checked = false;
-                cbActionext.Checked = false;
-                cbLyrDB.Checked = false;
-                cbShironet.Checked = false;
-
-                cbLyricsOnDemand.Enabled = false;
-                cbLyrics007.Enabled = false;
-                cbLrcFinder.Enabled = false;
-                cbShironet.Enabled = false;
-                cbHotLyrics.Enabled = false;
-                cbActionext.Enabled = false;
-                cbLyrDB.Enabled = false;
-
+                
+                var lyricsSitesLrc = LyricsSiteFactory.LrcLyricsSiteNames();
+                for (var index = 0; index < sitesList.Items.Count; index++)
+                {
+                    sitesList.SetItemChecked(index, lyricsSitesLrc.Contains(sitesList.Items[index].ToString()));
+                }
+                sitesList.Enabled = false;
+                
                 cbMusicTagAlwaysCheck.Checked = false;
                 cbMusicTagWrite.Checked = true;
 
@@ -1233,13 +1200,12 @@ namespace MyLyrics
                 xmlwriter.SetValue("myLyrics", "sitesMode", sitesMode);
                 xmlwriter.SetValue("myLyrics", "defaultSitesModeValue", trackBar.Value);
                 xmlwriter.SetValue("myLyrics", "limit", tbLimit.Text);
-                xmlwriter.SetValue("myLyrics", "useLrcFinder", cbLrcFinder.Checked.ToString());
-                xmlwriter.SetValue("myLyrics", "useActionext", cbActionext.Checked.ToString());
-                xmlwriter.SetValue("myLyrics", "useLyrDB", cbLyrDB.Checked.ToString());
-                xmlwriter.SetValue("myLyrics", "useLyrics007", cbLyrics007.Checked.ToString());
-                xmlwriter.SetValue("myLyrics", "useLyricsOnDemand", cbLyricsOnDemand.Checked.ToString());
-                xmlwriter.SetValue("myLyrics", "useHotLyrics", cbHotLyrics.Checked.ToString());
-                xmlwriter.SetValue("myLyrics", "useShironet", cbShironet.Checked.ToString());
+
+                foreach (var site in sitesList.Items)
+                {
+                    xmlwriter.SetValue("myLyrics", "use" + (string) site, sitesList.CheckedItems.Contains(site).ToString());
+                }
+                
                 xmlwriter.SetValueAsBool("myLyrics", "useAutoscroll", cbUseAutoScrollAsDefault.Checked);
                 xmlwriter.SetValueAsBool("myLyrics", "uploadLrcToLrcFinder", cbUploadLrcAutomatically.Checked);
                 xmlwriter.SetValueAsBool("myLyrics", "alwaysAskUploadLrcToLrcFinder", cbAlwaysAskForUploadToLrcFinder.Checked);
@@ -1333,5 +1299,6 @@ namespace MyLyrics
         }
 
         #endregion
+
     }
 }
