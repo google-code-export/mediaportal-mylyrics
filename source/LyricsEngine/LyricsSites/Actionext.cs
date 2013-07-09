@@ -151,6 +151,10 @@ namespace LyricsEngine.LyricsSites
                         LyricText = NotFound;
                     }
                 }
+                else
+                {
+                    LyricText = NotFound;
+                }
             }
             catch
             {

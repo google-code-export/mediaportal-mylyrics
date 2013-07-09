@@ -155,6 +155,10 @@ namespace LyricsEngine.LyricsSites
 
                     LyricText = lyricTemp.ToString().Trim();
                 }
+                else
+                {
+                    LyricText = NotFound;
+                }
             }
             catch
             {
