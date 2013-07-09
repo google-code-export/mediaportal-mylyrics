@@ -24,9 +24,9 @@ namespace MyLyrics
     {
         #region Delegates
 
-        public delegate void DelegateLyricFound(String s, String artist, String track, String site);
+        public delegate void DelegateLyricFound(String s, String artist, String track, String site, int row);
 
-        public delegate void DelegateLyricNotFound(String artist, String title, String message, String site);
+        public delegate void DelegateLyricNotFound(String artist, String title, String message, String site, int row);
 
         public delegate void DelegateStatusUpdate(
             Int32 noOfLyricsToSearch, Int32 noOfLyricsSearched, Int32 noOfLyricsFound, Int32 noOfLyricsNotFound);
@@ -133,10 +133,10 @@ namespace MyLyrics
             tabPageAbout.Controls.Add(informationUC);
 
             // initialize delegates
-            m_DelegateLyricFound = new DelegateLyricFound(LyricFoundMethod);
-            m_DelegateLyricNotFound = new DelegateLyricNotFound(LyricNotFoundMethod);
-            m_DelegateThreadFinished = new DelegateThreadFinished(ThreadFinishedMethod);
-            m_DelegateThreadException = new DelegateThreadException(ThreadExceptionMethod);
+            m_DelegateLyricFound = LyricFoundMethod;
+            m_DelegateLyricNotFound = LyricNotFoundMethod;
+            m_DelegateThreadFinished = ThreadFinishedMethod;
+            m_DelegateThreadException = ThreadExceptionMethod;
 
             // Grab music database
             MusicDatabase mDB = MusicDatabase.Instance;
@@ -523,7 +523,7 @@ namespace MyLyrics
         }
 
 
-        private void LyricFoundMethod(String lyricStrings, String artist, String track, String site)
+        private void LyricFoundMethod(String lyricStrings, String artist, String track, String site, int row)
         {
             m_LyricText = lyricStrings;
             m_artist = artist;
@@ -564,7 +564,7 @@ namespace MyLyrics
             Update();
         }
 
-        private void LyricNotFoundMethod(String artist, String title, String message, String site)
+        private void LyricNotFoundMethod(String artist, String title, String message, String site, int row)
         {
             m_LyricsNotFound += 1;
 

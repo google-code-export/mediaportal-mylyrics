@@ -15,9 +15,9 @@ namespace MyLyrics
     {
         #region Delegates
 
-        public delegate void DelegateLyricFound(String s, String artist, String track, String site);
+        public delegate void DelegateLyricFound(String s, String artist, String track, String site, int row);
 
-        public delegate void DelegateLyricNotFound(String artist, String title, String message, String site);
+        public delegate void DelegateLyricNotFound(String artist, String title, String message, String site, int row);
 
         public delegate void DelegateStatusUpdate(
             Int32 noOfLyricsToSearch, Int32 noOfLyricsSearched, Int32 noOfLyricsFound, Int32 noOfLyricsNotFound);
@@ -165,7 +165,7 @@ namespace MyLyrics
         {
         }
 
-        private void lyricFoundMethod(String lyricStrings, String artist, String title, String site)
+        private void lyricFoundMethod(String lyricStrings, String artist, String title, String site, int row)
         {
             foreach (ListViewItem lvi in lvSelectedSongs.Items)
             {
@@ -209,7 +209,7 @@ namespace MyLyrics
             //lvSelectedSongs.Update();
         }
 
-        private void lyricNotFoundMethod(String artist, String title, String message, String site)
+        private void lyricNotFoundMethod(String artist, String title, String message, String site, int row)
         {
             foreach (ListViewItem lvi in lvSelectedSongs.Items)
             {
@@ -272,12 +272,12 @@ namespace MyLyrics
             lvArtists.Items.Clear();
             lbSelectedArtist.Text = String.Empty;
 
-            m_DelegateStringUpdate = new DelegateStringUpdate(updateStringMethod);
-            m_DelegateStatusUpdate = new DelegateStatusUpdate(updateStatusMethod);
-            m_DelegateLyricFound = new DelegateLyricFound(lyricFoundMethod);
-            m_DelegateLyricNotFound = new DelegateLyricNotFound(lyricNotFoundMethod);
-            m_DelegateThreadFinished = new DelegateThreadFinished(ThreadFinishedMethod);
-            m_DelegateThreadException = new DelegateThreadException(ThreadExceptionMethod);
+            m_DelegateStringUpdate = updateStringMethod;
+            m_DelegateStatusUpdate = updateStatusMethod;
+            m_DelegateLyricFound = lyricFoundMethod;
+            m_DelegateLyricNotFound = lyricNotFoundMethod;
+            m_DelegateThreadFinished = ThreadFinishedMethod;
+            m_DelegateThreadException = ThreadExceptionMethod;
 
             foreach (object artist in artists)
             {
