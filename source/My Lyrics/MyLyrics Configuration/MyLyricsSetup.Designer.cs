@@ -366,7 +366,7 @@ namespace MyLyrics
             // 
             this.gbMessages.Controls.Add(this.lbMessage);
             this.gbMessages.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.gbMessages.Location = new System.Drawing.Point(259, 324);
+            this.gbMessages.Location = new System.Drawing.Point(256, 339);
             this.gbMessages.Name = "gbMessages";
             this.gbMessages.Size = new System.Drawing.Size(284, 140);
             this.gbMessages.TabIndex = 28;
@@ -394,7 +394,7 @@ namespace MyLyrics
             this.gbProgress.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.gbProgress.Location = new System.Drawing.Point(5, 190);
             this.gbProgress.Name = "gbProgress";
-            this.gbProgress.Size = new System.Drawing.Size(538, 133);
+            this.gbProgress.Size = new System.Drawing.Size(538, 143);
             this.gbProgress.TabIndex = 18;
             this.gbProgress.TabStop = false;
             this.gbProgress.Text = "Progress";
@@ -491,7 +491,7 @@ namespace MyLyrics
             this.gbMusicDBSearchStats.Controls.Add(this.lbLyricsFound2);
             this.gbMusicDBSearchStats.Controls.Add(this.lbLyricsFound);
             this.gbMusicDBSearchStats.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.gbMusicDBSearchStats.Location = new System.Drawing.Point(5, 324);
+            this.gbMusicDBSearchStats.Location = new System.Drawing.Point(5, 339);
             this.gbMusicDBSearchStats.Name = "gbMusicDBSearchStats";
             this.gbMusicDBSearchStats.Size = new System.Drawing.Size(249, 140);
             this.gbMusicDBSearchStats.TabIndex = 12;
