@@ -257,15 +257,30 @@ Click Next to continue or Cancel to exit Setup.</Value>
     <UpdateUrl>http://mediaportal-mylyrics.googlecode.com/svn/trunk/scripts/MyLyrics.xml</UpdateUrl>
     <Version>
       <Major>1</Major>
-      <Minor>7</Minor>
-      <Build>5</Build>
+      <Minor>8</Minor>
+      <Build>0</Build>
       <Revision>0</Revision>
     </Version>
     <ExtensionDescription>MyLyrics displays the lyric of the currently played song inside MediaPortal.
 
 The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics.
 </ExtensionDescription>
-    <VersionDescription>Release notes to MyLyrics 1.7.3
+    <VersionDescription>Release notes to MyLyrics 1.8.0
+
+Change log since 1.7.3:
+Rework everything. All lyrics search sites are now implementing a common interface. An abstract site class now handles timings and common stuff. Site implementation now only has to do the specific site things such as parsing. GUI is dynamically created according to the number of active implementations. Implementation now also responsible in GUI categories, i.e. in which search priority to enable it when in Lyrics mode. 
+The reason for doing such a work, which was practically rewriting almost everything, is this: Effort of adding a new search site is now very very small. Since sites often change, there's a need to be able to disable a site by changing a single word in code, and not by searching all the places it is being used (GUI, configuration, etc.)
+Other changes:
+- Added skin files for Default 4:3
+- Added www.lyrster.com (took 1 hour)
+- Changed Shironet to only work on Hebrew artists/titles.
+- Removed LyricsPluginSite
+- Removed HotLyrics
+- Fixed progress bar in batch search. 2 step progress bar: First for counting candidate songs  for search, the second for the search itself (The reason the first is not filling till the end is because looping over all artists and all songs does not total to the number of songs due to "various" or missing titles…)
+- Removed any hardcoded references to GUILocalizeStrings.
+- Update #Play.Current.Lyrics on lyrics found
+- Some GUI overhaul done. Fixed a few inconsistencies
+- Implement required changes for MPTagThat, so that it can use latest LyricsEngine from plugin.
 
 Change log since 1.7.2:
 - Fixed Lyrics007 (rewritten)
@@ -312,7 +327,7 @@ Compatible with MediaPortal 1.4.0
 </VersionDescription>
     <DevelopmentStatus>Stable</DevelopmentStatus>
     <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/files/MyLyrics-{VERSION}.MPE1</OnlineLocation>
-    <ReleaseDate>2013-06-25T21:07:35.5259868+03:00</ReleaseDate>
+    <ReleaseDate>2013-07-09T21:07:35</ReleaseDate>
     <Tags>mylyrics,lyrics,lrcs,music</Tags>
     <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
     <Params>
