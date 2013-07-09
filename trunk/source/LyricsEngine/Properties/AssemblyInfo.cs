@@ -27,8 +27,8 @@ using System.Reflection;
 // by using the '*' as shown below:
 
 
-[assembly: AssemblyVersion("1.7.3.$WCREV$")]
-[assembly: AssemblyFileVersion("1.7.3.$WCREV$")]
+[assembly: AssemblyVersion("1.8.0.$WCREV$")]
+[assembly: AssemblyFileVersion("1.8.0.$WCREV$")]
 
 
 //
