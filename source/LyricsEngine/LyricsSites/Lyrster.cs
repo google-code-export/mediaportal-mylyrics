@@ -7,19 +7,19 @@ using System.Threading;
 
 namespace LyricsEngine.LyricsSites
 {
-    public class HotLyrics : AbstractSite
+    public class Lyrster : AbstractSite
     {
         # region const
 
         // Name
-        private const string SiteName = "HotLyrics";
+        private const string SiteName = "Lyrster";
 
         // Base url
-        private const string SiteBaseUrl = "http://www.hotlyrics.net/lyrics/";
+        private const string SiteBaseUrl = "http://www.lyrster.com/lyrics/";
 
         # endregion
 
-        public HotLyrics(string artist, string title, WaitHandle mEventStopSiteSearches, int timeLimit) : base(artist, title, mEventStopSiteSearches, timeLimit)
+        public Lyrster(string artist, string title, WaitHandle mEventStopSiteSearches, int timeLimit) : base(artist, title, mEventStopSiteSearches, timeLimit)
         {
         }
 
@@ -27,70 +27,19 @@ namespace LyricsEngine.LyricsSites
 
         protected override void FindLyricsWithTimer()
         {
-            var artist = LyricUtil.RemoveFeatComment(Artist);
-            artist = LyricUtil.CapatalizeString(artist);
+            var artist = Artist.ToLower();
+            artist = ClearName(artist);
 
-            artist = artist.Replace(" ", "_");
-            artist = artist.Replace(",", "_");
-            artist = artist.Replace(".", "_");
-            artist = artist.Replace("'", "_");
-            artist = artist.Replace("(", "%28");
-            artist = artist.Replace(")", "%29");
-            artist = artist.Replace(",", "");
-            artist = artist.Replace("#", "");
-            artist = artist.Replace("%", "");
-            artist = artist.Replace("+", "%2B");
-            artist = artist.Replace("=", "%3D");
-            artist = artist.Replace("-", "_");
-
-            // French letters
-            artist = artist.Replace("é", "%E9");
-
-            var title = LyricUtil.TrimForParenthesis(Title);
-            title = LyricUtil.CapatalizeString(title);
-
-            title = title.Replace(" ", "_");
-            title = title.Replace(",", "_");
-            title = title.Replace(".", "_");
-            title = title.Replace("'", "_");
-            title = title.Replace("(", "%28");
-            title = title.Replace(")", "%29");
-            title = title.Replace(",", "_");
-            title = title.Replace("#", "_");
-            title = title.Replace("%", "_");
-            title = title.Replace("?", "_");
-            title = title.Replace("+", "%2B");
-            title = title.Replace("=", "%3D");
-            title = title.Replace("-", "_");
-            title = title.Replace(":", "_");
-
-            // German letters
-            artist = artist.Replace("ü", "%FC");
-            artist = artist.Replace("Ü", "%DC");
-            artist = artist.Replace("ä", "%E4");
-            artist = artist.Replace("Ä", "%C4");
-            artist = artist.Replace("ö", "%F6");
-            artist = artist.Replace("Ö", "%D6");
-            artist = artist.Replace("ß", "%DF");
-
-            // Danish letters
-            title = title.Replace("å", "%E5");
-            title = title.Replace("Å", "%C5");
-            title = title.Replace("æ", "%E6");
-            title = title.Replace("ø", "%F8");
-
-            // French letters
-            title = title.Replace("é", "%E9");
-
+            var title = Title.ToLower();
+            title = ClearName(title);
+            
             // Validation
             if (string.IsNullOrEmpty(artist) || string.IsNullOrEmpty(title))
             {
                 return;
             }
 
-            var firstLetter = artist[0].ToString(CultureInfo.InvariantCulture);
-
-            var urlString = SiteBaseUrl + firstLetter + "/" + artist + "/" + title + ".html";
+            var urlString = SiteBaseUrl + title + "-lyrics-" + artist + ".html";
 
             var client = new LyricsWebClient();
 
@@ -110,6 +59,7 @@ namespace LyricsEngine.LyricsSites
                 }
             }
         }
+
 
         public override LyricType GetLyricType()
         {
@@ -133,7 +83,7 @@ namespace LyricsEngine.LyricsSites
 
         public override bool SiteActive()
         {
-            return false;
+            return true;
         }
 
         public override string Name
@@ -162,9 +112,9 @@ namespace LyricsEngine.LyricsSites
                 reply = e.Result;
                 reader = new StreamReader(reply, Encoding.Default);
 
-                string line = "";
+                var line = "";
 
-                while (line.IndexOf("GOOGLE END", StringComparison.Ordinal) == -1)
+                while (line.IndexOf(@"<div id=""lyrics"">", StringComparison.Ordinal) == -1)
                 {
                     if (reader.EndOfStream)
                     {
@@ -179,7 +129,7 @@ namespace LyricsEngine.LyricsSites
                     var lyricTemp = new StringBuilder();
                     line = reader.ReadLine() ?? "";
 
-                    while (line.IndexOf("<script type", StringComparison.Ordinal) == -1)
+                    while (line.IndexOf("</div>", StringComparison.Ordinal) == -1)
                     {
                         lyricTemp.Append(line);
                         if (reader.EndOfStream)
@@ -189,6 +139,9 @@ namespace LyricsEngine.LyricsSites
                         line = reader.ReadLine() ?? "";
                     }
 
+
+                    lyricTemp.Replace(@"<div id=""lyrics"">", "");
+                    lyricTemp.Replace("</div>", "");
                     lyricTemp.Replace("?s", "'s");
                     lyricTemp.Replace("?t", "'t");
                     lyricTemp.Replace("?m", "'m");
@@ -226,6 +179,60 @@ namespace LyricsEngine.LyricsSites
                 }
                 Complete = true;
             }
+        }
+
+        private static string ClearName(string name)
+        {
+            // Spaces
+            name = name.Replace(" ", "-");
+            name = name.Replace(",", "-");
+            name = name.Replace(".", "-");
+            name = name.Replace("'", "-");
+            name = name.Replace("(", "%28");
+            name = name.Replace(")", "%29");
+            name = name.Replace(",", "");
+            name = name.Replace("#", "");
+            name = name.Replace("%", "");
+            name = name.Replace("+", "%2B");
+            name = name.Replace("=", "%3D");
+            
+            // French letters
+            name = name.Replace("é", "%E9");
+
+            name = name.Replace(" ", "-");
+            name = name.Replace(",", "-");
+            name = name.Replace(".", "-");
+            name = name.Replace("'", "-");
+            name = name.Replace("(", "%28");
+            name = name.Replace(")", "%29");
+            name = name.Replace(",", "-");
+            name = name.Replace("#", "-");
+            name = name.Replace("%", "-");
+            name = name.Replace("?", "-");
+            name = name.Replace("+", "%2B");
+            name = name.Replace("=", "%3D");
+            name = name.Replace(":", "-");
+
+            // German letters
+            name = name.Replace("ü", "%FC");
+            name = name.Replace("Ü", "%DC");
+            name = name.Replace("ä", "%E4");
+            name = name.Replace("Ä", "%C4");
+            name = name.Replace("ö", "%F6");
+            name = name.Replace("Ö", "%D6");
+            name = name.Replace("ß", "%DF");
+
+            // Danish letters
+            name = name.Replace("å", "%E5");
+            name = name.Replace("Å", "%C5");
+            name = name.Replace("æ", "%E6");
+            name = name.Replace("ø", "%F8");
+
+            // French letters
+            name = name.Replace("é", "%E9");
+
+
+            return name;
         }
 
         #endregion private methods
