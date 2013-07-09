@@ -28,27 +28,31 @@ namespace MyLyricsTests
         [TestMethod]
         public void TestLyrics007()
         {
-            var u2WithOrWithoutYou = new Lyrics007("U2", "With Or Without You", new ManualResetEvent(false), 10000);
-            u2WithOrWithoutYou.FindLyrics();
-            var splitUwowy = u2WithOrWithoutYou.Lyric.Split(' ');
-            Assert.AreEqual("See", splitUwowy[0]);
-            Assert.AreEqual("you", splitUwowy[splitUwowy.Length - 1]);
+            var site = new Lyrics007("U2", "With Or Without You", new ManualResetEvent(false), 10000);
+            site.FindLyrics();
+            var splitLyrics = site.Lyric.Split(' ');
+            Assert.AreEqual("See", splitLyrics[0]);
+            Assert.AreEqual("you", splitLyrics[splitLyrics.Length - 1]);
+        }
 
-            var u2StaringAtTheSun = new Lyrics007("U2", "Staring At The Sun", new ManualResetEvent(false), 10000);
-            u2StaringAtTheSun.FindLyrics();
-            var splitUsats = u2StaringAtTheSun.Lyric.Split(' ');
-            Assert.AreEqual("Summer", splitUsats[0]);
-            Assert.AreEqual("I", splitUsats[splitUsats.Length - 1]);
+        [TestMethod]
+        public void TestLyrics007_2()
+        {
+            var site = new Lyrics007("U2", "Staring At The Sun", new ManualResetEvent(false), 10000);
+            site.FindLyrics();
+            var splitLyrics = site.Lyric.Split(' ');
+            Assert.AreEqual("Summer", splitLyrics[0]);
+            Assert.AreEqual("I", splitLyrics[splitLyrics.Length - 1]);
         }
 
         [TestMethod]
         public void TestLyrics007NotFound()
         {
-            var notFound = new Lyrics007("Foo", "Bar", new ManualResetEvent(false), 10000);
-            notFound.FindLyrics();
-            var splitNf = notFound.Lyric.Split(' ');
-            Assert.AreEqual("Not", splitNf[0]);
-            Assert.AreEqual("found", splitNf[splitNf.Length - 1]);
+            var site = new Lyrics007("Foo", "Bar", new ManualResetEvent(false), 10000);
+            site.FindLyrics();
+            var splitLyrics = site.Lyric.Split(' ');
+            Assert.AreEqual("Not", splitLyrics[0]);
+            Assert.AreEqual("found", splitLyrics[splitLyrics.Length - 1]);
         }
     }
 }

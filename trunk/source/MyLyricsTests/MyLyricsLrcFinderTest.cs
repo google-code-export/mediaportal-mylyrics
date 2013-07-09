@@ -28,8 +28,8 @@ namespace MyLyricsTests
         [TestMethod]
         public void TestLrcFinder()
         {
-            var u2WithOrWithoutYou = new LrcFinder(); 
-            var lrcLyrics = u2WithOrWithoutYou.FindLRC("U2", "With Or Without You");
+            var site = new LrcFinder(); 
+            var lrcLyrics = site.FindLRC("U2", "With Or Without You");
 
             const string lrcPattern = @"\[.*?\]";
             const string lrcPatternReplacement = "";
