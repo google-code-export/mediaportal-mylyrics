@@ -201,6 +201,12 @@ namespace MyLyrics
             lyricsLibraryUC.updateLyricsTree(false);
         }
 
+        public void CopyCheckedListBox(CheckedListBox copy)
+        {
+            copy.Items.Clear();
+            
+        }
+
         private void InitSitesList()
         {
             var lyricsSitesNames = LyricsSiteFactory.LyricsSitesNames();
@@ -215,11 +221,11 @@ namespace MyLyrics
         {
             #region Get settings from in MediaPortal.xml
 
-            using (Settings xmlreader = new Settings("MediaPortal.xml"))
+            using (var xmlreader = new Settings("MediaPortal.xml"))
             {
                 try
                 {
-                    string sitesMode = xmlreader.GetValueAsString("myLyrics", "sitesMode", rdLyricsMode.Tag as string);
+                    var sitesMode = xmlreader.GetValueAsString("myLyrics", "sitesMode", rdLyricsMode.Tag as string);
 
                     if (sitesMode.Equals(rdLyricsMode.Tag))
                     {
@@ -229,9 +235,15 @@ namespace MyLyrics
                     {
                         rbUserSelectMode.Checked = true;
 
+                        Setup.ActiveSites.Clear();
                         for (var index = 0; index < sitesList.Items.Count; index++)
                         {
-                            sitesList.SetItemChecked(index, "True".Equals(xmlreader.GetValue("myLyrics", "use" + (sitesList.Items[index]))));
+                            var active = "True".Equals(xmlreader.GetValue("myLyrics", "use" + (sitesList.Items[index])));
+                            sitesList.SetItemChecked(index, active);
+                            if (active)
+                            {
+                                Setup.ActiveSites.Add((string) (sitesList.Items[index]));
+                            }
                         }
                     }
                     else
@@ -500,7 +512,7 @@ namespace MyLyrics
             lbDisregardedSongs2.Text = "-";
 
             var sitesToSearch = new ArrayList();
-            foreach (var site in sitesList.CheckedItems)
+            foreach (var site in Setup.ActiveSites)
             {
                 sitesToSearch.Add(site);
             }
@@ -1108,6 +1120,7 @@ namespace MyLyrics
                     {
                         sitesList.SetItemChecked(index, lyricsSitesFast.Contains(sitesList.Items[index].ToString()));
                     }
+                    Setup.ActiveSites = lyricsSitesFast;
                     break;
                 case 1:
                     var lyricsSitesMedium = LyricsSiteFactory.LyricsSitesBySpeed(SiteSpeed.Medium);
@@ -1115,6 +1128,7 @@ namespace MyLyrics
                     {
                         sitesList.SetItemChecked(index, lyricsSitesMedium.Contains(sitesList.Items[index].ToString()));
                     }
+                    Setup.ActiveSites = lyricsSitesMedium;
                     break;
                 case 2:
                     var lyricsSitesSlow = LyricsSiteFactory.LyricsSitesBySpeed(SiteSpeed.Slow);
@@ -1122,6 +1136,7 @@ namespace MyLyrics
                     {
                         sitesList.SetItemChecked(index, lyricsSitesSlow.Contains(sitesList.Items[index].ToString()));
                     }
+                    Setup.ActiveSites = lyricsSitesSlow;
                     break;
                 case 3:
                     var lyricsSitesVerySlow = LyricsSiteFactory.LyricsSitesBySpeed(SiteSpeed.VerySlow);
@@ -1129,6 +1144,7 @@ namespace MyLyrics
                     {
                         sitesList.SetItemChecked(index, lyricsSitesVerySlow.Contains(sitesList.Items[index].ToString()));
                     }
+                    Setup.ActiveSites = lyricsSitesVerySlow;
                     break;
             }
 
@@ -1168,6 +1184,7 @@ namespace MyLyrics
                     sitesList.SetItemChecked(index, lyricsSitesLrc.Contains(sitesList.Items[index].ToString()));
                 }
                 sitesList.Enabled = false;
+                Setup.ActiveSites = lyricsSitesLrc;
                 
                 cbMusicTagAlwaysCheck.Checked = false;
                 cbMusicTagWrite.Checked = true;
@@ -1299,6 +1316,5 @@ namespace MyLyrics
         }
 
         #endregion
-
     }
 }

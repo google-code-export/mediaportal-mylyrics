@@ -96,7 +96,7 @@
     <Compile Include="LyricsSites\Actionext.cs" />
     <Compile Include="LyricsSites\ILyricSite.cs" />
     <Compile Include="LyricsSites\LrcFinder.cs" />
-    <Compile Include="LyricsSites\LyrDB.cs" />
+    <Compile Include="LyricsSites\LyrDb.cs" />
     <Compile Include="LyricsSites\HotLyrics.cs" />
     <Compile Include="LyricsSites\Lyrics007.cs" />
     <Compile Include="LyricsSites\LyricsOnDemand.cs" />

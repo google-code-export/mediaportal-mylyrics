@@ -1241,6 +1241,6 @@ namespace MyLyrics
     private MediaPortal.UserInterface.Controls.MPLabel mpLabel1;
     private System.Windows.Forms.ComboBox comboBoxLanguages;
     internal MediaPortal.UserInterface.Controls.MPCheckBox cbAlwaysAskForUploadToLrcFinder;
-    private System.Windows.Forms.CheckedListBox sitesList;
+    internal System.Windows.Forms.CheckedListBox sitesList;
   }
 }

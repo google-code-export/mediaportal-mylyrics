@@ -1,39 +1,32 @@
-using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace LyricsEngine
 {
-  public static class Setup
-  {
-    public static string[] BatchSearchSites = new string[7]
-                                                      {
-                                                          "LrcFinder",
-                                                          //"LyricWiki",
-                                                          "Lyrics007",
-                                                          "LyricsOnDemand",
-                                                          "HotLyrics",
-                                                          "Actionext",
-                                                          "LyrDB",
-                                                          "Shironet"
-                                                      };
-
-
-    public static string[] AllSites()
+    public static class Setup
     {
-      ArrayList allSites = new ArrayList();
-      allSites.AddRange(BatchSearchSites);
-      string[] allSitesArray = (string[])allSites.ToArray(typeof(string));
-      return allSitesArray;
-    }
+        public static List<string> AllLyricsSites = new List<string>();
 
-    public static bool IsMember(string value)
-    {
-      return Array.IndexOf(BatchSearchSites, value) != -1;
-    }
+        static Setup()
+        {
+            ActiveSites = new List<string>();
+        }
 
-    public static int NoOfSites()
-    {
-      return BatchSearchSites.Length;
+        public static List<string> ActiveSites { get; set; }
+
+
+        public static List<string> AllSites()
+        {
+            return AllLyricsSites;
+        }
+
+        public static bool IsMember(string site)
+        {
+            return ActiveSites.Contains(site);
+        }
+
+        public static int NoOfSites()
+        {
+            return ActiveSites.Count;
+        }
     }
-  }
 }
