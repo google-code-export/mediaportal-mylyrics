@@ -219,9 +219,9 @@ namespace MyLyrics
 
         private void GetSettingsFromConfigurationXml()
         {
-            #region Get settings from in MediaPortal.xml
+            #region Get settings from in configuration file
 
-            using (var xmlreader = new Settings("MediaPortal.xml"))
+            using (var xmlreader = MediaPortalUtil.MediaPortalSettings)
             {
                 try
                 {
@@ -326,7 +326,7 @@ namespace MyLyrics
                         m_guid = Guid.NewGuid();
                         m_guidString = m_guid.ToString("P");
 
-                        using (Settings xmlwriter = new Settings("MediaPortal.xml"))
+                        using (var xmlwriter = MediaPortalUtil.MediaPortalSettings)
                         {
                             xmlwriter.SetValue("myLyrics", "Guid", m_guidString);
                         }
@@ -851,7 +851,7 @@ namespace MyLyrics
             // create worker thread instance
             if (lyricConfigInfosQueue.Count > 0)
             {
-                using (Settings xmlreader = new Settings("MediaPortal.xml"))
+                using (Settings xmlreader = MediaPortalUtil.MediaPortalSettings)
                 {
                     m_find = xmlreader.GetValueAsString("myLyrics", "find", "");
                     m_replace = xmlreader.GetValueAsString("myLyrics", "replace", "");
@@ -1196,7 +1196,7 @@ namespace MyLyrics
 
         private void WriteMediaPortalXml(object sender, EventArgs e)
         {
-            using (var xmlwriter = new Settings("MediaPortal.xml"))
+            using (var xmlwriter = MediaPortalUtil.MediaPortalSettings)
             {
                 string sitesMode;
                 if (rdLyricsMode.Checked)

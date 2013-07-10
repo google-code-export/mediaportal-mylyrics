@@ -650,7 +650,7 @@ namespace MyLyrics
 
             resetGUI(_selectedScreen);
 
-            using (var xmlreader = new Settings("MediaPortal.xml"))
+            using (var xmlreader = MediaPortalUtil.MediaPortalSettings)
             {
                 _UseID3 = xmlreader.GetValueAsBool("musicfiles", "showid3", true);
 
@@ -729,7 +729,7 @@ namespace MyLyrics
                 _guid = Guid.NewGuid();
                 _guidString = _guid.ToString("P");
 
-                using (Settings xmlwriter = new Settings("MediaPortal.xml"))
+                using (Settings xmlwriter = MediaPortalUtil.MediaPortalSettings)
                 {
                     xmlwriter.SetValue("myLyrics", "Guid", _guidString);
                 }
@@ -1941,7 +1941,7 @@ namespace MyLyrics
 
                                 _uploadLrcToLrcFinder = true;
 
-                                using (Settings xmlwriter = new Settings("MediaPortal.xml"))
+                                using (Settings xmlwriter = MediaPortalUtil.MediaPortalSettings)
                                 {
                                     xmlwriter.SetValue("myLyrics", "uploadLrcToLrcFinder", "yes");
                                 }
@@ -1950,7 +1950,7 @@ namespace MyLyrics
                             {
                                 _confirmedNoUploadLrcToLrcFinder = true;
 
-                                using (Settings xmlwriter = new Settings("MediaPortal.xml"))
+                                using (Settings xmlwriter = MediaPortalUtil.MediaPortalSettings)
                                 {
                                     xmlwriter.SetValue("myLyrics", "confirmedNoUploadLrcToLrcFinder", "yes");
                                 }
@@ -2737,7 +2737,7 @@ namespace MyLyrics
         public bool GetHome(out string strButtonText, out string strButtonImage, out string strButtonImageFocus,
                             out string strPictureImage)
         {
-            using (Settings xmlreader = new Settings("MediaPortal.xml"))
+            using (Settings xmlreader = MediaPortalUtil.MediaPortalSettings)
             {
                 strButtonText = (xmlreader.GetValueAsString("myLyrics", "pluginsName", "My Lyrics"));
             }
