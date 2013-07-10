@@ -5,7 +5,6 @@ using System.Threading;
 using System.Windows.Forms;
 using LyricsEngine;
 using LyricsEngine.LyricsSites;
-using MediaPortal.Profile;
 
 namespace MyLyrics
 {
@@ -88,7 +87,7 @@ namespace MyLyrics
             _originalArtist = artist;
             _originalTitle = title;
 
-            using (var xmlreader = new Settings("MediaPortal.xml"))
+            using (var xmlreader = MediaPortalUtil.MediaPortalSettings)
             {
                 var lyricsSitesNames = LyricsSiteFactory.LyricsSitesNames();
                 singleRunSitesList.Items.Clear();

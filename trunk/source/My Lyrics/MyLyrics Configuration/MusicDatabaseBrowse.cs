@@ -190,7 +190,7 @@ namespace MyLyrics
 
                     if (!site.Equals("music tag"))
                     {
-                        using (Settings xmlreader = new Settings("MediaPortal.xml"))
+                        using (var xmlreader = MediaPortalUtil.MediaPortalSettings)
                         {
                             if (xmlreader.GetValueAsBool("myLyrics", "automaticWriteToMusicTag", true))
                             {
@@ -515,7 +515,7 @@ namespace MyLyrics
 
             List<string> sitesToSearch = new List<string>();
 
-            using (Settings xmlreader = new Settings("MediaPortal.xml"))
+            using (Settings xmlreader = MediaPortalUtil.MediaPortalSettings)
             {
                 if (((string) xmlreader.GetValueAsString("myLyrics", "useLrcFinder", "True")).ToString().Equals("True"))
                     sitesToSearch.Add("LrcFinder");
@@ -822,7 +822,7 @@ namespace MyLyrics
 
         private void btSearch_Click(object sender, EventArgs e)
         {
-            using (Settings xmlreader = new Settings("MediaPortal.xml"))
+            using (Settings xmlreader = MediaPortalUtil.MediaPortalSettings)
             {
                 if (xmlreader.GetValueAsBool("myLyrics", "automaticReadFromMusicTag", true))
                 {
