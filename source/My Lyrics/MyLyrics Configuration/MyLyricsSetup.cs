@@ -624,13 +624,12 @@ namespace MyLyrics
                 lbStep2a.Text = "Completed";
             }
 
-            lbMessage.Text = "#" + ((int) (++m_noOfMessages)).ToString() + " - " + message + "\r\n" + lbMessage.Text +
-                             "\r\n";
+            lbMessage.Text = "#" + ((int) (++m_noOfMessages)).ToString() + " - " + message + "\r\n" + lbMessage.Text + "\r\n";
             btStartBatchSearch.Enabled = true;
             btCancel.Enabled = false;
             isSearching(false);
             
-            string logText = string.Format("The search has ended with {0} found and {1} missed.\r\n", m_LyricsFound, m_LyricsNotFound);
+            string logText = string.Format("The search has ended with {0} found and {1} missed.", m_LyricsFound, m_LyricsNotFound);
             lbLastActivity2.Text = logText;
 
             logger.Info("{0}", logText);
