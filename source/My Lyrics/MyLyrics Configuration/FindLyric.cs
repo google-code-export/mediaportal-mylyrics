@@ -87,7 +87,7 @@ namespace MyLyrics
             _originalArtist = artist;
             _originalTitle = title;
 
-            using (var xmlreader = MediaPortalUtil.MediaPortalSettings)
+            using (var xmlreader = MyLyricsCore.MediaPortalSettings)
             {
                 var lyricsSitesNames = LyricsSiteFactory.LyricsSitesNames();
                 singleRunSitesList.Items.Clear();

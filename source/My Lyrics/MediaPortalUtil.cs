@@ -1,25 +1,16 @@
 using System;
 using LyricsEngine;
-using MediaPortal.Configuration;
-using MediaPortal.Profile;
 
 namespace MyLyrics
 {
   internal class MediaPortalUtil
   {
       // Returns latests settings from the MediaPortal.xml file. Reload on access to ensure any changes made while the program runs are honored.
-      public static Settings MediaPortalSettings
-      {
-          get
-          {
-              return new Settings(Config.GetFile(Config.Dir.Config, "MediaPortal.xml"));
-          }
-      }
 
-    public static string[] GetStrippedPrefixStringArray()
+      public static string[] GetStrippedPrefixStringArray()
     {
       string strippedPrefixes = "";
-      using (Settings xmlreader = MediaPortalSettings)
+      using (var xmlreader = MyLyricsCore.MediaPortalSettings)
       {
         strippedPrefixes = (xmlreader.GetValueAsString("musicfiles", "artistprefixes", "the,les,die"));
       }

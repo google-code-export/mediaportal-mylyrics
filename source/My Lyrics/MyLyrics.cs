@@ -21,6 +21,7 @@ using MediaPortal.Player;
 using MediaPortal.Playlists;
 using MediaPortal.Profile;
 using MediaPortal.TagReader;
+using NLog;
 using Timer = System.Timers.Timer;
 
 namespace MyLyrics
@@ -31,6 +32,11 @@ namespace MyLyrics
     [PluginIcons("MyLyrics.Resources.MyLyrics_icon_enabled.png", "MyLyrics.Resources.MyLyrics_icon_disabled.png")]
     public partial class GUIMyLyrics : GUIWindow, ILyricForm, ISetupForm
     {
+        // Make sure everything initialize
+        private MyLyricsCore _core = MyLyricsCore.GetInstance();
+        // Logger
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         #region Fields related to the MyLyrics in general
 
         internal const string MLyricsDbName = "LyricsDatabaseV2.db";
@@ -44,8 +50,6 @@ namespace MyLyrics
         private readonly List<String> _ImagePathContainer;
         private readonly PlayListPlayer _PlaylistPlayer;
         internal int CONTROL_LYRIC_SELECTED = 20;
-        private string logFileName = "MyLyrics.log";
-        private string logFullFileName = "";
         private bool _alreadyValidLRC;
 
         // Track info
@@ -60,7 +64,6 @@ namespace MyLyrics
         private MusicTag _CurrentTrackTag;
         private MusicTag _NextTrackTag;
         private MusicTag _PreviousTrackTag;
-        private bool _enableLogging;
 
         private string _Find = string.Empty;
         private Guid _guid;
@@ -650,7 +653,7 @@ namespace MyLyrics
 
             resetGUI(_selectedScreen);
 
-            using (var xmlreader = MediaPortalUtil.MediaPortalSettings)
+            using (var xmlreader = MyLyricsCore.MediaPortalSettings)
             {
                 _UseID3 = xmlreader.GetValueAsBool("musicfiles", "showid3", true);
 
@@ -659,8 +662,6 @@ namespace MyLyrics
                 {
                     Setup.ActiveSites.Add(site);
                 }
-
-                _enableLogging = xmlreader.GetValue("myLyrics", "loggingEnabled").Equals("True");
 
                 _AutomaticWriteToMusicTag = xmlreader.GetValue("myLyrics", "automaticWriteToMusicTag").Equals("yes");
                 _AutomaticReadFromMusicTag = xmlreader.GetValue("myLyrics", "automaticReadFromMusicTag").Equals("yes");
@@ -729,7 +730,7 @@ namespace MyLyrics
                 _guid = Guid.NewGuid();
                 _guidString = _guid.ToString("P");
 
-                using (Settings xmlwriter = MediaPortalUtil.MediaPortalSettings)
+                using (Settings xmlwriter = MyLyricsCore.MediaPortalSettings)
                 {
                     xmlwriter.SetValue("myLyrics", "Guid", _guidString);
                 }
@@ -797,14 +798,8 @@ namespace MyLyrics
                 _LRCPickTimer.Elapsed += OnLRCPickTimerTickEvent;
                 _LRCPickTimer.Stop();
             }
-
-            if (_enableLogging)
-            {
-                logFullFileName = Config.GetFile(Config.Dir.Log, logFileName);
-                LyricDiagnostics.OpenLog(logFullFileName);
-                LyricDiagnostics.TraceSource.TraceEvent(TraceEventType.Start, 0,
-                                                        LyricDiagnostics.ElapsedTimeString() + "MyLyrics opens");
-            }
+            
+            logger.Info("MyLyrics opens");
         }
 
         protected override void OnPageDestroy(int new_windowId)
@@ -832,13 +827,8 @@ namespace MyLyrics
                     TagReaderUtil.WriteLyrics(pair[0], pair[1]);
                 }
             }
-
-            if (_enableLogging)
-            {
-                LyricDiagnostics.TraceSource.TraceEvent(TraceEventType.Stop, 0,
-                                                        LyricDiagnostics.ElapsedTimeString() + "MyLyrics closes");
-                LyricDiagnostics.Dispose();
-            }
+            
+            logger.Info("MyLyrics closes");
 
             //deregister the handler!
             GUIPropertyManager.OnPropertyChanged -= trackChangeHandler;
@@ -1554,11 +1544,8 @@ namespace MyLyrics
             if ((_CurrentTrackTag != null && _CurrentTrackTag.Artist != "") || g_Player.IsRadio)
             {
                 _TrackText = _artist + " - " + _title;
-
-                if (_enableLogging)
-                {
-                    LyricDiagnostics.TraceSource.TraceEvent(TraceEventType.Information, 0, LyricDiagnostics.ElapsedTimeString() + "FindLrc(" + _artist + ", " + _title + ")");
-                }
+                
+                logger.Info("FindLrc({0}, {1})", _artist, _title);
 
                 /* The prioritized search order is:
                    1) LRC in music tag
@@ -1616,12 +1603,16 @@ namespace MyLyrics
 
                     #region 3) Search the Internet for a LRC
 
-                    var lrcActiveSites = LyricsSiteFactory.LrcLyricsSiteNames().Where(lrcSite => Setup.ActiveSites.Contains(lrcSite)).ToList();
+                    var lrcActiveSites =
+                        LyricsSiteFactory.LrcLyricsSiteNames()
+                                         .Where(lrcSite => Setup.ActiveSites.Contains(lrcSite))
+                                         .ToList();
                     if (lrcActiveSites.Count > 0)
                     {
                         _lyricsFound = false;
 
-                        _lc = new LyricsController(this, _EventStopThread, lrcActiveSites.ToArray(), false, false, _Find, _Replace);
+                        _lc = new LyricsController(this, _EventStopThread, lrcActiveSites.ToArray(), false, false, _Find,
+                                                   _Replace);
 
                         // create worker thread instance
                         ThreadStart job = delegate { _lc.Run(); };
@@ -1657,12 +1648,7 @@ namespace MyLyrics
 
             if ((_CurrentTrackTag != null && _CurrentTrackTag.Artist != "") || g_Player.IsRadio)
             {
-                if (_enableLogging)
-                {
-                    LyricDiagnostics.TraceSource.TraceEvent(TraceEventType.Information, 0,
-                                                            LyricDiagnostics.ElapsedTimeString() + "FindLyric(" +
-                                                            _artist + ", " + _title + ")");
-                }
+                logger.Info("FindLyric({0}, {1})", _artist, _title);
 
                 string lyricText = string.Empty;
 
@@ -1709,7 +1695,8 @@ namespace MyLyrics
 
                         _lyricsFound = false;
 
-                        _lc = new LyricsController(this, _EventStopThread, _nonLrcSitesToSearch.ToArray(), false, false, _Find, _Replace);
+                        _lc = new LyricsController(this, _EventStopThread, _nonLrcSitesToSearch.ToArray(), false, false,
+                                                   _Find, _Replace);
                         // create worker thread instance
                         ThreadStart job = delegate { _lc.Run(); };
 
@@ -1717,7 +1704,8 @@ namespace MyLyrics
                         _LyricControllerThread.Name = "lyricSearch Thread"; // looks nice in Output window
                         _LyricControllerThread.Start();
 
-                        _lc.AddNewLyricSearch(_artist, _title, MediaPortalUtil.GetStrippedPrefixArtist(_artist, _strippedPrefixStrings));
+                        _lc.AddNewLyricSearch(_artist, _title,
+                                              MediaPortalUtil.GetStrippedPrefixArtist(_artist, _strippedPrefixStrings));
 
                         _LyriccontrollerIsWorking = true;
 
@@ -1757,11 +1745,8 @@ namespace MyLyrics
 
             _LrcTimeCollection = _SimpleLrc.SimpleLRCTimeAndLineCollectionWithOffset;
             _lines = _LrcTimeCollection.Copy();
-
-            if (_enableLogging)
-            {
-                LyricDiagnostics.TraceSource.TraceEvent(TraceEventType.Information, 0, LyricDiagnostics.ElapsedTimeString() + "LRC found: " + _artist + " - " + _title + ".");
-            }
+            
+            logger.Info("LRC found: {0} - {1}.", _artist, _title);
 
             if (showLrcPickScreen)
             {
@@ -1800,7 +1785,8 @@ namespace MyLyrics
                     {
                         SimpleLRCTimeAndLine currentLine = _LrcTimeCollection[i];
                         GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + i);
-                        GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + i, currentLine.TimeString);
+                        GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + i,
+                                                   currentLine.TimeString);
                     }
                 }
             }
@@ -1941,7 +1927,7 @@ namespace MyLyrics
 
                                 _uploadLrcToLrcFinder = true;
 
-                                using (Settings xmlwriter = MediaPortalUtil.MediaPortalSettings)
+                                using (Settings xmlwriter = MyLyricsCore.MediaPortalSettings)
                                 {
                                     xmlwriter.SetValue("myLyrics", "uploadLrcToLrcFinder", "yes");
                                 }
@@ -1950,7 +1936,7 @@ namespace MyLyrics
                             {
                                 _confirmedNoUploadLrcToLrcFinder = true;
 
-                                using (Settings xmlwriter = MediaPortalUtil.MediaPortalSettings)
+                                using (Settings xmlwriter = MyLyricsCore.MediaPortalSettings)
                                 {
                                     xmlwriter.SetValue("myLyrics", "confirmedNoUploadLrcToLrcFinder", "yes");
                                 }
@@ -2184,13 +2170,8 @@ namespace MyLyrics
         {
             _lyricsFound = true;
             _LyricText = lyricText;
-
-            if (_enableLogging)
-            {
-                LyricDiagnostics.TraceSource.TraceEvent(TraceEventType.Information, 0,
-                                                        LyricDiagnostics.ElapsedTimeString() + "Lyric found: " +
-                                                        _artist + " - " + _title + ". Place: " + source);
-            }
+            
+            logger.Info("Lyric found: {0} - {1}. Place: {2}", _artist, _title, source);
 
             _SearchType = (int) SEARCH_TYPES.ONLY_LYRICS;
 
@@ -2654,26 +2635,14 @@ namespace MyLyrics
                         if (_SearchType == (int) SEARCH_TYPES.BOTH_LRCS_AND_LYRICS)
                             _SearchType = (int) SEARCH_TYPES.ONLY_LYRICS;
                         _StatusText = "No matching LRC found";
-
-                        if (_enableLogging)
-                        {
-                            LyricDiagnostics.TraceSource.TraceEvent(TraceEventType.Information, 0,
-                                                                    LyricDiagnostics.ElapsedTimeString() +
-                                                                    "No matching LRC found for " + artist + " - " +
-                                                                    title + ". Place: " + site);
-                        }
+                        
+                        logger.Info("No matching LRC found for {0} - {1}. Place: {2}", artist, title, site);
                     }
                     else
                     {
                         _StatusText = "No matching lyric found";
-
-                        if (_enableLogging)
-                        {
-                            LyricDiagnostics.TraceSource.TraceEvent(TraceEventType.Information, 0,
-                                                                    LyricDiagnostics.ElapsedTimeString() +
-                                                                    "No matching lyric found for " + artist + " - " +
-                                                                    title + ". Place: " + site);
-                        }
+                        
+                        logger.Info("No matching lyric found for {0} - {1}. Place: {2}", artist, title, site);
                     }
                     GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, _StatusText);
                 }
@@ -2734,10 +2703,9 @@ namespace MyLyrics
         /// <summary>
         /// See ISetupForm interface
         /// </summary>
-        public bool GetHome(out string strButtonText, out string strButtonImage, out string strButtonImageFocus,
-                            out string strPictureImage)
+        public bool GetHome(out string strButtonText, out string strButtonImage, out string strButtonImageFocus, out string strPictureImage)
         {
-            using (Settings xmlreader = MediaPortalUtil.MediaPortalSettings)
+            using (Settings xmlreader = MyLyricsCore.MediaPortalSettings)
             {
                 strButtonText = (xmlreader.GetValueAsString("myLyrics", "pluginsName", "My Lyrics"));
             }
@@ -2805,6 +2773,7 @@ namespace MyLyrics
         /// </summary>
         public void ShowPlugin()
         {
+            _core.Initialize();
             MyLyricsSetup dlg = new MyLyricsSetup();
             dlg.ShowDialog();
         }

@@ -96,7 +96,6 @@ namespace MyLyrics
             this.cbMoveSongFrom = new MediaPortal.UserInterface.Controls.MPCheckBox();
             this.cbAutoFetch = new MediaPortal.UserInterface.Controls.MPCheckBox();
             this.mpGroupBox2 = new MediaPortal.UserInterface.Controls.MPGroupBox();
-            this.cbEnableLogging = new MediaPortal.UserInterface.Controls.MPCheckBox();
             this.tbPluginName = new MediaPortal.UserInterface.Controls.MPTextBox();
             this.lbPluginName = new MediaPortal.UserInterface.Controls.MPLabel();
             this.gbLyricSites = new MediaPortal.UserInterface.Controls.MPGroupBox();
@@ -853,7 +852,6 @@ namespace MyLyrics
             // 
             // mpGroupBox2
             // 
-            this.mpGroupBox2.Controls.Add(this.cbEnableLogging);
             this.mpGroupBox2.Controls.Add(this.tbPluginName);
             this.mpGroupBox2.Controls.Add(this.lbPluginName);
             this.mpGroupBox2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
@@ -863,18 +861,6 @@ namespace MyLyrics
             this.mpGroupBox2.TabIndex = 29;
             this.mpGroupBox2.TabStop = false;
             this.mpGroupBox2.Text = "Basic settings";
-            // 
-            // cbEnableLogging
-            // 
-            this.cbEnableLogging.AutoSize = true;
-            this.cbEnableLogging.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.cbEnableLogging.Location = new System.Drawing.Point(359, 20);
-            this.cbEnableLogging.Name = "cbEnableLogging";
-            this.cbEnableLogging.Size = new System.Drawing.Size(94, 17);
-            this.cbEnableLogging.TabIndex = 11;
-            this.cbEnableLogging.Text = "Enable logging";
-            this.cbEnableLogging.UseVisualStyleBackColor = true;
-            this.cbEnableLogging.Leave += new System.EventHandler(this.WriteMediaPortalXml);
             // 
             // tbPluginName
             // 
@@ -1236,7 +1222,6 @@ namespace MyLyrics
     private MediaPortal.UserInterface.Controls.MPTextBox tbLrcTaggingName;
     private MediaPortal.UserInterface.Controls.MPLabel lbLrcTaggingName;
     public MediaPortal.UserInterface.Controls.MPTabControl tabControl;
-    internal MediaPortal.UserInterface.Controls.MPCheckBox cbEnableLogging;
     private MediaPortal.UserInterface.Controls.MPGroupBox mpGroupBox5;
     private MediaPortal.UserInterface.Controls.MPLabel mpLabel1;
     private System.Windows.Forms.ComboBox comboBoxLanguages;
