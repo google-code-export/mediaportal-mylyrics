@@ -16,12 +16,16 @@ using MediaPortal.Music.Database;
 using MediaPortal.Profile;
 using MediaPortal.TagReader;
 using MediaPortal.Util;
+using NLog;
 using Timer = System.Windows.Forms.Timer;
 
 namespace MyLyrics
 {
     public partial class MyLyricsSetup : Form, ILyricForm, IDisposable
     {
+        // Logger
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         #region Delegates
 
         public delegate void DelegateLyricFound(String s, String artist, String track, String site, int row);
@@ -39,7 +43,6 @@ namespace MyLyrics
 
         #endregion
 
-        private static int logIdCounter = 0;
         public static bool UpdateLibraryUI = false;
         private ArrayList artists = new ArrayList();
         private int hour = 0;
@@ -51,9 +54,6 @@ namespace MyLyrics
         private string latestTitleBeforeCrash = null;
         private LyricsController lc = null;
 
-        //private string log;
-        private string logFileName = "MyLyrics_Batch.log";
-        private string logFullFileName = "";
         private Queue lyricConfigInfosQueue;
         private LyricsLibrary lyricsLibraryUC;
         private string m_artist = "";
@@ -78,7 +78,6 @@ namespace MyLyrics
         private bool m_DisregardSongWithLyricInTag = true;
         private bool m_DisregardVariousArtist = true;
 
-        private bool m_enableLogging = false;
         private ManualResetEvent m_EventStopThread;
         private string m_find = string.Empty;
         public Guid m_guid;
@@ -221,7 +220,7 @@ namespace MyLyrics
         {
             #region Get settings from in configuration file
 
-            using (var xmlreader = MediaPortalUtil.MediaPortalSettings)
+            using (var xmlreader = MyLyricsCore.MediaPortalSettings)
             {
                 try
                 {
@@ -255,9 +254,7 @@ namespace MyLyrics
 
                     tbLimit.Text = xmlreader.GetValueAsString("myLyrics", "limit", m_TotalTitles.ToString());
                     tbPluginName.Text = xmlreader.GetValueAsString("myLyrics", "pluginsName", "Lyrics");
-                    m_enableLogging = xmlreader.GetValue("myLyrics", "loggingEnabled").Equals("True");
-                    cbEnableLogging.Checked = m_enableLogging;
-
+                    
                     cbAutoFetch.Checked = xmlreader.GetValue("myLyrics", "automaticFetch").Equals("yes");
                     cbAutomaticUpdate.Checked =
                         xmlreader.GetValue("myLyrics", "automaticUpdateWhenFirstFound").Equals("yes");
@@ -326,7 +323,7 @@ namespace MyLyrics
                         m_guid = Guid.NewGuid();
                         m_guidString = m_guid.ToString("P");
 
-                        using (var xmlwriter = MediaPortalUtil.MediaPortalSettings)
+                        using (var xmlwriter = MyLyricsCore.MediaPortalSettings)
                         {
                             xmlwriter.SetValue("myLyrics", "Guid", m_guidString);
                         }
@@ -436,18 +433,7 @@ namespace MyLyrics
                 m_Limit = m_TotalTitles;
             }
 
-            logIdCounter = 0;
-
-            if (m_enableLogging)
-            {
-                logFullFileName = Config.GetFile(Config.Dir.Log, logFileName);
-                LyricDiagnostics.OpenLog(logFullFileName);
-                LyricDiagnostics.TraceSource.TraceEvent(TraceEventType.Start, ++logIdCounter,
-                                                        LyricDiagnostics.ElapsedTimeString() +
-                                                        string.Format(
-                                                            " ***** New batch search for {0} lyrics started *****.",
-                                                            m_Limit));
-            }
+            logger.Info("New batch search for {0} lyrics started.", m_Limit);
 
             stopwatch.StartZero();
             lbTimer.Text = "00:00.00";
@@ -479,7 +465,8 @@ namespace MyLyrics
             m_DisregardKnownLyric = cbDontSearchSongsInLyricDB.Enabled && cbDontSearchSongsInLyricDB.Checked;
             m_MarkSongsWhenNoLyricFound = cbMarkSongsWithNoLyrics.Enabled && cbMarkSongsWithNoLyrics.Checked;
             m_DisregardMarkedLyric = cbDisregardSongsWithNoLyric.Enabled && cbDisregardSongsWithNoLyric.Checked;
-            m_DisregardSongWithLyricInTag = cbDontSearchSongsWithLyricInTag.Enabled && cbDontSearchSongsWithLyricInTag.Checked;
+            m_DisregardSongWithLyricInTag = cbDontSearchSongsWithLyricInTag.Enabled &&
+                                            cbDontSearchSongsWithLyricInTag.Checked;
             m_DisregardVariousArtist = cbDontSearchVariousArtist.Enabled && cbDontSearchVariousArtist.Checked;
             m_SearchOnlyMarkedSongs = cbSearchOnlyForMarkedSongs.Enabled && cbSearchOnlyForMarkedSongs.Checked;
 
@@ -561,16 +548,10 @@ namespace MyLyrics
                 TagReaderUtil.WriteLyrics(capArtist, capTitle, lyricStrings);
             }
 
-            lbLastActivity2.Text = capArtist + " - " + capTitle + " has a match at " + site + ".\r\n";
+            var logText = capArtist + " - " + capTitle + " has a match at " + site;
+            lbLastActivity2.Text = logText;
 
-            if (m_enableLogging)
-            {
-                var logText = capArtist + " - " + capTitle + " has a match at " + site;
-                lbLastActivity2.Text = logText;
-
-                LyricDiagnostics.TraceSource.TraceEvent(TraceEventType.Information, ++logIdCounter,
-                                                        LyricDiagnostics.ElapsedTimeString() + "HIT!: " + logText);
-            }
+            logger.Info("HIT!: {0}", logText);
 
             progressBar.PerformStep();
             Update();
@@ -597,15 +578,10 @@ namespace MyLyrics
 
             m_SongsWithMark += 1;
             lbSongsWithMark2.Text = m_SongsWithMark.ToString();
-
-            if (m_enableLogging)
-            {
-                string logText = "No match found to " + capArtist + " - " + capTitle;
-                lbLastActivity2.Text = logText;
-
-                LyricDiagnostics.TraceSource.TraceEvent(TraceEventType.Information, ++logIdCounter,
-                                                        LyricDiagnostics.ElapsedTimeString() + "Miss: " + logText);
-            }
+            
+            string logText = "No match found to " + capArtist + " - " + capTitle;
+            lbLastActivity2.Text = logText;
+            logger.Info("Miss: {0}", logText);
 
             progressBar.PerformStep();
             Update();
@@ -653,19 +629,12 @@ namespace MyLyrics
             btStartBatchSearch.Enabled = true;
             btCancel.Enabled = false;
             isSearching(false);
+            
+            string logText = string.Format("The search has ended with {0} found and {1} missed.\r\n", m_LyricsFound, m_LyricsNotFound);
+            lbLastActivity2.Text = logText;
 
-            if (m_enableLogging)
-            {
-                string logText = string.Format("The search has ended with {0} found and {1} missed.\r\n", m_LyricsFound,
-                                               m_LyricsNotFound);
-                lbLastActivity2.Text = logText;
-
-                logText += DateTime.Now.ToString() + " " + logText;
-                logText += DateTime.Now.ToString() + " ***** Batch search ended *****\r\n\r\n";
-
-                LyricDiagnostics.TraceSource.TraceEvent(TraceEventType.Stop, ++logIdCounter,
-                                                        LyricDiagnostics.ElapsedTimeString() + logText);
-            }
+            logger.Info("{0}", logText);
+            logger.Info("Batch search ended.");
         }
 
         // Called from worker thread using delegate and Control.Invoke
@@ -851,7 +820,7 @@ namespace MyLyrics
             // create worker thread instance
             if (lyricConfigInfosQueue.Count > 0)
             {
-                using (Settings xmlreader = MediaPortalUtil.MediaPortalSettings)
+                using (Settings xmlreader = MyLyricsCore.MediaPortalSettings)
                 {
                     m_find = xmlreader.GetValueAsString("myLyrics", "find", "");
                     m_replace = xmlreader.GetValueAsString("myLyrics", "replace", "");
@@ -889,16 +858,10 @@ namespace MyLyrics
 
                         latestArtistBeforeCrash = artist;
                         latestTitleBeforeCrash = title;
-
-                        if (m_enableLogging)
-                        {
-                            string logText = string.Format("New!: Looking for {0} - {1}.", artist, title);
-                            LyricDiagnostics.TraceSource.TraceEvent(TraceEventType.Information, ++logIdCounter,
-                                                                    LyricDiagnostics.ElapsedTimeString() + logText);
-                        }
-
-                        lc.AddNewLyricSearch(artist, title,
-                                             MediaPortalUtil.GetStrippedPrefixArtist(artist, m_strippedPrefixStrings));
+                        
+                        logger.Info("New!: Looking for {0} - {1}.", artist, title);
+                        
+                        lc.AddNewLyricSearch(artist, title, MediaPortalUtil.GetStrippedPrefixArtist(artist, m_strippedPrefixStrings));
                     }
 
                     Thread.Sleep(100);
@@ -1196,7 +1159,7 @@ namespace MyLyrics
 
         private void WriteMediaPortalXml(object sender, EventArgs e)
         {
-            using (var xmlwriter = MediaPortalUtil.MediaPortalSettings)
+            using (var xmlwriter = MyLyricsCore.MediaPortalSettings)
             {
                 string sitesMode;
                 if (rdLyricsMode.Checked)
@@ -1213,7 +1176,6 @@ namespace MyLyrics
                 }
 
                 xmlwriter.SetValue("myLyrics", "pluginsName", tbPluginName.Text);
-                xmlwriter.SetValue("myLyrics", "loggingEnabled", cbEnableLogging.Checked.ToString());
                 xmlwriter.SetValue("myLyrics", "sitesMode", sitesMode);
                 xmlwriter.SetValue("myLyrics", "defaultSitesModeValue", trackBar.Value);
                 xmlwriter.SetValue("myLyrics", "limit", tbLimit.Text);

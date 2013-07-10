@@ -157,7 +157,7 @@ namespace MyLyrics
                 treeView.Update();
                 DatabaseUtil.SerializeDB(CurrentDB);
 
-                using (var xmlreader = MediaPortalUtil.MediaPortalSettings)
+                using (var xmlreader = MyLyricsCore.MediaPortalSettings)
                 {
                     if (xmlreader.GetValueAsBool("myLyrics", "automaticWriteToMusicTag", true))
                     {
@@ -334,7 +334,7 @@ namespace MyLyrics
             CurrentDB[DatabaseUtil.CorrectKeyFormat(capArtist, capTitle)].Lyrics = lyrics;
             DatabaseUtil.SerializeDB(CurrentDB);
 
-            using (var xmlreader = MediaPortalUtil.MediaPortalSettings)
+            using (var xmlreader = MyLyricsCore.MediaPortalSettings)
             {
                 if (xmlreader.GetValueAsBool("myLyrics", "automaticWriteToMusicTag", true))
                 {
@@ -344,7 +344,7 @@ namespace MyLyrics
 
             if (CurrentDB.Equals(MyLyricsSettings.LyricsMarkedDB))
             {
-                using (var xmlreader = MediaPortalUtil.MediaPortalSettings)
+                using (var xmlreader = MyLyricsCore.MediaPortalSettings)
                 {
                     if (xmlreader.GetValueAsBool("myLyrics", "moveLyricFromMarkedDatabase", true))
                     {
