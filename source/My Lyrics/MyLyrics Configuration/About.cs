@@ -15,10 +15,7 @@ namespace MyLyrics
 
         private void linkLabelForum_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process proc = new Process();
-            proc.StartInfo.FileName = "iexplore";
-            proc.StartInfo.Arguments = "http://forum.team-mediaportal.com/my_lyrics_plugin-f163.html";
-            proc.Start();
+            Process.Start("http://forum.team-mediaportal.com/forums/my-lyrics-plugin.163/");
         }
     }
 }
