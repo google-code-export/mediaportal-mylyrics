@@ -115,7 +115,7 @@ namespace MyLyrics
         {
             get
             {
-                return new MediaPortal.Profile.Settings(Config.GetFile(Config.Dir.Config, MyLyricsUtils.OldSettingsFileName));
+                return new MediaPortal.Profile.Settings(Config.GetFile(Config.Dir.Config, MyLyricsUtils.SettingsFileName));
             }
         }
 

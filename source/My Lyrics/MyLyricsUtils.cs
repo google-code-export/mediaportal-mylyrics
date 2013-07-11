@@ -2,11 +2,8 @@
 {
     public class MyLyricsUtils
     {
-        // Old Settings filename
-        public static readonly string OldSettingsFileName = "MediaPortal.xml";
-
-        // New Settings filename
-        public static readonly string SettingsFileName = "MyLyrics.xml";
+        // Settings filename
+        public static readonly string SettingsFileName = "MediaPortal.xml";
 
         // Log filename
         public static string LogFileName = "MyLyrics.log";
