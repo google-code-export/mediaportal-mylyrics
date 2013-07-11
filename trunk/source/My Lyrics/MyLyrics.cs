@@ -2765,7 +2765,7 @@ namespace MyLyrics
         /// </summary>
         public string Author()
         {
-            return "mackey & yoavain (with the help of BennieBoy, SilentException, Søren)";
+            return "mackey and yoavain (with the help of BennieBoy, SilentException, Søren)";
         }
 
         /// <summary>
