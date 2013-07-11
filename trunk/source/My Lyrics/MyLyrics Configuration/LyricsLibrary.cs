@@ -342,7 +342,7 @@ namespace MyLyrics
                 }
             }
 
-            if (CurrentDB.Equals(MyLyricsSettings.LyricsMarkedDB))
+            if (CurrentDB.Equals(MyLyricsUtils.LyricsMarkedDB))
             {
                 using (var xmlreader = MyLyricsCore.MediaPortalSettings)
                 {
@@ -521,13 +521,13 @@ namespace MyLyrics
                 TreeNode artistNode = treeView.SelectedNode;
 
                 LyricsDatabase otherDatabase = null;
-                if (CurrentDB.Equals(MyLyricsSettings.LyricsDB))
+                if (CurrentDB.Equals(MyLyricsUtils.LyricsDB))
                 {
-                    otherDatabase = MyLyricsSettings.LyricsMarkedDB;
+                    otherDatabase = MyLyricsUtils.LyricsMarkedDB;
                 }
                 else
                 {
-                    otherDatabase = MyLyricsSettings.LyricsDB;
+                    otherDatabase = MyLyricsUtils.LyricsDB;
                 }
 
                 foreach (TreeNode node in artistNode.Nodes)
@@ -559,15 +559,15 @@ namespace MyLyrics
                 RemoveSong(artist, title, true);
 
                 // add song to other database and serialize it
-                if (CurrentDB.Equals(MyLyricsSettings.LyricsDB))
+                if (CurrentDB.Equals(MyLyricsUtils.LyricsDB))
                 {
-                    MyLyricsSettings.LyricsMarkedDB.Add(key, item);
-                    DatabaseUtil.SerializeDB(MyLyricsSettings.LyricsMarkedDB);
+                    MyLyricsUtils.LyricsMarkedDB.Add(key, item);
+                    DatabaseUtil.SerializeDB(MyLyricsUtils.LyricsMarkedDB);
                 }
                 else
                 {
-                    MyLyricsSettings.LyricsDB.Add(key, item);
-                    DatabaseUtil.SerializeDB(MyLyricsSettings.LyricsDB);
+                    MyLyricsUtils.LyricsDB.Add(key, item);
+                    DatabaseUtil.SerializeDB(MyLyricsUtils.LyricsDB);
                 }
                 updateLyricDatabaseStats();
             }
@@ -773,7 +773,7 @@ namespace MyLyrics
             {
                 resetFields();
                 currentDBIndex = 0;
-                CurrentDB = MyLyricsSettings.LyricsDB;
+                CurrentDB = MyLyricsUtils.LyricsDB;
                 btImportFiles.Enabled = true;
                 btImportDirs.Enabled = true;
                 btImportTags.Enabled = true;
@@ -784,7 +784,7 @@ namespace MyLyrics
             {
                 resetFields();
                 currentDBIndex = 0;
-                CurrentDB = MyLyricsSettings.LyricsDB;
+                CurrentDB = MyLyricsUtils.LyricsDB;
                 btImportFiles.Enabled = true;
                 btImportDirs.Enabled = true;
                 btImportTags.Enabled = false;
@@ -795,7 +795,7 @@ namespace MyLyrics
             {
                 resetFields();
                 currentDBIndex = 1;
-                CurrentDB = MyLyricsSettings.LyricsMarkedDB;
+                CurrentDB = MyLyricsUtils.LyricsMarkedDB;
                 btImportFiles.Enabled = false;
                 btImportDirs.Enabled = false;
                 btImportTags.Enabled = false;
@@ -810,14 +810,14 @@ namespace MyLyrics
                 MessageBox.Show(this, "Are you sure the Lyrics database should be deleted?", "Delete Lyrics database",
                                 MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
             {
-                string path = Config.GetFolder(Config.Dir.Database) + "\\" + MyLyricsSettings.LyricsDBName;
+                string path = Config.GetFolder(Config.Dir.Database) + "\\" + MyLyricsUtils.LyricsDBName;
                 FileStream fs = new FileStream(path, FileMode.Create);
                 BinaryFormatter bf = new BinaryFormatter();
-                MyLyricsSettings.LyricsDB = new LyricsDatabase();
-                bf.Serialize(fs, MyLyricsSettings.LyricsDB);
+                MyLyricsUtils.LyricsDB = new LyricsDatabase();
+                bf.Serialize(fs, MyLyricsUtils.LyricsDB);
                 fs.Close();
 
-                CurrentDB = MyLyricsSettings.LyricsDB;
+                CurrentDB = MyLyricsUtils.LyricsDB;
                 comboDatabase.SelectedIndex = 0;
                 updateLyricsTree(false);
                 updateInfo();
@@ -832,14 +832,14 @@ namespace MyLyrics
                                 "Delete title database", MessageBoxButtons.YesNo, MessageBoxIcon.Information) ==
                 DialogResult.Yes)
             {
-                string path = Config.GetFolder(Config.Dir.Database) + "\\" + MyLyricsSettings.LyricsMarkedDBName;
+                string path = Config.GetFolder(Config.Dir.Database) + "\\" + MyLyricsUtils.LyricsMarkedDBName;
                 FileStream fs = new FileStream(path, FileMode.Create);
                 BinaryFormatter bf = new BinaryFormatter();
-                MyLyricsSettings.LyricsMarkedDB = new LyricsDatabase();
-                bf.Serialize(fs, MyLyricsSettings.LyricsMarkedDB);
+                MyLyricsUtils.LyricsMarkedDB = new LyricsDatabase();
+                bf.Serialize(fs, MyLyricsUtils.LyricsMarkedDB);
                 fs.Close();
 
-                CurrentDB = MyLyricsSettings.LyricsMarkedDB;
+                CurrentDB = MyLyricsUtils.LyricsMarkedDB;
                 comboDatabase.SelectedIndex = 2;
                 updateLyricsTree(false);
                 updateInfo();
@@ -872,7 +872,7 @@ namespace MyLyrics
             }
 
 
-            FindLyric std = new FindLyric(this, artist, title, CurrentDB.Equals(MyLyricsSettings.LyricsMarkedDB),
+            FindLyric std = new FindLyric(this, artist, title, CurrentDB.Equals(MyLyricsUtils.LyricsMarkedDB),
                                           treeArtistIndex, treeTitleIndex);
         }
 

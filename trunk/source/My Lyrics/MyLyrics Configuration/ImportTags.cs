@@ -77,13 +77,13 @@ namespace MyLyrics
                         string capTitle = LyricUtil.CapatalizeString(tag.Title);
 
                         if (
-                            DatabaseUtil.IsSongInLyricsDatabase(MyLyricsSettings.LyricsDB, capArtist, capTitle).Equals(
+                            DatabaseUtil.IsSongInLyricsDatabase(MyLyricsUtils.LyricsDB, capArtist, capTitle).Equals(
                                 DatabaseUtil.LYRIC_FOUND))
                         {
                             // If lyric exists in LyricsDb then only import (and overwrite) if it isn't an LRC-file
                             string lyricsText =
                                 (string)
-                                MyLyricsSettings.LyricsDB[DatabaseUtil.CorrectKeyFormat(capArtist, capTitle)].Lyrics;
+                                MyLyricsUtils.LyricsDB[DatabaseUtil.CorrectKeyFormat(capArtist, capTitle)].Lyrics;
                             SimpleLRC lrc = new SimpleLRC(capArtist, capTitle, lyricsText);
                             if (!lrc.IsValid)
                             {
@@ -131,7 +131,7 @@ namespace MyLyrics
                     {
                         string capArtist = LyricUtil.CapatalizeString(tag.Artist);
                         string capTitle = LyricUtil.CapatalizeString(tag.Title);
-                        DatabaseUtil.ReplaceInLyricsDatabase(MyLyricsSettings.LyricsDB, capArtist, capTitle, tag.Lyrics,
+                        DatabaseUtil.ReplaceInLyricsDatabase(MyLyricsUtils.LyricsDB, capArtist, capTitle, tag.Lyrics,
                                                              "music tag");
                     }
                     DatabaseUtil.SerializeLyricDB();

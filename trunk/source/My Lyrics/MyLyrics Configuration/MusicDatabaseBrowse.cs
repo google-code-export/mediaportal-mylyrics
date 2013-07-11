@@ -184,7 +184,7 @@ namespace MyLyrics
                     string capArtist = LyricUtil.CapatalizeString(artist);
                     string capTitle = LyricUtil.CapatalizeString(title);
 
-                    DatabaseUtil.WriteToLyricsDatabase(MyLyricsSettings.LyricsDB, MyLyricsSettings.LyricsMarkedDB,
+                    DatabaseUtil.WriteToLyricsDatabase(MyLyricsUtils.LyricsDB, MyLyricsUtils.LyricsMarkedDB,
                                                        capArtist, capTitle, lyricStrings, site);
                     DatabaseUtil.SerializeLyricDB();
 
@@ -223,10 +223,10 @@ namespace MyLyrics
                     string capTitle = LyricUtil.CapatalizeString(title);
 
                     if (
-                        DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsSettings.LyricsMarkedDB, capArtist, capTitle).
+                        DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsUtils.LyricsMarkedDB, capArtist, capTitle).
                             Equals(DatabaseUtil.LYRIC_NOT_FOUND))
                     {
-                        MyLyricsSettings.LyricsMarkedDB.Add(DatabaseUtil.CorrectKeyFormat(capArtist, capTitle),
+                        MyLyricsUtils.LyricsMarkedDB.Add(DatabaseUtil.CorrectKeyFormat(capArtist, capTitle),
                                                             new LyricsItem(capArtist, capTitle, "", ""));
                     }
 
@@ -391,7 +391,7 @@ namespace MyLyrics
                 ListViewItem lvi = new ListViewItem(capatalizedTitle);
                 lvi.Tag = capatalizedTitle;
 
-                int status = DatabaseUtil.IsSongInLyricsDatabase(MyLyricsSettings.LyricsDB, capatalizedArtist,
+                int status = DatabaseUtil.IsSongInLyricsDatabase(MyLyricsUtils.LyricsDB, capatalizedArtist,
                                                                  capatalizedTitle);
                 switch (status)
                 {
@@ -406,7 +406,7 @@ namespace MyLyrics
                         break;
                     case DatabaseUtil.LYRIC_NOT_FOUND:
                         if (
-                            DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsSettings.LyricsMarkedDB, capatalizedArtist,
+                            DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsUtils.LyricsMarkedDB, capatalizedArtist,
                                                                       capatalizedTitle).Equals(DatabaseUtil.LYRIC_MARKED))
                         {
                             lvi.SubItems.Add("MarkedDB");
@@ -613,7 +613,7 @@ namespace MyLyrics
                     string artist = lvi.SubItems[0].Text;
                     string title = lvi.SubItems[1].Text;
                     if (
-                        DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsSettings.LyricsMarkedDB, artist, title).Equals
+                        DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsUtils.LyricsMarkedDB, artist, title).Equals
                             (DatabaseUtil.LYRIC_MARKED))
                     {
                         lvi.SubItems[2].Text = "MarkedDB";
