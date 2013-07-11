@@ -2,14 +2,9 @@ namespace MyLyrics
 {
   internal class MyLyricsSettings
   {
-    // Database settings
     internal static string LogName = "MyLyrics.log";
-    internal static LyricsDatabase LyricsDB;
-    internal static string LyricsDBName = "LyricsDatabaseV2.db";
-    internal static LyricsDatabase LyricsMarkedDB;
-    internal static string LyricsMarkedDBName = "LyricsMarkedDatabaseV2.db";
 
-    #region Nested type: Screen
+      #region Nested type: Screen
 
     internal enum Screen
     {

@@ -335,13 +335,13 @@ namespace MyLyrics
                 {
                     _parent.RemoveSong(_originalArtist, _originalTitle, true);
                     var key = DatabaseUtil.CorrectKeyFormat(_originalArtist, _originalTitle);
-                    MyLyricsSettings.LyricsDB[key] = new LyricsItem(_originalArtist, _originalTitle, lyric, site);
+                    MyLyricsUtils.LyricsDB[key] = new LyricsItem(_originalArtist, _originalTitle, lyric, site);
                     DatabaseUtil.SerializeLyricDB();
                     _parent.updateInfo();
                 }
                 else if (_markedDatabase)
                 {
-                    DatabaseUtil.ReplaceInLyricsDatabase(MyLyricsSettings.LyricsMarkedDB, _originalArtist, _originalTitle,
+                    DatabaseUtil.ReplaceInLyricsDatabase(MyLyricsUtils.LyricsMarkedDB, _originalArtist, _originalTitle,
                                                          lyric, site);
                     DatabaseUtil.SerializeDBs();
                     _parent.updateInfo();
@@ -349,7 +349,7 @@ namespace MyLyrics
                 }
                 else
                 {
-                    DatabaseUtil.ReplaceInLyricsDatabase(MyLyricsSettings.LyricsDB, _originalArtist, _originalTitle, lyric,
+                    DatabaseUtil.ReplaceInLyricsDatabase(MyLyricsUtils.LyricsDB, _originalArtist, _originalTitle, lyric,
                                                          site);
                     DatabaseUtil.SerializeDBs();
                     _parent.updateInfo();

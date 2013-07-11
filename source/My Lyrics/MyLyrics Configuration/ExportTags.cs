@@ -77,11 +77,11 @@ namespace MyLyrics
                         string capTitle = LyricUtil.CapatalizeString(song.Title);
 
                         if (
-                            DatabaseUtil.IsSongInLyricsDatabase(MyLyricsSettings.LyricsDB, capArtist, capTitle).Equals(
+                            DatabaseUtil.IsSongInLyricsDatabase(MyLyricsUtils.LyricsDB, capArtist, capTitle).Equals(
                                 DatabaseUtil.LYRIC_FOUND))
                         {
                             string lyric =
-                                MyLyricsSettings.LyricsDB[DatabaseUtil.CorrectKeyFormat(capArtist, capTitle)].Lyrics;
+                                MyLyricsUtils.LyricsDB[DatabaseUtil.CorrectKeyFormat(capArtist, capTitle)].Lyrics;
                             SimpleLRC lrcInLyricsDb = new SimpleLRC(capArtist, capTitle, lyric);
 
                             // If the lyricsDB lyric is LRC always export

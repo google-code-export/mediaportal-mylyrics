@@ -127,7 +127,7 @@ namespace MyLyrics
 
     public static void SerializeDB(LyricsDatabase lyricsDatabase)
     {
-      if (lyricsDatabase == MyLyricsSettings.LyricsDB)
+      if (lyricsDatabase == MyLyricsUtils.LyricsDB)
       {
         SerializeLyricDB();
       }
@@ -145,37 +145,37 @@ namespace MyLyrics
 
     public static void SerializeLyricDB()
     {
-      string path = Config.GetFile(Config.Dir.Database, MyLyricsSettings.LyricsDBName);
+      string path = Config.GetFile(Config.Dir.Database, MyLyricsUtils.LyricsDBName);
       using (FileStream fs = new FileStream(path, FileMode.Open))
       {
         BinaryFormatter bf = new BinaryFormatter();
-        MyLyricsSettings.LyricsDB.SetLastModified();
-        bf.Serialize(fs, MyLyricsSettings.LyricsDB);
+        MyLyricsUtils.LyricsDB.SetLastModified();
+        bf.Serialize(fs, MyLyricsUtils.LyricsDB);
         fs.Close();
       }
     }
 
     public static void SerializeLyricMarkedDB()
     {
-      string path = Config.GetFile(Config.Dir.Database, MyLyricsSettings.LyricsMarkedDBName);
+      string path = Config.GetFile(Config.Dir.Database, MyLyricsUtils.LyricsMarkedDBName);
       using (FileStream fs = new FileStream(path, FileMode.Open))
       {
         BinaryFormatter bf = new BinaryFormatter();
-        MyLyricsSettings.LyricsMarkedDB.SetLastModified();
-        bf.Serialize(fs, MyLyricsSettings.LyricsMarkedDB);
+        MyLyricsUtils.LyricsMarkedDB.SetLastModified();
+        bf.Serialize(fs, MyLyricsUtils.LyricsMarkedDB);
         fs.Close();
       }
     }
 
     public static LyricsDatabase GetOtherLyricsDatabase(LyricsDatabase currentDatabase)
     {
-      if (currentDatabase.Equals(MyLyricsSettings.LyricsDB))
+      if (currentDatabase.Equals(MyLyricsUtils.LyricsDB))
       {
-        return MyLyricsSettings.LyricsMarkedDB;
+        return MyLyricsUtils.LyricsMarkedDB;
       }
       else
       {
-        return MyLyricsSettings.LyricsDB;
+        return MyLyricsUtils.LyricsDB;
       }
     }
   }

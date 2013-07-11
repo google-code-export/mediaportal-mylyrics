@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -166,26 +165,26 @@ namespace MyLyrics
 
             #region Serialzie/deserialize lyricsdatabases
 
-            string path = Config.GetFile(Config.Dir.Database, MyLyricsSettings.LyricsDBName);
+            string path = Config.GetFile(Config.Dir.Database, MyLyricsUtils.LyricsDBName);
             FileInfo fileInfo = new FileInfo(path);
 
             // .. but only if the databases hasn't been created
             if (fileInfo.Exists == false)
             {
-                path = Config.GetFile(Config.Dir.Database, MyLyricsSettings.LyricsDBName);
+                path = Config.GetFile(Config.Dir.Database, MyLyricsUtils.LyricsDBName);
 
                 // Serialize empty LyricsDatabase if no lyrics.xml present
                 FileStream fs = new FileStream(path, FileMode.Create);
                 BinaryFormatter bf = new BinaryFormatter();
-                MyLyricsSettings.LyricsDB = new LyricsDatabase();
-                bf.Serialize(fs, MyLyricsSettings.LyricsDB);
+                MyLyricsUtils.LyricsDB = new LyricsDatabase();
+                bf.Serialize(fs, MyLyricsUtils.LyricsDB);
                 fs.Close();
 
                 // Serialize empty LyricsMarkedDatabase
-                path = Config.GetFile(Config.Dir.Database, MyLyricsSettings.LyricsMarkedDBName);
+                path = Config.GetFile(Config.Dir.Database, MyLyricsUtils.LyricsMarkedDBName);
                 fs = new FileStream(path, FileMode.Create);
-                MyLyricsSettings.LyricsMarkedDB = new LyricsDatabase();
-                bf.Serialize(fs, MyLyricsSettings.LyricsMarkedDB);
+                MyLyricsUtils.LyricsMarkedDB = new LyricsDatabase();
+                bf.Serialize(fs, MyLyricsUtils.LyricsMarkedDB);
                 fs.Close();
             }
             else
@@ -193,7 +192,7 @@ namespace MyLyrics
                 DeserializeBothDB();
             }
 
-            LyricsLibrary.CurrentDB = MyLyricsSettings.LyricsDB;
+            LyricsLibrary.CurrentDB = MyLyricsUtils.LyricsDB;
 
             #endregion
 
@@ -472,7 +471,7 @@ namespace MyLyrics
 
             if (m_SearchOnlyMarkedSongs)
             {
-                progressBar.Maximum = MyLyricsSettings.LyricsMarkedDB.Count;
+                progressBar.Maximum = MyLyricsUtils.LyricsMarkedDB.Count;
             }
             else
             {
@@ -540,7 +539,7 @@ namespace MyLyrics
             var capArtist = LyricUtil.CapatalizeString(m_artist);
             var capTitle = LyricUtil.CapatalizeString(m_track);
 
-            DatabaseUtil.WriteToLyricsDatabase(MyLyricsSettings.LyricsDB, MyLyricsSettings.LyricsMarkedDB, capArtist,
+            DatabaseUtil.WriteToLyricsDatabase(MyLyricsUtils.LyricsDB, MyLyricsUtils.LyricsMarkedDB, capArtist,
                                                capTitle, lyricStrings, site);
 
             if (!site.Equals("music tag") && m_automaticWriteToMusicTag)
@@ -569,10 +568,10 @@ namespace MyLyrics
             string capArtist = LyricUtil.CapatalizeString(artist);
             string capTitle = LyricUtil.CapatalizeString(title);
             if (m_MarkSongsWhenNoLyricFound &&
-                DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsSettings.LyricsMarkedDB, capArtist, capTitle).Equals(
+                DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsUtils.LyricsMarkedDB, capArtist, capTitle).Equals(
                     DatabaseUtil.LYRIC_NOT_FOUND))
             {
-                MyLyricsSettings.LyricsMarkedDB.Add(DatabaseUtil.CorrectKeyFormat(capArtist, capTitle),
+                MyLyricsUtils.LyricsMarkedDB.Add(DatabaseUtil.CorrectKeyFormat(capArtist, capTitle),
                                                     new LyricsItem(capArtist, capTitle, "", ""));
             }
 
@@ -712,35 +711,35 @@ namespace MyLyrics
                             var capTitle = LyricUtil.CapatalizeString(tag.Title);
 
                             if (
-                                DatabaseUtil.IsSongInLyricsDatabase(MyLyricsSettings.LyricsDB, capArtist, capTitle).
+                                DatabaseUtil.IsSongInLyricsDatabase(MyLyricsUtils.LyricsDB, capArtist, capTitle).
                                              Equals(DatabaseUtil.LYRIC_NOT_FOUND))
                             {
-                                MyLyricsSettings.LyricsDB.Add(DatabaseUtil.CorrectKeyFormat(capArtist, capTitle),
+                                MyLyricsUtils.LyricsDB.Add(DatabaseUtil.CorrectKeyFormat(capArtist, capTitle),
                                                               new LyricsItem(capArtist, capTitle, tag.Lyrics,
                                                                              "music tag"));
                             }
 
                             if (
-                                DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsSettings.LyricsMarkedDB, capArtist,
+                                DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsUtils.LyricsMarkedDB, capArtist,
                                                                           capTitle).Equals(DatabaseUtil.LYRIC_MARKED))
                             {
-                                MyLyricsSettings.LyricsMarkedDB.Remove(DatabaseUtil.CorrectKeyFormat(capArtist,
+                                MyLyricsUtils.LyricsMarkedDB.Remove(DatabaseUtil.CorrectKeyFormat(capArtist,
                                                                                                      capTitle));
                             }
                         }
                         else
                         {
-                            var status = DatabaseUtil.IsSongInLyricsDatabase(MyLyricsSettings.LyricsDB, song.Artist, song.Title);
+                            var status = DatabaseUtil.IsSongInLyricsDatabase(MyLyricsUtils.LyricsDB, song.Artist, song.Title);
 
                             if (!m_DisregardKnownLyric && status.Equals(DatabaseUtil.LYRIC_FOUND)
                                 ||
                                 (!m_DisregardMarkedLyric &&
-                                 ((DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsSettings.LyricsMarkedDB,
+                                 ((DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsUtils.LyricsMarkedDB,
                                                                              song.Artist, song.Title).Equals(
                                                                                  DatabaseUtil.LYRIC_MARKED)) || status.Equals(DatabaseUtil.LYRIC_MARKED)))
                                 ||
                                 (status.Equals(DatabaseUtil.LYRIC_NOT_FOUND) &&
-                                 !DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsSettings.LyricsMarkedDB,
+                                 !DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsUtils.LyricsMarkedDB,
                                                                             song.Artist, song.Title).Equals(
                                                                                 DatabaseUtil.LYRIC_MARKED)))
                             {
@@ -771,7 +770,7 @@ namespace MyLyrics
             }
             else
             {
-                foreach (KeyValuePair<string, LyricsItem> kvp in MyLyricsSettings.LyricsMarkedDB)
+                foreach (KeyValuePair<string, LyricsItem> kvp in MyLyricsUtils.LyricsMarkedDB)
                 {
                     if (++m_SongsNotKnown > m_Limit)
                     {
@@ -985,7 +984,7 @@ namespace MyLyrics
 
         private void DeserializeBothDB()
         {
-            string path = Config.GetFile(Config.Dir.Database, MyLyricsSettings.LyricsDBName);
+            string path = Config.GetFile(Config.Dir.Database, MyLyricsUtils.LyricsDBName);
 
             // Open database to read data from
             FileStream fs = new FileStream(path, FileMode.Open);
@@ -994,14 +993,14 @@ namespace MyLyrics
             BinaryFormatter bf = new BinaryFormatter();
 
             // Use the BinaryFormatter object to deserialize the database
-            MyLyricsSettings.LyricsDB = (LyricsDatabase) bf.Deserialize(fs);
+            MyLyricsUtils.LyricsDB = (LyricsDatabase) bf.Deserialize(fs);
             fs.Close();
 
             // Deserialize LyricsRemainingDatabase
-            path = Config.GetFile(Config.Dir.Database, MyLyricsSettings.LyricsMarkedDBName);
+            path = Config.GetFile(Config.Dir.Database, MyLyricsUtils.LyricsMarkedDBName);
 
             fs = new FileStream(path, FileMode.Open);
-            MyLyricsSettings.LyricsMarkedDB = (LyricsDatabase) bf.Deserialize(fs);
+            MyLyricsUtils.LyricsMarkedDB = (LyricsDatabase) bf.Deserialize(fs);
             fs.Close();
         }
 
@@ -1067,8 +1066,8 @@ namespace MyLyrics
             }
             else
             {
-                lastShownLyricsTitles = MyLyricsSettings.LyricsDB.Count;
-                lastShownMarkedLyricsTitles = MyLyricsSettings.LyricsMarkedDB.Count;
+                lastShownLyricsTitles = MyLyricsUtils.LyricsDB.Count;
+                lastShownMarkedLyricsTitles = MyLyricsUtils.LyricsMarkedDB.Count;
             }
         }
 
