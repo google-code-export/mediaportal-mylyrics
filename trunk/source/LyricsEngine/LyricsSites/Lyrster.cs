@@ -35,6 +35,7 @@ namespace LyricsEngine.LyricsSites
             // Validation
             if (string.IsNullOrEmpty(artist) || string.IsNullOrEmpty(title))
             {
+                LyricText = NotFound;
                 return;
             }
 
@@ -139,24 +140,32 @@ namespace LyricsEngine.LyricsSites
                     }
 
 
-                    lyricTemp.Replace(@"<div id=""lyrics"">", "");
-                    lyricTemp.Replace("</div>", "");
-                    lyricTemp.Replace("?s", "'s");
-                    lyricTemp.Replace("?t", "'t");
-                    lyricTemp.Replace("?m", "'m");
-                    lyricTemp.Replace("?l", "'l");
-                    lyricTemp.Replace("?v", "'v");
-                    lyricTemp.Replace("<br>", "\r\n");
-                    lyricTemp.Replace("<br />", "\r\n");
-                    lyricTemp.Replace("&quot;", "\"");
-                    lyricTemp.Replace("</p>", "");
-                    lyricTemp.Replace("<BR>", "");
-                    lyricTemp.Replace("<br/>", "\r\n");
-                    lyricTemp.Replace("&amp;", "&");
+                    if (lyricTemp.Length > 0)
+                    {
 
-                    LyricText = lyricTemp.ToString().Trim();
+                        lyricTemp.Replace(@"<div id=""lyrics"">", "");
+                        lyricTemp.Replace("</div>", "");
+                        lyricTemp.Replace("?s", "'s");
+                        lyricTemp.Replace("?t", "'t");
+                        lyricTemp.Replace("?m", "'m");
+                        lyricTemp.Replace("?l", "'l");
+                        lyricTemp.Replace("?v", "'v");
+                        lyricTemp.Replace("<br>", "\r\n");
+                        lyricTemp.Replace("<br />", "\r\n");
+                        lyricTemp.Replace("&quot;", "\"");
+                        lyricTemp.Replace("</p>", "");
+                        lyricTemp.Replace("<BR>", "");
+                        lyricTemp.Replace("<br/>", "\r\n");
+                        lyricTemp.Replace("&amp;", "&");
 
-                    if (LyricText.Contains("<td"))
+                        LyricText = lyricTemp.ToString().Trim();
+
+                        if (LyricText.Contains("<td"))
+                        {
+                            LyricText = NotFound;
+                        }
+                    }
+                    else
                     {
                         LyricText = NotFound;
                     }
