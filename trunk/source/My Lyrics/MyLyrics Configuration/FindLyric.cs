@@ -5,6 +5,7 @@ using System.Threading;
 using System.Windows.Forms;
 using LyricsEngine;
 using LyricsEngine.LyricsSites;
+using MyLyrics.XmlSettings;
 
 namespace MyLyrics
 {
@@ -86,24 +87,21 @@ namespace MyLyrics
 
             _originalArtist = artist;
             _originalTitle = title;
-
-            using (var xmlreader = MyLyricsCore.MediaPortalSettings)
+            
+            var lyricsSitesNames = LyricsSiteFactory.LyricsSitesNames();
+            singleRunSitesList.Items.Clear();
+            foreach (var site in lyricsSitesNames)
             {
-                var lyricsSitesNames = LyricsSiteFactory.LyricsSitesNames();
-                singleRunSitesList.Items.Clear();
-                foreach (var site in lyricsSitesNames)
-                {
-                    singleRunSitesList.Items.Add(site, xmlreader.GetValueAsString("myLyrics", "use" + site, "False").Equals("True"));
-                }
-                
-                _mAutomaticFetch = xmlreader.GetValueAsBool("myLyrics", "automaticFetch", true);
-                _mAutomaticUpdate = xmlreader.GetValueAsBool("myLyrics", "automaticUpdateWhenFirstFound", false);
-                _mMoveLyricFromMarkedDatabase = xmlreader.GetValueAsBool("myLyrics", "moveLyricFromMarkedDatabase", true);
-                _mAutomaticWriteToMusicTag = xmlreader.GetValueAsBool("myLyrics", "automaticWriteToMusicTag", true);
-
-                _mFind = xmlreader.GetValueAsString("myLyrics", "find", "");
-                _mReplace = xmlreader.GetValueAsString("myLyrics", "replace", "");
+                singleRunSitesList.Items.Add(site, SettingManager.GetParamAsBool(SettingManager.SitePrefix + site, false));
             }
+
+            _mAutomaticFetch = SettingManager.GetParamAsBool(SettingManager.AutomaticFetch, true);
+            _mAutomaticUpdate = SettingManager.GetParamAsBool(SettingManager.AutomaticUpdateWhenFirstFound, false);
+            _mMoveLyricFromMarkedDatabase = SettingManager.GetParamAsBool(SettingManager.MoveLyricFromMarkedDatabase, true);
+            _mAutomaticWriteToMusicTag = SettingManager.GetParamAsBool(SettingManager.AutomaticWriteToMusicTag, true);
+
+            _mFind = SettingManager.GetParamAsString(SettingManager.Find, "");
+            _mReplace = SettingManager.GetParamAsString(SettingManager.Replace, "");
 
             _mStrippedPrefixStrings = MediaPortalUtil.GetStrippedPrefixStringArray();
 

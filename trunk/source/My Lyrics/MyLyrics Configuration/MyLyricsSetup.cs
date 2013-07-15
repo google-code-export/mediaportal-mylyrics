@@ -15,6 +15,7 @@ using MediaPortal.Music.Database;
 using MediaPortal.Profile;
 using MediaPortal.TagReader;
 using MediaPortal.Util;
+using MyLyrics.XmlSettings;
 using NLog;
 using Timer = System.Windows.Forms.Timer;
 
@@ -219,123 +220,111 @@ namespace MyLyrics
         {
             #region Get settings from in configuration file
 
-            using (var xmlreader = MyLyricsCore.MediaPortalSettings)
+            try
             {
-                try
+                var sitesMode = SettingManager.GetParamAsString(SettingManager.SitesMode, rdLyricsMode.Tag as string);
+
+                if (sitesMode.Equals(rdLyricsMode.Tag))
                 {
-                    var sitesMode = xmlreader.GetValueAsString("myLyrics", "sitesMode", rdLyricsMode.Tag as string);
+                    rdLyricsMode.Checked = true;
+                }
+                else if (sitesMode.Equals(rbUserSelectMode.Tag))
+                {
+                    rbUserSelectMode.Checked = true;
 
-                    if (sitesMode.Equals(rdLyricsMode.Tag))
+                    Setup.ActiveSites.Clear();
+                    for (var index = 0; index < sitesList.Items.Count; index++)
                     {
-                        rdLyricsMode.Checked = true;
-                    }
-                    else if (sitesMode.Equals(rbUserSelectMode.Tag))
-                    {
-                        rbUserSelectMode.Checked = true;
-
-                        Setup.ActiveSites.Clear();
-                        for (var index = 0; index < sitesList.Items.Count; index++)
+                        var active = SettingManager.GetParamAsBool(SettingManager.SitePrefix + (sitesList.Items[index]), true);
+                        sitesList.SetItemChecked(index, active);
+                        if (active)
                         {
-                            var active = "True".Equals(xmlreader.GetValue("myLyrics", "use" + (sitesList.Items[index])));
-                            sitesList.SetItemChecked(index, active);
-                            if (active)
-                            {
-                                Setup.ActiveSites.Add((string) (sitesList.Items[index]));
-                            }
+                            Setup.ActiveSites.Add((string) (sitesList.Items[index]));
                         }
                     }
-                    else
+                }
+                else
+                {
+                    rbLrcMode.Checked = true;
+                }
+
+                rdTrackBar_CheckedChanged(null, null);
+
+                tbLimit.Text = SettingManager.GetParamAsString(SettingManager.Limit, m_TotalTitles.ToString());
+                tbPluginName.Text = SettingManager.GetParamAsString(SettingManager.PluginsName, SettingManager.DefaultPluginName);
+
+                cbAutoFetch.Checked = SettingManager.GetParamAsBool(SettingManager.AutomaticFetch, false);
+                cbAutomaticUpdate.Checked = SettingManager.GetParamAsBool(SettingManager.AutomaticUpdateWhenFirstFound, false);
+                cbMoveSongFrom.Checked = SettingManager.GetParamAsBool(SettingManager.MoveLyricFromMarkedDatabase, false);
+
+                m_automaticWriteToMusicTag = SettingManager.GetParamAsBool(SettingManager.AutomaticWriteToMusicTag, false);
+                cbMusicTagWrite.Checked = m_automaticWriteToMusicTag;
+
+                m_automaticReadFromToMusicTag = SettingManager.GetParamAsBool(SettingManager.AutomaticReadFromMusicTag, false);
+                cbMusicTagAlwaysCheck.Checked = m_automaticReadFromToMusicTag;
+
+                cbUseAutoScrollAsDefault.Checked = SettingManager.GetParamAsBool(SettingManager.UseAutoscroll, false);
+                tbLrcTaggingOffset.Text = SettingManager.GetParamAsString(SettingManager.LrcTaggingOffset, SettingManager.DefaultLrcTaggingOffset);
+                tbLrcTaggingName.Text = SettingManager.GetParamAsString(SettingManager.LrcTaggingName, "");
+
+                m_guidString = SettingManager.GetParamAsString(SettingManager.Guid, "");
+
+                cbUploadLrcAutomatically.Checked = SettingManager.GetParamAsBool(SettingManager.UploadLrcToLrcFinder, false);
+
+                cbAlwaysAskForUploadToLrcFinder.Checked = SettingManager.GetParamAsBool(SettingManager.AlwaysAskUploadLrcToLrcFinder, false);
+
+                lbSongsLimitNote.Text = ("(You have currently " + m_TotalTitles.ToString() + " titles in your music database)");
+
+                trackBar.Value = SettingManager.GetParamAsInt(SettingManager.DefaultSitesModeValue, 2);
+
+                // Update the search sites according to trackbar
+                if (rdLyricsMode.Checked)
+                {
+                    trackBar_Scroll(null, null);
+                }
+
+                comboBoxLanguages.SelectedItem = SettingManager.GetParamAsString(SettingManager.TranslationLanguage, SettingManager.DefaultTranslationLanguage);
+
+                m_find = SettingManager.GetParamAsString(SettingManager.Find, "");
+                m_replace = SettingManager.GetParamAsString(SettingManager.Replace, "");
+
+
+                if (m_find != "")
+                {
+                    string[] findArray = m_find.Split(',');
+                    string[] replaceArray = m_replace.Split(',');
+                    int valueIndex = 0;
+
+                    dbGridView.Rows.Clear();
+
+                    foreach (string findValue in findArray)
                     {
-                        rbLrcMode.Checked = true;
+                        if (findValue != "")
+                        {
+                            dbGridView.Rows.Insert(valueIndex, 1);
+                            DataGridViewRow row = dbGridView.Rows[valueIndex];
+                            row.Cells[0].Value = findValue;
+                            row.Cells[1].Value = replaceArray[valueIndex];
+                            valueIndex++;
+                        }
                     }
+                }
 
-                    rdTrackBar_CheckedChanged(null, null);
-
-                    tbLimit.Text = xmlreader.GetValueAsString("myLyrics", "limit", m_TotalTitles.ToString());
-                    tbPluginName.Text = xmlreader.GetValueAsString("myLyrics", "pluginsName", "Lyrics");
+                if (string.IsNullOrEmpty(m_guidString))
+                {
+                    m_guid = Guid.NewGuid();
+                    m_guidString = m_guid.ToString("P");
                     
-                    cbAutoFetch.Checked = xmlreader.GetValue("myLyrics", "automaticFetch").Equals("yes");
-                    cbAutomaticUpdate.Checked =
-                        xmlreader.GetValue("myLyrics", "automaticUpdateWhenFirstFound").Equals("yes");
-                    cbMoveSongFrom.Checked = xmlreader.GetValue("myLyrics", "moveLyricFromMarkedDatabase").Equals("yes");
-
-                    m_automaticWriteToMusicTag = xmlreader.GetValue("myLyrics", "automaticWriteToMusicTag").Equals("yes");
-                    cbMusicTagWrite.Checked = m_automaticWriteToMusicTag;
-
-                    m_automaticReadFromToMusicTag =
-                        xmlreader.GetValue("myLyrics", "automaticReadFromMusicTag").Equals("yes");
-                    cbMusicTagAlwaysCheck.Checked = m_automaticReadFromToMusicTag;
-
-                    cbUseAutoScrollAsDefault.Checked = xmlreader.GetValue("myLyrics", "useAutoscroll").Equals("yes");
-                    tbLrcTaggingOffset.Text = xmlreader.GetValueAsString("myLyrics", "LrcTaggingOffset", "500");
-                    tbLrcTaggingName.Text = xmlreader.GetValueAsString("myLyrics", "LrcTaggingName", "");
-
-                    m_guidString = ((string) xmlreader.GetValueAsString("myLyrics", "Guid", ""));
-
-                    cbUploadLrcAutomatically.Checked =
-                        xmlreader.GetValue("myLyrics", "uploadLrcToLrcFinder").Equals("yes");
-
-                    cbAlwaysAskForUploadToLrcFinder.Checked =
-                        xmlreader.GetValue("myLyrics", "alwaysAskUploadLrcToLrcFinder").Equals("yes");
-
-                    lbSongsLimitNote.Text = ("(You have currently " + m_TotalTitles.ToString() +
-                                             " titles in your music database)");
-
-                    trackBar.Value = ((int) xmlreader.GetValueAsInt("myLyrics", "defaultSitesModeValue", 2));
-
-                    // Update the search sites according to trackbar
-                    if (rdLyricsMode.Checked)
-                    {
-                        trackBar_Scroll(null, null);
-                    }
-
-                    comboBoxLanguages.SelectedItem =
-                        ((string) xmlreader.GetValueAsString("myLyrics", "translationLanguage", "English (en)"));
-
-                    m_find = xmlreader.GetValueAsString("myLyrics", "find", "");
-                    m_replace = xmlreader.GetValueAsString("myLyrics", "replace", "");
-
-
-                    if (m_find != "")
-                    {
-                        string[] findArray = m_find.Split(',');
-                        string[] replaceArray = m_replace.Split(',');
-                        int valueIndex = 0;
-
-                        dbGridView.Rows.Clear();
-
-                        foreach (string findValue in findArray)
-                        {
-                            if (findValue != "")
-                            {
-                                dbGridView.Rows.Insert(valueIndex, 1);
-                                DataGridViewRow row = dbGridView.Rows[valueIndex];
-                                row.Cells[0].Value = findValue;
-                                row.Cells[1].Value = replaceArray[valueIndex];
-                                valueIndex++;
-                            }
-                        }
-                    }
-
-                    if (string.IsNullOrEmpty(m_guidString))
-                    {
-                        m_guid = Guid.NewGuid();
-                        m_guidString = m_guid.ToString("P");
-
-                        using (var xmlwriter = MyLyricsCore.MediaPortalSettings)
-                        {
-                            xmlwriter.SetValue("myLyrics", "Guid", m_guidString);
-                        }
-                    }
-                    else
-                    {
-                        m_guid = new Guid(m_guidString);
-                    }
+                    SettingManager.SetParam(SettingManager.Guid, m_guidString);
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show("Something has gone wrong when reading Mediaportal.xml (" + ex.Message + ")");
+                    m_guid = new Guid(m_guidString);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Something has gone wrong when reading Mediaportal.xml (" + ex.Message + ")");
             }
 
             m_strippedPrefixStrings = MediaPortalUtil.GetStrippedPrefixStringArray();
@@ -818,11 +807,8 @@ namespace MyLyrics
             // create worker thread instance
             if (lyricConfigInfosQueue.Count > 0)
             {
-                using (Settings xmlreader = MyLyricsCore.MediaPortalSettings)
-                {
-                    m_find = xmlreader.GetValueAsString("myLyrics", "find", "");
-                    m_replace = xmlreader.GetValueAsString("myLyrics", "replace", "");
-                }
+                m_find = SettingManager.GetParamAsString(SettingManager.Find, "");
+                m_replace = SettingManager.GetParamAsString(SettingManager.Replace, "");
 
                 m_EventStopThread = new ManualResetEvent(false);
                 lc = new LyricsController(this, m_EventStopThread, sitesToSearchArray, false, false, m_find, m_replace);
@@ -856,10 +842,11 @@ namespace MyLyrics
 
                         latestArtistBeforeCrash = artist;
                         latestTitleBeforeCrash = title;
-                        
+
                         logger.Info("New!: Looking for {0} - {1}.", artist, title);
-                        
-                        lc.AddNewLyricSearch(artist, title, MediaPortalUtil.GetStrippedPrefixArtist(artist, m_strippedPrefixStrings));
+
+                        lc.AddNewLyricSearch(artist, title,
+                                             MediaPortalUtil.GetStrippedPrefixArtist(artist, m_strippedPrefixStrings));
                     }
 
                     Thread.Sleep(100);
@@ -1157,79 +1144,76 @@ namespace MyLyrics
 
         private void WriteMediaPortalXml(object sender, EventArgs e)
         {
-            using (var xmlwriter = MyLyricsCore.MediaPortalSettings)
+            string sitesMode;
+            if (rdLyricsMode.Checked)
             {
-                string sitesMode;
-                if (rdLyricsMode.Checked)
+                sitesMode = rdLyricsMode.Tag as string;
+            }
+            else if (rbUserSelectMode.Checked)
+            {
+                sitesMode = rbUserSelectMode.Tag as string;
+            }
+            else
+            {
+                sitesMode = rbLrcMode.Tag as string;
+            }
+
+            SettingManager.SetParam(SettingManager.PluginsName, tbPluginName.Text);
+            SettingManager.SetParam(SettingManager.SitesMode, sitesMode);
+            SettingManager.SetParam(SettingManager.DefaultSitesModeValue, trackBar.Value.ToString());
+            SettingManager.SetParam(SettingManager.Limit, tbLimit.Text);
+
+            foreach (var site in sitesList.Items)
+            {
+                SettingManager.SetParamAsBool(SettingManager.SitePrefix + (string) site, sitesList.CheckedItems.Contains(site));
+            }
+
+            SettingManager.SetParamAsBool(SettingManager.UseAutoscroll, cbUseAutoScrollAsDefault.Checked);
+            SettingManager.SetParamAsBool(SettingManager.UploadLrcToLrcFinder, cbUploadLrcAutomatically.Checked);
+            SettingManager.SetParamAsBool(SettingManager.AlwaysAskUploadLrcToLrcFinder, cbAlwaysAskForUploadToLrcFinder.Checked);
+            SettingManager.SetParam(SettingManager.LrcTaggingName, tbLrcTaggingName.Text);
+            SettingManager.SetParamAsBool(SettingManager.AutomaticFetch, cbAutoFetch.Checked);
+            SettingManager.SetParamAsBool(SettingManager.AutomaticUpdateWhenFirstFound, cbAutomaticUpdate.Checked);
+            SettingManager.SetParamAsBool(SettingManager.MoveLyricFromMarkedDatabase, cbMoveSongFrom.Checked);
+            SettingManager.SetParamAsBool(SettingManager.AutomaticWriteToMusicTag, cbMusicTagWrite.Checked);
+            SettingManager.SetParamAsBool(SettingManager.AutomaticReadFromMusicTag, cbMusicTagAlwaysCheck.Checked);
+            SettingManager.SetParam(SettingManager.LrcTaggingOffset, tbLrcTaggingOffset.Text);
+
+
+            var text = comboBoxLanguages.SelectedItem as string;
+            if (!string.IsNullOrEmpty(text))
+            {
+                SettingManager.SetParam(SettingManager.TranslationLanguage, text);
+            }
+
+            m_automaticWriteToMusicTag = cbMusicTagWrite.Checked;
+            m_automaticReadFromToMusicTag = cbMusicTagAlwaysCheck.Checked;
+
+            try
+            {
+                var find = new StringBuilder();
+                var replace = new StringBuilder();
+
+                dbGridView.EndEdit();
+
+                foreach (DataGridViewRow row in dbGridView.Rows)
                 {
-                    sitesMode = rdLyricsMode.Tag as string;
-                }
-                else if (rbUserSelectMode.Checked)
-                {
-                    sitesMode = rbUserSelectMode.Tag as string;
-                }
-                else
-                {
-                    sitesMode = rbLrcMode.Tag as string;
-                }
-
-                xmlwriter.SetValue("myLyrics", "pluginsName", tbPluginName.Text);
-                xmlwriter.SetValue("myLyrics", "sitesMode", sitesMode);
-                xmlwriter.SetValue("myLyrics", "defaultSitesModeValue", trackBar.Value);
-                xmlwriter.SetValue("myLyrics", "limit", tbLimit.Text);
-
-                foreach (var site in sitesList.Items)
-                {
-                    xmlwriter.SetValue("myLyrics", "use" + (string) site, sitesList.CheckedItems.Contains(site).ToString());
-                }
-                
-                xmlwriter.SetValueAsBool("myLyrics", "useAutoscroll", cbUseAutoScrollAsDefault.Checked);
-                xmlwriter.SetValueAsBool("myLyrics", "uploadLrcToLrcFinder", cbUploadLrcAutomatically.Checked);
-                xmlwriter.SetValueAsBool("myLyrics", "alwaysAskUploadLrcToLrcFinder", cbAlwaysAskForUploadToLrcFinder.Checked);
-                xmlwriter.SetValue("myLyrics", "LrcTaggingName", tbLrcTaggingName.Text);
-                xmlwriter.SetValueAsBool("myLyrics", "automaticFetch", cbAutoFetch.Checked);
-                xmlwriter.SetValueAsBool("myLyrics", "automaticUpdateWhenFirstFound", cbAutomaticUpdate.Checked);
-                xmlwriter.SetValueAsBool("myLyrics", "moveLyricFromMarkedDatabase", cbMoveSongFrom.Checked);
-                xmlwriter.SetValueAsBool("myLyrics", "automaticWriteToMusicTag", cbMusicTagWrite.Checked);
-                xmlwriter.SetValueAsBool("myLyrics", "automaticReadFromMusicTag", cbMusicTagAlwaysCheck.Checked);
-                xmlwriter.SetValue("myLyrics", "LrcTaggingOffset", tbLrcTaggingOffset.Text);
-
-
-                var text = comboBoxLanguages.SelectedItem as string;
-                if (!string.IsNullOrEmpty(text))
-                {
-                    xmlwriter.SetValue("myLyrics", "translationLanguage", text);
-                }
-
-                m_automaticWriteToMusicTag = cbMusicTagWrite.Checked;
-                m_automaticReadFromToMusicTag = cbMusicTagAlwaysCheck.Checked;
-
-                try
-                {
-                    var find = new StringBuilder();
-                    var replace = new StringBuilder();
-
-                    dbGridView.EndEdit();
-
-                    foreach (DataGridViewRow row in dbGridView.Rows)
+                    if (row.Cells[0].Value != null && row.Cells[1].Value != null)
                     {
-                        if (row.Cells[0].Value != null && row.Cells[1].Value != null)
-                        {
-                            find.Append(row.Cells[0].Value.ToString().Replace(",", "") + ",");
-                            replace.Append(row.Cells[1].Value.ToString().Replace(",", "") + ",");
-                        }
+                        find.Append(row.Cells[0].Value.ToString().Replace(",", "") + ",");
+                        replace.Append(row.Cells[1].Value.ToString().Replace(",", "") + ",");
                     }
-
-                    xmlwriter.SetValue("myLyrics", "find", find.ToString());
-                    xmlwriter.SetValue("myLyrics", "replace", replace.ToString());
-
-                    m_find = find.ToString();
-                    m_replace = replace.ToString();
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
+
+                SettingManager.SetParam(SettingManager.Find, find.ToString());
+                SettingManager.SetParam(SettingManager.Replace, replace.ToString());
+
+                m_find = find.ToString();
+                m_replace = replace.ToString();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
 
