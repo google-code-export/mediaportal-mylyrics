@@ -5,9 +5,10 @@ using System.ComponentModel;
 using System.Threading;
 using System.Windows.Forms;
 using LyricsEngine;
+using LyricsEngine.LyricsSites;
 using MediaPortal.Music.Database;
-using MediaPortal.Profile;
 using MediaPortal.TagReader;
+using MyLyrics.XmlSettings;
 
 namespace MyLyrics
 {
@@ -19,8 +20,7 @@ namespace MyLyrics
 
         public delegate void DelegateLyricNotFound(String artist, String title, String message, String site, int row);
 
-        public delegate void DelegateStatusUpdate(
-            Int32 noOfLyricsToSearch, Int32 noOfLyricsSearched, Int32 noOfLyricsFound, Int32 noOfLyricsNotFound);
+        public delegate void DelegateStatusUpdate(Int32 noOfLyricsToSearch, Int32 noOfLyricsSearched, Int32 noOfLyricsFound, Int32 noOfLyricsNotFound);
 
         public delegate void DelegateStringUpdate(String message, String site);
 
@@ -160,8 +160,7 @@ namespace MyLyrics
         }
 
         // Called from worker thread using delegate and Control.Invoke
-        private void updateStatusMethod(Int32 noOfLyricsToSearch, Int32 noOfLyricsSearched, Int32 noOfLyricsFound,
-                                        Int32 noOfLyricsNotFound)
+        private void updateStatusMethod(Int32 noOfLyricsToSearch, Int32 noOfLyricsSearched, Int32 noOfLyricsFound, Int32 noOfLyricsNotFound)
         {
         }
 
@@ -184,18 +183,14 @@ namespace MyLyrics
                     string capArtist = LyricUtil.CapatalizeString(artist);
                     string capTitle = LyricUtil.CapatalizeString(title);
 
-                    DatabaseUtil.WriteToLyricsDatabase(MyLyricsUtils.LyricsDB, MyLyricsUtils.LyricsMarkedDB,
-                                                       capArtist, capTitle, lyricStrings, site);
+                    DatabaseUtil.WriteToLyricsDatabase(MyLyricsUtils.LyricsDB, MyLyricsUtils.LyricsMarkedDB, capArtist, capTitle, lyricStrings, site);
                     DatabaseUtil.SerializeLyricDB();
 
                     if (!site.Equals("music tag"))
                     {
-                        using (var xmlreader = MyLyricsCore.MediaPortalSettings)
+                        if (SettingManager.GetParamAsBool(SettingManager.AutomaticWriteToMusicTag, true))
                         {
-                            if (xmlreader.GetValueAsBool("myLyrics", "automaticWriteToMusicTag", true))
-                            {
-                                TagReaderUtil.WriteLyrics(capArtist, capTitle, lyricStrings);
-                            }
+                            TagReaderUtil.WriteLyrics(capArtist, capTitle, lyricStrings);
                         }
                     }
 
@@ -223,11 +218,9 @@ namespace MyLyrics
                     string capTitle = LyricUtil.CapatalizeString(title);
 
                     if (
-                        DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsUtils.LyricsMarkedDB, capArtist, capTitle).
-                            Equals(DatabaseUtil.LYRIC_NOT_FOUND))
+                        DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsUtils.LyricsMarkedDB, capArtist, capTitle).Equals(DatabaseUtil.LYRIC_NOT_FOUND))
                     {
-                        MyLyricsUtils.LyricsMarkedDB.Add(DatabaseUtil.CorrectKeyFormat(capArtist, capTitle),
-                                                            new LyricsItem(capArtist, capTitle, "", ""));
+                        MyLyricsUtils.LyricsMarkedDB.Add(DatabaseUtil.CorrectKeyFormat(capArtist, capTitle), new LyricsItem(capArtist, capTitle, "", ""));
                     }
 
                     DatabaseUtil.SerializeLyricMarkedDB();
@@ -347,8 +340,7 @@ namespace MyLyrics
                     }
                 }
 
-                if (!alreadySelected &&
-                    !lvSelectedSongs.Items.ContainsKey(_mSelectedArtist + "-" + lvi.SubItems[0].Text))
+                if (!alreadySelected && !lvSelectedSongs.Items.ContainsKey(_mSelectedArtist + "-" + lvi.SubItems[0].Text))
                 {
                     lvSelectedSongs.Items.Add(newLvi);
                 }
@@ -375,9 +367,7 @@ namespace MyLyrics
         {
             MusicDatabase mdb = MusicDatabase.Instance;
             List<Song> songs = new List<Song>();
-            _mSelectedArtist = ((ListView) (sender)).SelectedItems.Count > 0
-                                   ? ((ListView) (sender)).SelectedItems[0].Text
-                                   : "";
+            _mSelectedArtist = ((ListView) (sender)).SelectedItems.Count > 0 ? ((ListView) (sender)).SelectedItems[0].Text : "";
             mdb.GetSongsByArtist(_mSelectedArtist, ref songs);
 
             lbSelectedArtist.Text = String.Format("Artist: {0}", _mSelectedArtist);
@@ -391,8 +381,7 @@ namespace MyLyrics
                 ListViewItem lvi = new ListViewItem(capatalizedTitle);
                 lvi.Tag = capatalizedTitle;
 
-                int status = DatabaseUtil.IsSongInLyricsDatabase(MyLyricsUtils.LyricsDB, capatalizedArtist,
-                                                                 capatalizedTitle);
+                int status = DatabaseUtil.IsSongInLyricsDatabase(MyLyricsUtils.LyricsDB, capatalizedArtist, capatalizedTitle);
                 switch (status)
                 {
                     case DatabaseUtil.LYRIC_FOUND:
@@ -406,8 +395,7 @@ namespace MyLyrics
                         break;
                     case DatabaseUtil.LYRIC_NOT_FOUND:
                         if (
-                            DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsUtils.LyricsMarkedDB, capatalizedArtist,
-                                                                      capatalizedTitle).Equals(DatabaseUtil.LYRIC_MARKED))
+                            DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsUtils.LyricsMarkedDB, capatalizedArtist, capatalizedTitle).Equals(DatabaseUtil.LYRIC_MARKED))
                         {
                             lvi.SubItems.Add("MarkedDB");
                             lvi.SubItems.Add("-");
@@ -513,36 +501,30 @@ namespace MyLyrics
                 Thread.Sleep(2000);
             }
 
-            List<string> sitesToSearch = new List<string>();
-
-            using (Settings xmlreader = MyLyricsCore.MediaPortalSettings)
+            var sitesToSearch = new List<string>();
+            
+            //todo-foreach
+            var lyricsSitesNames = LyricsSiteFactory.LyricsSitesNames();
+            foreach (var site in lyricsSitesNames)
             {
-                if (((string) xmlreader.GetValueAsString("myLyrics", "useLrcFinder", "True")).ToString().Equals("True"))
-                    sitesToSearch.Add("LrcFinder");
-                if (((string) xmlreader.GetValueAsString("myLyrics", "useActionext", "True")).ToString().Equals("True"))
-                    sitesToSearch.Add("Actionext");
-                if (((string) xmlreader.GetValueAsString("myLyrics", "useLyrDB", "True")).ToString().Equals("True"))
-                    sitesToSearch.Add("LyrDb");
-                if (((string) xmlreader.GetValueAsString("myLyrics", "useLyrics007", "True")).ToString().Equals("True"))
-                    sitesToSearch.Add("Lyrics007");
-                if (((string) xmlreader.GetValueAsString("myLyrics", "useLyricsOnDemand", "True")).ToString().Equals("True"))
-                    sitesToSearch.Add("LyricsOnDemand");
-                if (((string) xmlreader.GetValueAsString("myLyrics", "useHotLyrics", "True")).ToString().Equals("True"))
-                    sitesToSearch.Add("HotLyrics");
-                if (((string)xmlreader.GetValueAsString("myLyrics", "useShironet", "True")).ToString().Equals("True"))
-                    sitesToSearch.Add("Shironet");
-
-                _mFind = xmlreader.GetValueAsString("myLyrics", "find", "");
-                _mReplace = xmlreader.GetValueAsString("myLyrics", "replace", "");
+                if (SettingManager.GetParamAsBool(SettingManager.SitePrefix + site, false))
+                {
+                    sitesToSearch.Add(site);
+                }
             }
+
+            _mFind = SettingManager.GetParamAsString(SettingManager.Find, "");
+            _mReplace = SettingManager.GetParamAsString(SettingManager.Replace, "");
+
 
             _mStrippedPrefixStrings = MediaPortalUtil.GetStrippedPrefixStringArray();
 
             _mEventStopThread = new ManualResetEvent(false);
 
             // If automaticUpdate is set then return after the first positive search
-            _lyricsController = new LyricsController(this, _mEventStopThread, (string[]) sitesToSearch.ToArray(), false, false,
-                                        _mFind, _mReplace);
+            _lyricsController = new LyricsController(this, _mEventStopThread, (string[]) sitesToSearch.ToArray(), false,
+                                                     false,
+                                                     _mFind, _mReplace);
 
             _lyricsController.NoOfLyricsToSearch = _mNoOfSearchesToComplete;
 
@@ -613,8 +595,7 @@ namespace MyLyrics
                     string artist = lvi.SubItems[0].Text;
                     string title = lvi.SubItems[1].Text;
                     if (
-                        DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsUtils.LyricsMarkedDB, artist, title).Equals
-                            (DatabaseUtil.LYRIC_MARKED))
+                        DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsUtils.LyricsMarkedDB, artist, title).Equals(DatabaseUtil.LYRIC_MARKED))
                     {
                         lvi.SubItems[2].Text = "MarkedDB";
                         if (cancelled)
@@ -693,8 +674,7 @@ namespace MyLyrics
 
                     bwOnlineSearch.ReportProgress(rowNumberInListView);
 
-                    _lyricsController.AddNewLyricSearch(artist, title,
-                                           MediaPortalUtil.GetStrippedPrefixArtist(artist, _mStrippedPrefixStrings));
+                    _lyricsController.AddNewLyricSearch(artist, title, MediaPortalUtil.GetStrippedPrefixArtist(artist, _mStrippedPrefixStrings));
                 }
 
                 Thread.Sleep(200);
@@ -758,8 +738,7 @@ namespace MyLyrics
             else if (_mEventStopThread != null)
             {
                 _mEventStopThread.Set();
-                ThreadFinishedMethod(_mSelectedArtist, string.Empty, "The search has been cancelled by the user.",
-                                     "none");
+                ThreadFinishedMethod(_mSelectedArtist, string.Empty, "The search has been cancelled by the user.", "none");
             }
 
             bwMusicTagSearch.CancelAsync();
@@ -822,18 +801,15 @@ namespace MyLyrics
 
         private void btSearch_Click(object sender, EventArgs e)
         {
-            using (Settings xmlreader = MyLyricsCore.MediaPortalSettings)
+            if (SettingManager.GetParamAsBool(SettingManager.AutomaticReadFromMusicTag, true))
             {
-                if (xmlreader.GetValueAsBool("myLyrics", "automaticReadFromMusicTag", true))
-                {
-                    Search_Init();
-                    SearchMusicTags();
-                }
-                else
-                {
-                    Search_Init();
-                    SearchOnline();
-                }
+                Search_Init();
+                SearchMusicTags();
+            }
+            else
+            {
+                Search_Init();
+                SearchOnline();
             }
         }
     }

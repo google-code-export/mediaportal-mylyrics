@@ -19,8 +19,8 @@ using MediaPortal.GUI.Library;
 using MediaPortal.Music.Database;
 using MediaPortal.Player;
 using MediaPortal.Playlists;
-using MediaPortal.Profile;
 using MediaPortal.TagReader;
+using MyLyrics.XmlSettings;
 using NLog;
 using Timer = System.Timers.Timer;
 
@@ -178,8 +178,7 @@ namespace MyLyrics
             if (_NextTrackTag != null)
             {
                 GUIPropertyManager.SetProperty("#Play.Next.Title", _NextTrackTag.Title);
-                GUIPropertyManager.SetProperty("#Play.Next.Track",
-                                               _NextTrackTag.Track > 0 ? _NextTrackTag.Track.ToString() : string.Empty);
+                GUIPropertyManager.SetProperty("#Play.Next.Track", _NextTrackTag.Track > 0 ? _NextTrackTag.Track.ToString() : string.Empty);
                 GUIPropertyManager.SetProperty("#Play.Next.Album", _NextTrackTag.Album);
                 GUIPropertyManager.SetProperty("#Play.Next.Artist", _NextTrackTag.Artist);
                 GUIPropertyManager.SetProperty("#Play.Next.Genre", _NextTrackTag.Genre);
@@ -653,61 +652,48 @@ namespace MyLyrics
 
             resetGUI(_selectedScreen);
 
+            // Get MediaPortal internal configuration
             using (var xmlreader = MyLyricsCore.MediaPortalSettings)
             {
                 _UseID3 = xmlreader.GetValueAsBool("musicfiles", "showid3", true);
 
-                Setup.ActiveSites.Clear();
-                foreach (var site in from site in LyricsSiteFactory.LyricsSitesNames() let active = "True".Equals(xmlreader.GetValue("myLyrics", "use" + site)) where active select site)
-                {
-                    Setup.ActiveSites.Add(site);
-                }
-
-                _AutomaticWriteToMusicTag = xmlreader.GetValue("myLyrics", "automaticWriteToMusicTag").Equals("yes");
-                _AutomaticReadFromMusicTag = xmlreader.GetValue("myLyrics", "automaticReadFromMusicTag").Equals("yes");
-
-                _useAutoScrollAsDefault =
-                    (xmlreader.GetValueAsString("myLyrics", "useAutoscroll", "True")).Equals("yes") ? true : false;
-                _useAutoOnLyricLength =
-                    (xmlreader.GetValueAsString("myLyrics", "useAutoOnLyricLength", "False")).Equals("yes")
-                        ? true
-                        : false;
-                _LrcTaggingOffset = (xmlreader.GetValueAsString("myLyrics", "LrcTaggingOffset", "´500"));
-
-                string strButtonText = (xmlreader.GetValueAsString("myLyrics", "pluginsName", "My Lyrics"));
-                GUIPropertyManager.SetProperty("#currentmodule", strButtonText);
-
-                _LrcTaggingName = (xmlreader.GetValueAsString("myLyrics", "LrcTaggingName", ""));
-
-                _uploadLrcToLrcFinder =
-                    (xmlreader.GetValueAsString("myLyrics", "uploadLrcToLrcFinder", "False")).Equals("yes")
-                        ? true
-                        : false;
-                _confirmedNoUploadLrcToLrcFinder =
-                    (xmlreader.GetValueAsString("myLyrics", "confirmedNoUploadLrcToLrcFinder", "False")).Equals("yes")
-                        ? true
-                        : false;
-                _alwaysAskUploadLrcToLrcFinder =
-                    (xmlreader.GetValueAsString("myLyrics", "alwaysAskUploadLrcToLrcFinder", "False")).Equals("yes")
-                        ? true
-                        : false;
-
-                string translationString =
-                    (xmlreader.GetValueAsString("myLyrics", "translationLanguage", "English (en)"));
-
-                string[] strings = translationString.Split(new string[1] {"("}, StringSplitOptions.None);
-                _translationLanguage = strings[0].Trim();
-                _translationLanguageCode = strings[1].Replace(")", string.Empty);
-
-                _skin = (xmlreader.GetValueAsString("skin", "name", "Blue3"));
-
-                _guidString = (xmlreader.GetValueAsString("myLyrics", "Guid", ""));
+                _skin = xmlreader.GetValueAsString("skin", "name", "Blue3");
 
                 _crossfade = xmlreader.GetValueAsInt("audioplayer", "crossfade", 2000);
-
-                _Find = xmlreader.GetValueAsString("myLyrics", "find", "");
-                _Replace = xmlreader.GetValueAsString("myLyrics", "replace", "");
             }
+
+            Setup.ActiveSites.Clear();
+            foreach (var site in from site in LyricsSiteFactory.LyricsSitesNames() let active = SettingManager.GetParamAsBool(SettingManager.SitePrefix + site, false) where active select site)
+            {
+                Setup.ActiveSites.Add(site);
+            }
+
+            _AutomaticWriteToMusicTag = SettingManager.GetParamAsBool(SettingManager.AutomaticWriteToMusicTag, false);
+            _AutomaticReadFromMusicTag = SettingManager.GetParamAsBool(SettingManager.AutomaticReadFromMusicTag, false);
+
+            _useAutoScrollAsDefault = SettingManager.GetParamAsBool(SettingManager.UseAutoscroll, true);
+            _useAutoOnLyricLength = SettingManager.GetParamAsBool(SettingManager.UseAutoOnLyricLength, false);
+            _LrcTaggingOffset = SettingManager.GetParamAsString(SettingManager.LrcTaggingOffset, SettingManager.DefaultLrcTaggingOffset);
+
+            var strButtonText = SettingManager.GetParamAsString(SettingManager.PluginsName, SettingManager.DefaultPluginName);
+            GUIPropertyManager.SetProperty("#currentmodule", strButtonText);
+
+            _LrcTaggingName = SettingManager.GetParamAsString(SettingManager.LrcTaggingName, "");
+
+            _uploadLrcToLrcFinder = SettingManager.GetParamAsBool(SettingManager.UploadLrcToLrcFinder, false);
+            _confirmedNoUploadLrcToLrcFinder = SettingManager.GetParamAsBool(SettingManager.ConfirmedNoUploadLrcToLrcFinder, false);
+            _alwaysAskUploadLrcToLrcFinder = SettingManager.GetParamAsBool(SettingManager.AlwaysAskUploadLrcToLrcFinder, false);
+
+            var translationString = SettingManager.GetParamAsString(SettingManager.TranslationLanguage, SettingManager.DefaultTranslationLanguage);
+
+            string[] strings = translationString.Split(new string[1] {"("}, StringSplitOptions.None);
+            _translationLanguage = strings[0].Trim();
+            _translationLanguageCode = strings[1].Replace(")", string.Empty);
+
+            _guidString = SettingManager.GetParamAsString(SettingManager.Guid, "");
+
+            _Find = SettingManager.GetParamAsString(SettingManager.Find, "");
+            _Replace = SettingManager.GetParamAsString(SettingManager.Replace, "");
 
             if (!_settingsRead) // only first time
             {
@@ -729,11 +715,8 @@ namespace MyLyrics
             {
                 _guid = Guid.NewGuid();
                 _guidString = _guid.ToString("P");
-
-                using (Settings xmlwriter = MyLyricsCore.MediaPortalSettings)
-                {
-                    xmlwriter.SetValue("myLyrics", "Guid", _guidString);
-                }
+                
+                SettingManager.SetParam(SettingManager.Guid, _guidString);
             }
             else
             {
@@ -1926,20 +1909,14 @@ namespace MyLyrics
                                 UploadLrcFile(_LyricText);
 
                                 _uploadLrcToLrcFinder = true;
-
-                                using (Settings xmlwriter = MyLyricsCore.MediaPortalSettings)
-                                {
-                                    xmlwriter.SetValue("myLyrics", "uploadLrcToLrcFinder", "yes");
-                                }
+                                
+                                SettingManager.SetParamAsBool(SettingManager.UploadLrcToLrcFinder, true);
                             }
                             else
                             {
                                 _confirmedNoUploadLrcToLrcFinder = true;
-
-                                using (Settings xmlwriter = MyLyricsCore.MediaPortalSettings)
-                                {
-                                    xmlwriter.SetValue("myLyrics", "confirmedNoUploadLrcToLrcFinder", "yes");
-                                }
+                                
+                                SettingManager.SetParamAsBool(SettingManager.ConfirmedNoUploadLrcToLrcFinder, true);
                             }
                         }
                     }
@@ -2705,10 +2682,7 @@ namespace MyLyrics
         /// </summary>
         public bool GetHome(out string strButtonText, out string strButtonImage, out string strButtonImageFocus, out string strPictureImage)
         {
-            using (Settings xmlreader = MyLyricsCore.MediaPortalSettings)
-            {
-                strButtonText = (xmlreader.GetValueAsString("myLyrics", "pluginsName", "My Lyrics"));
-            }
+            strButtonText = (SettingManager.GetParamAsString(SettingManager.PluginsName, SettingManager.DefaultPluginName));
             strButtonImage = String.Empty;
             strButtonImageFocus = String.Empty;
             strPictureImage = "hover_my lyrics.png";

@@ -11,6 +11,7 @@ using MediaPortal.Configuration;
 using MediaPortal.Music.Database;
 using MediaPortal.Profile;
 using MediaPortal.TagReader;
+using MyLyrics.XmlSettings;
 
 namespace MyLyrics
 {
@@ -157,12 +158,9 @@ namespace MyLyrics
                 treeView.Update();
                 DatabaseUtil.SerializeDB(CurrentDB);
 
-                using (var xmlreader = MyLyricsCore.MediaPortalSettings)
+                if (SettingManager.GetParamAsBool(SettingManager.AutomaticWriteToMusicTag, true))
                 {
-                    if (xmlreader.GetValueAsBool("myLyrics", "automaticWriteToMusicTag", true))
-                    {
-                        TagReaderUtil.WriteLyrics(artist, title, lyrics);
-                    }
+                    TagReaderUtil.WriteLyrics(artist, title, lyrics);
                 }
 
                 return true;
@@ -333,23 +331,17 @@ namespace MyLyrics
 
             CurrentDB[DatabaseUtil.CorrectKeyFormat(capArtist, capTitle)].Lyrics = lyrics;
             DatabaseUtil.SerializeDB(CurrentDB);
-
-            using (var xmlreader = MyLyricsCore.MediaPortalSettings)
+            
+            if (SettingManager.GetParamAsBool(SettingManager.AutomaticWriteToMusicTag, true))
             {
-                if (xmlreader.GetValueAsBool("myLyrics", "automaticWriteToMusicTag", true))
-                {
-                    TagReaderUtil.WriteLyrics(capArtist, capTitle, lyrics);
-                }
+                TagReaderUtil.WriteLyrics(capArtist, capTitle, lyrics);
             }
 
             if (CurrentDB.Equals(MyLyricsUtils.LyricsMarkedDB))
             {
-                using (var xmlreader = MyLyricsCore.MediaPortalSettings)
+                if (SettingManager.GetParamAsBool(SettingManager.MoveLyricFromMarkedDatabase, true))
                 {
-                    if (xmlreader.GetValueAsBool("myLyrics", "moveLyricFromMarkedDatabase", true))
-                    {
-                        MoveLyricToOtherDatabase();
-                    }
+                    MoveLyricToOtherDatabase();
                 }
             }
 
