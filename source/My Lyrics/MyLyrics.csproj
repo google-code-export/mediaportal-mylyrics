@@ -116,6 +116,12 @@
   <ItemGroup>
     <Compile Include="Convert\ConvertFromXMLtoLyricsDatabase.cs" />
     <Compile Include="MediaPortalUtil.cs" />
+    <Compile Include="MyLyrics Configuration\Help.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MyLyrics Configuration\Help.Designer.cs">
+      <DependentUpon>Help.cs</DependentUpon>
+    </Compile>
     <Compile Include="MyLyrics Configuration\ExportTags.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -178,8 +184,13 @@
       <DependentUpon>FindLyric.cs</DependentUpon>
     </Compile>
     <Compile Include="TagReaderUtil.cs" />
+    <Compile Include="XmlSettings\SettingManager.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="MyLyrics Configuration\Help.resx">
+      <DependentUpon>Help.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="MyLyrics Configuration\ExportTags.resx">
       <DependentUpon>ExportTags.cs</DependentUpon>
       <SubType>Designer</SubType>

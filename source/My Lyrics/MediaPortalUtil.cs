@@ -8,24 +8,24 @@ namespace MyLyrics
       // Returns latests settings from the MediaPortal.xml file. Reload on access to ensure any changes made while the program runs are honored.
 
       public static string[] GetStrippedPrefixStringArray()
-    {
-      string strippedPrefixes = "";
-      using (var xmlreader = MyLyricsCore.MediaPortalSettings)
       {
-        strippedPrefixes = (xmlreader.GetValueAsString("musicfiles", "artistprefixes", "the,les,die"));
+          string strippedPrefixes = "";
+          using (var xmlreader = MyLyricsCore.MediaPortalSettings)
+          {
+              strippedPrefixes = (xmlreader.GetValueAsString("musicfiles", "artistprefixes", "the,les,die"));
+          }
+          string[] strippedPrefixesArray = strippedPrefixes.Split(new string[1] { "," }, StringSplitOptions.RemoveEmptyEntries);
+
+          for (int i = 0; i < strippedPrefixesArray.Length; i++)
+          {
+              string temp = strippedPrefixesArray[i];
+              strippedPrefixesArray[i] = LyricUtil.CapatalizeString(", " + temp.Trim());
+          }
+
+          return strippedPrefixesArray;
       }
-      string[] strippedPrefixesArray = strippedPrefixes.Split(new string[1] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
-      for (int i = 0; i < strippedPrefixesArray.Length; i++)
-      {
-        string temp = strippedPrefixesArray[i];
-        strippedPrefixesArray[i] = LyricUtil.CapatalizeString(", " + temp.Trim());
-      }
-
-      return strippedPrefixesArray;
-    }
-
-    public static string GetStrippedPrefixArtist(string artist, string[] strippedPrefixStringArray)
+      public static string GetStrippedPrefixArtist(string artist, string[] strippedPrefixStringArray)
     {
       foreach (string s in strippedPrefixStringArray)
       {
