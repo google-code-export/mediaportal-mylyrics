@@ -54,7 +54,7 @@ namespace LyricsEngine.LyricsSites
         /// <returns>List of lyrics search sites</returns>
         public static List<string> LyricsSitesNames()
         {
-            return ClassRegistry.Keys.Where(identifier => Create(ClassRegistry[identifier], "", "", null, 0).SiteActive()).ToList();
+            return ClassRegistry.Keys.Where(identifier => CreateDummySite(identifier).SiteActive()).ToList();
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace LyricsEngine.LyricsSites
         /// <returns>List of LRC sites</returns>
         public static List<string> LrcLyricsSiteNames()
         {
-            return LyricsSitesNames().Where(identifier => Create(ClassRegistry[identifier], "", "", null, 0).GetLyricType() == LyricType.Lrc).ToList();
+            return LyricsSitesNames().Where(identifier => CreateDummySite(identifier).GetLyricType() == LyricType.Lrc).ToList();
         }
 
 
@@ -74,8 +74,9 @@ namespace LyricsEngine.LyricsSites
         /// <returns>List of sites with a speed at least as requested</returns>
         public static List<string> LyricsSitesBySpeed(SiteSpeed speed)
         {
-            return LyricsSitesNames().Where(identifier => Create(ClassRegistry[identifier], "", "", null, 0).GetSiteSpeed() <= speed).ToList();
+            return LyricsSitesNames().Where(identifier => CreateDummySite(identifier).GetSiteSpeed() <= speed).ToList();
         }
+
 
         /// <summary>
         /// Create a Lyrics search site object by name
@@ -99,10 +100,25 @@ namespace LyricsEngine.LyricsSites
             return Create(ClassRegistry[identifier], artist, title, mEventStopSiteSearches, timeLimit);
         }
 
+        public static string GetBaseUrlFromSiteName(string site)
+        {
+            var abstractSite = CreateDummySite(site);
+            return abstractSite != null ? abstractSite.BaseUrl : string.Empty;
+        }
+
         #endregion public methods
 
         #region private methods
 
+        /// <summary>
+        /// Create site
+        /// </summary>
+        /// <param name="type">site identifier</param>
+        /// <param name="artist">artist</param>
+        /// <param name="title">title</param>
+        /// <param name="mEventStopSiteSearches">stop event</param>
+        /// <param name="timeLimit">time limit</param>
+        /// <returns></returns>
         private static AbstractSite Create(Type type, string artist, string title, WaitHandle mEventStopSiteSearches, int timeLimit)
         {
             ConstructorDelegate del;
@@ -131,6 +147,16 @@ namespace LyricsEngine.LyricsSites
             del = (ConstructorDelegate) dynamicMethod.CreateDelegate(typeof (ConstructorDelegate));
             ClassConstructors.Add(type.Name, del);
             return del(artist, title, mEventStopSiteSearches, timeLimit);
+        }
+
+        /// <summary>
+        /// Create a dummy site from identifier
+        /// </summary>
+        /// <param name="identifier">site identifier</param>
+        /// <returns>site (without any data)</returns>
+        private static AbstractSite CreateDummySite(string identifier)
+        {
+            return Create(ClassRegistry[identifier], "", "", null, 0);
         }
 
         #endregion private methods

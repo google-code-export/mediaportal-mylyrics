@@ -115,6 +115,7 @@ namespace MyLyrics
             this.Find = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Replace = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabPageAbout = new System.Windows.Forms.TabPage();
+            this.tabPageHelp = new System.Windows.Forms.TabPage();
             this.btClose = new MediaPortal.UserInterface.Controls.MPButton();
             this.bgWorkerSearch = new System.ComponentModel.BackgroundWorker();
             this.tabControl.SuspendLayout();
@@ -148,6 +149,7 @@ namespace MyLyrics
             this.tabControl.Controls.Add(this.tabPageSetup);
             this.tabControl.Controls.Add(this.tabPageReplace);
             this.tabControl.Controls.Add(this.tabPageAbout);
+            this.tabControl.Controls.Add(this.tabPageHelp);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
@@ -1067,6 +1069,16 @@ namespace MyLyrics
             this.tabPageAbout.Text = "About";
             this.tabPageAbout.UseVisualStyleBackColor = true;
             // 
+            // tabPageHelp
+            // 
+            this.tabPageHelp.Location = new System.Drawing.Point(4, 22);
+            this.tabPageHelp.Name = "tabPageHelp";
+            this.tabPageHelp.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageHelp.Size = new System.Drawing.Size(540, 500);
+            this.tabPageHelp.TabIndex = 6;
+            this.tabPageHelp.Text = "Help";
+            this.tabPageHelp.UseVisualStyleBackColor = true;
+            // 
             // btClose
             // 
             this.btClose.Location = new System.Drawing.Point(468, 507);
@@ -1227,5 +1239,6 @@ namespace MyLyrics
     private System.Windows.Forms.ComboBox comboBoxLanguages;
     internal MediaPortal.UserInterface.Controls.MPCheckBox cbAlwaysAskForUploadToLrcFinder;
     internal System.Windows.Forms.CheckedListBox sitesList;
+    private TabPage tabPageHelp;
   }
 }
