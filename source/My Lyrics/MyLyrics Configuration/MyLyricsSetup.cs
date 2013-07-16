@@ -48,6 +48,7 @@ namespace MyLyrics
         private int hour = 0;
 
         private Information informationUC;
+        private Help helpUC;
         private int lastShownLyricsTitles = 0;
         private int lastShownMarkedLyricsTitles = 0;
         private string latestArtistBeforeCrash = null;
@@ -126,10 +127,12 @@ namespace MyLyrics
             lyricsLibraryUC = new LyricsLibrary(this);
             musicDatabaseBrowseUC = new MusicDatabaseBrowse(this);
             informationUC = new Information(this);
+            helpUC = new Help(this);
 
             tabPageLyricsDatabase.Controls.Add(lyricsLibraryUC);
             tabPageMusicDatabaseBrowse.Controls.Add(musicDatabaseBrowseUC);
             tabPageAbout.Controls.Add(informationUC);
+            tabPageHelp.Controls.Add(helpUC);
 
             // initialize delegates
             m_DelegateLyricFound = LyricFoundMethod;
@@ -1260,5 +1263,5 @@ namespace MyLyrics
         }
 
         #endregion
-    }
+        }
 }
