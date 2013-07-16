@@ -117,15 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="lbIntro.Text" xml:space="preserve">
-    <value>The MyLyrics plugin makes it possible for you to see the lyric for the currently played song in MediaPortal. When playing a song in MediaPortal simple go into MyLyrics and the lyric for the song will be displayed.
-
-Also when run in configuration mode, you will be able to work on your lyrics database, import and export lyrics from music tags, and perform various types of searches.</value>
+  <data name="label2.Text" xml:space="preserve">
+    <value>- See your lyrics database (containing the songs with a matching lyric).
+- See your marked database (containing the songs that were searched without a match).
+- You can modify, import, and find an alternative title for a known song amont other things.</value>
   </data>
-  <metadata name="Site.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="Url.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
+  <data name="label8.Text" xml:space="preserve">
+    <value>- Set up the plugin as you prefer. E.g. which sites to query in your searches.
+- Choose the plugin alias and if a found lyric should be stored in the tag of the music file.
+- Tweak the settings regarding the "Find Lyric" dialog. </value>
+  </data>
 </root>

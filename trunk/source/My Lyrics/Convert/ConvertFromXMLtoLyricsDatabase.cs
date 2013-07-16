@@ -8,47 +8,47 @@ namespace MyLyrics
   {
     public LyricsDatabase Convert(string path)
     {
-      LyricsDatabase db = new LyricsDatabase();
-      XmlTextReader tr = new XmlTextReader(path);
+        LyricsDatabase db = new LyricsDatabase();
+        XmlTextReader tr = new XmlTextReader(path);
 
-      string currentArtist = "";
-      string currentTitle = "";
-      while (tr.Read())
-      {
-        switch (tr.Name)
+        string currentArtist = "";
+        string currentTitle = "";
+        while (tr.Read())
         {
-          case "section":
-            if (tr.AttributeCount == 1)
+            switch (tr.Name)
             {
-              currentArtist = tr.GetAttribute(0);
+                case "section":
+                    if (tr.AttributeCount == 1)
+                    {
+                        currentArtist = tr.GetAttribute(0);
+                    }
+                    break;
+                case "entry":
+                    if (tr.AttributeCount == 1)
+                    {
+                        currentTitle = tr.GetAttribute(0);
+                        LyricsItem item = new LyricsItem(currentArtist, currentTitle, "", "");
+                        db.Add(DatabaseUtil.CorrectKeyFormat(currentArtist, currentTitle), item);
+                    }
+                    break;
             }
-            break;
-          case "entry":
-            if (tr.AttributeCount == 1)
-            {
-              currentTitle = tr.GetAttribute(0);
-              LyricsItem item = new LyricsItem(currentArtist, currentTitle, "", "");
-              db.Add(DatabaseUtil.CorrectKeyFormat(currentArtist, currentTitle), item);
-            }
-            break;
         }
-      }
-      tr.Close();
+        tr.Close();
 
-      LyricsDatabase lyricsDatabase = new LyricsDatabase();
+        LyricsDatabase lyricsDatabase = new LyricsDatabase();
 
-      using (Settings xmlreader = new Settings(path, false))
-      {
-        string lyrics;
-        foreach (KeyValuePair<string, LyricsItem> kvp in db)
+        using (Settings xmlreader = new Settings(path, false))
         {
-          lyrics = xmlreader.GetValueAsString(kvp.Value.Artist, kvp.Value.Title, "");
-          lyricsDatabase.Add(DatabaseUtil.CorrectKeyFormat(kvp.Value.Artist, kvp.Value.Title),
-                             new LyricsItem(kvp.Value.Artist, kvp.Value.Title, lyrics, "old database entry"));
+            string lyrics;
+            foreach (KeyValuePair<string, LyricsItem> kvp in db)
+            {
+                lyrics = xmlreader.GetValueAsString(kvp.Value.Artist, kvp.Value.Title, "");
+                lyricsDatabase.Add(DatabaseUtil.CorrectKeyFormat(kvp.Value.Artist, kvp.Value.Title),
+                                   new LyricsItem(kvp.Value.Artist, kvp.Value.Title, lyrics, "old database entry"));
+            }
         }
-      }
 
-      return lyricsDatabase;
+        return lyricsDatabase;
     }
   }
 }
