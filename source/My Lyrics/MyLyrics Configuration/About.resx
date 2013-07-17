@@ -128,4 +128,12 @@ Also when run in configuration mode, you will be able to work on your lyrics dat
   <metadata name="Url.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
+  <data name="label1.Text" xml:space="preserve">
+    <value>mackey - author or original plugin
+Søren - maintaining the plugin for a while
+BennieBoy - LRC Finder feature
+SilentException - various bug fixes
+ysmp - skin files
+Dadeo, catavolt, Dragy - forum feedback and support</value>
+  </data>
 </root>

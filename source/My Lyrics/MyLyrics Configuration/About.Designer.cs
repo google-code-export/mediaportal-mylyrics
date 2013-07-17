@@ -35,12 +35,14 @@ namespace MyLyrics
             this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.supportedSites = new System.Windows.Forms.DataGridView();
-            this.Site = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Url = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.sites = new System.Windows.Forms.ListView();
             this.label8 = new System.Windows.Forms.Label();
             this.linkLabelForum = new System.Windows.Forms.LinkLabel();
             this.label11 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.Site = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Url = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.supportedSites)).BeginInit();
             this.SuspendLayout();
@@ -62,7 +64,7 @@ namespace MyLyrics
             this.lbInfo2.AutoSize = true;
             this.lbInfo2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbInfo2.ForeColor = System.Drawing.Color.Black;
-            this.lbInfo2.Location = new System.Drawing.Point(26, 150);
+            this.lbInfo2.Location = new System.Drawing.Point(26, 137);
             this.lbInfo2.Name = "lbInfo2";
             this.lbInfo2.Size = new System.Drawing.Size(117, 18);
             this.lbInfo2.TabIndex = 2;
@@ -95,9 +97,9 @@ namespace MyLyrics
             this.panel1.Controls.Add(this.sites);
             this.panel1.Controls.Add(this.label8);
             this.panel1.Controls.Add(this.label2);
-            this.panel1.Location = new System.Drawing.Point(29, 173);
+            this.panel1.Location = new System.Drawing.Point(29, 158);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(480, 269);
+            this.panel1.Size = new System.Drawing.Size(480, 145);
             this.panel1.TabIndex = 8;
             // 
             // supportedSites
@@ -116,40 +118,25 @@ namespace MyLyrics
             this.supportedSites.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Site,
             this.Url});
-            this.supportedSites.Location = new System.Drawing.Point(6, 4);
+            this.supportedSites.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.supportedSites.Location = new System.Drawing.Point(6, 3);
             this.supportedSites.MultiSelect = false;
             this.supportedSites.Name = "supportedSites";
             this.supportedSites.ReadOnly = true;
             this.supportedSites.RowHeadersVisible = false;
-            this.supportedSites.Size = new System.Drawing.Size(467, 258);
+            this.supportedSites.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.supportedSites.Size = new System.Drawing.Size(467, 135);
             this.supportedSites.TabIndex = 13;
             this.supportedSites.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
-            // 
-            // Site
-            // 
-            this.Site.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Site.HeaderText = "Site";
-            this.Site.Name = "Site";
-            this.Site.ReadOnly = true;
-            this.Site.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.Site.Width = 5;
-            // 
-            // Url
-            // 
-            this.Url.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Url.HeaderText = "Url";
-            this.Url.Name = "Url";
-            this.Url.ReadOnly = true;
-            this.Url.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.Url.Width = 5;
             // 
             // sites
             // 
             this.sites.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.sites.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.sites.Location = new System.Drawing.Point(3, 4);
+            this.sites.MultiSelect = false;
             this.sites.Name = "sites";
-            this.sites.Size = new System.Drawing.Size(470, 258);
+            this.sites.Size = new System.Drawing.Size(470, 134);
             this.sites.TabIndex = 12;
             this.sites.UseCompatibleStateImageBehavior = false;
             // 
@@ -189,10 +176,53 @@ namespace MyLyrics
             this.label11.TabIndex = 14;
             this.label11.Text = "For bugs, issues and feature requests use the MP forum:";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label1.Location = new System.Drawing.Point(118, 330);
+            this.label1.MinimumSize = new System.Drawing.Size(300, 110);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(300, 110);
+            this.label1.TabIndex = 15;
+            this.label1.Text = resources.GetString("label1.Text");
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.Color.Black;
+            this.label3.Location = new System.Drawing.Point(115, 306);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(59, 18);
+            this.label3.TabIndex = 16;
+            this.label3.Text = "Credits:";
+            // 
+            // Site
+            // 
+            this.Site.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Site.HeaderText = "Site";
+            this.Site.Name = "Site";
+            this.Site.ReadOnly = true;
+            this.Site.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Site.Width = 5;
+            // 
+            // Url
+            // 
+            this.Url.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Url.HeaderText = "Url";
+            this.Url.Name = "Url";
+            this.Url.ReadOnly = true;
+            this.Url.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Url.Width = 5;
+            // 
             // Information
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.linkLabelForum);
             this.Controls.Add(this.panel1);
@@ -222,7 +252,9 @@ namespace MyLyrics
     private System.Windows.Forms.ListView sites;
     private System.Windows.Forms.DataGridView supportedSites;
     private System.Windows.Forms.DataGridViewTextBoxColumn SiteName;
-    private System.Windows.Forms.DataGridViewTextBoxColumn Url;
+    private System.Windows.Forms.Label label1;
+    private System.Windows.Forms.Label label3;
     private System.Windows.Forms.DataGridViewTextBoxColumn Site;
+    private System.Windows.Forms.DataGridViewTextBoxColumn Url;
   }
 }
