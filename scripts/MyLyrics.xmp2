@@ -251,7 +251,7 @@ Click Next to continue or Cancel to exit Setup.</Value>
   <GeneralInfo>
     <Name>MyLyrics</Name>
     <Id>acdc23fa-19b4-4867-bf25-176e79753869</Id>
-    <Author>mackey &amp; yoavain (BennieBoy, SilentException, Søren)</Author>
+    <Author>yoavain</Author>
     <HomePage>http://wiki.team-mediaportal.com/1_MEDIAPORTAL_1/17_Extensions/3_Plugins/MyLyrics</HomePage>
     <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
     <UpdateUrl>http://mediaportal-mylyrics.googlecode.com/svn/trunk/scripts/MyLyrics.xml</UpdateUrl>
