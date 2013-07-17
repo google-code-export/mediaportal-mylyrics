@@ -129,7 +129,7 @@ Also when run in configuration mode, you will be able to work on your lyrics dat
     <value>True</value>
   </metadata>
   <data name="label1.Text" xml:space="preserve">
-    <value>mackey - author or original plugin
+    <value>mackey - author of original plugin
 Søren - maintaining the plugin for a while
 BennieBoy - LRC Finder feature
 SilentException - various bug fixes
