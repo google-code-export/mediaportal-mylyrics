@@ -93,6 +93,7 @@
     <Compile Include="LyricSearch.cs" />
     <Compile Include="LyricsSites\AbstractSite.cs" />
     <Compile Include="LyricsSites\Actionext.cs" />
+    <Compile Include="LyricsSites\LyricsNet.cs" />
     <Compile Include="LyricsSites\ViewLyrics.cs" />
     <Compile Include="LyricsSites\Lyricsmode.cs" />
     <Compile Include="LyricsSites\Lyrster.cs" />
