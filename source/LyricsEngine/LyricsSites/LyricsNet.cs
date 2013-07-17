@@ -17,11 +17,6 @@ namespace LyricsEngine.LyricsSites
         // Base url
         private const string SiteBaseUrl = "http://www.lyrics.net";
 
-        // Cannot find exact match
-        private const string CannotFindExactMatch = "Cannot find exact match";
-        // space
-        private const string Space = "%20";
-
         private const string SearchPathQuery = "/artist/";
         private const string LyricsPath = "/lyric/";
 
@@ -41,17 +36,6 @@ namespace LyricsEngine.LyricsSites
         // Second phase patterns //
         ///////////////////////////
 
-        // Validation RegEx - Either TitleAndArtist or Title & Artist should be valid
-        // Title+Artist RegEx
-//        private const string TitleAndArtistSearchPattern = @"<title>(?<titleartist>.*?)</title>";
-        // Title RegEx (multiline)
-//        private const string TitleSearchStartPattern = @"<span class=""artist_song_name_txt"">";
-//        private const string TitleSearchEndPattern = @"</span>";
-//        private const string TitleSearchPattern = @"<span class=""artist_song_name_txt"">(?<title>.*?)</span>";
-        // Artist RegEx
-//        private const string ArtistSearchPattern = @"<a class=""artist_singer_title"" href=""/artist\?prfid=?\d+&lang=?\d+"">(?<artist>.*?)</a>";
-
-
         // Lyrics RegEx
         // Lyrics start RegEx
         private const string LyricsStartSearchPattern = @"<pre id=""lyric-body-text"" class=""lyric-body"" dir=""ltr"" data-lang=""en"">";
@@ -61,7 +45,7 @@ namespace LyricsEngine.LyricsSites
         # endregion
 
         // step 1 output
-        private string lyricsIndex;
+        private string _lyricsIndex;
         private bool _firstStepComplete;
 
 
@@ -73,11 +57,10 @@ namespace LyricsEngine.LyricsSites
 
         protected override void FindLyricsWithTimer()
         {
-            var fixHebrewArtist = Artist;
-            var fixedHebrewTitle = Title;
+            var artist = FixEscapeCharacters(Artist);
 
             // 1st step - find lyrics page
-            var firstUrlString = BaseUrl + SearchPathQuery + fixHebrewArtist + Space + fixedHebrewTitle;
+            var firstUrlString = BaseUrl + SearchPathQuery + artist;
 
             var findLyricsPageWebClient = new LyricsWebClient();
             findLyricsPageWebClient.OpenReadCompleted += FirstCallbackMethod;
@@ -95,13 +78,13 @@ namespace LyricsEngine.LyricsSites
                 }
             }
 
-            if (lyricsIndex == null)
+            if (_lyricsIndex == null)
             {
                 LyricText = NotFound;
                 return;
             }
             // 2nd step - find lyrics
-            var secondUrlString = BaseUrl + LyricsPath + lyricsIndex;
+            var secondUrlString = BaseUrl + LyricsPath + _lyricsIndex;
 
             var findLyricsWebClient = new LyricsWebClient(firstUrlString);
             findLyricsWebClient.OpenReadCompleted += SecondCallbackMethod;
@@ -148,7 +131,7 @@ namespace LyricsEngine.LyricsSites
 
         public override SiteSpeed GetSiteSpeed()
         {
-            return SiteSpeed.Medium;
+            return SiteSpeed.Slow;
         }
 
         public override bool SiteActive()
@@ -188,9 +171,9 @@ namespace LyricsEngine.LyricsSites
 
                     if (findLyricsPageMatch.Groups.Count == 2)
                     {
-                        lyricsIndex = findLyricsPageMatch.Groups[1].Value;
+                        _lyricsIndex = findLyricsPageMatch.Groups[1].Value;
 
-                        if (Convert.ToUInt32(lyricsIndex) > 0)
+                        if (Convert.ToUInt32(_lyricsIndex) > 0)
                         {
                             // Found page
                             thisMayBeTheCorrectPage = true;
@@ -237,15 +220,6 @@ namespace LyricsEngine.LyricsSites
                 reply = e.Result;
                 reader = new StreamReader(reply, Encoding.UTF8);
 
-                // Validation
-                var titleAndArtistInPage = string.Empty;
-                var inTitle = false;
-                var titleInPage = string.Empty;
-                var artistInPage = string.Empty;
-                var validateArtistAndTitle = false;
-                var validateArtist = false;
-                var validateTitle = false;
-
                 var foundStart = false;
 
                 while (!Complete)
@@ -257,98 +231,14 @@ namespace LyricsEngine.LyricsSites
                     }
                     var line = reader.ReadLine() ?? string.Empty;
 
-                    // Find artist + title in <title> line and validate correct artist/title
-                    /*
-                    if (titleAndArtistInPage == string.Empty)
-                    {
-                        var findTitleAndArtistMatch = Regex.Match(line, TitleAndArtistSearchPattern, RegexOptions.IgnoreCase);
-                        if (findTitleAndArtistMatch.Groups.Count == 2)
-                        {
-                            titleAndArtistInPage = findTitleAndArtistMatch.Groups[1].Value;
-
-                            // validation ArtistAndTitle
-                            if (ValidateArtistAndTitle(titleAndArtistInPage))
-                            {
-                                validateArtistAndTitle = true;
-                            }
-                        }
-                    }
-                    */
-
-                    /*
-                    //Find title in <span class="artist_song_name_txt">(?.*)</span> line
-                    if (titleInPage == String.Empty)
-                    {
-                        var findTitleStartMatch = Regex.Match(line, TitleSearchStartPattern, RegexOptions.IgnoreCase);
-                        if (findTitleStartMatch.Success)
-                        {
-                            inTitle = true;
-                        }
-                    }
-                    if (inTitle) // title found in page
-                    {
-                        titleInPage += line;
-
-                        // Search for ending of title 
-                        var findTitleEndMatch = Regex.Match(line, TitleSearchEndPattern, RegexOptions.IgnoreCase);
-                        if (findTitleEndMatch.Success)
-                        {
-                            inTitle = false;
-                        }
-                    }
-                     */
- 
-                    /*
-                    // Finish and validate
-                    if (titleInPage != string.Empty && !inTitle)
-                    {
-                        // Search for ending of artist 
-                        var findTitleMatch = Regex.Match(titleInPage, TitleSearchPattern, RegexOptions.IgnoreCase | RegexOptions.Singleline);
-                        if (findTitleMatch.Groups.Count == 2)
-                        {
-                            titleInPage = findTitleMatch.Groups[1].Value;
-
-                            // validation Title
-                            if (IgnoreSpecialChars(Title).Equals(IgnoreSpecialChars(titleInPage).Trim()))
-                            {
-                                validateTitle = true;
-                            }
-                        }
-                    }
-                    */
-
-                    /*
-                    // Find artist in <a class="artist_singer_title" href="/artist?prfid=975&lang=1">()</a>
-                    if (artistInPage == string.Empty)
-                    {
-                        var findArtistMatch = Regex.Match(line, ArtistSearchPattern, RegexOptions.IgnoreCase);
-                        if (findArtistMatch.Groups.Count == 2)
-                        {
-                            artistInPage = findArtistMatch.Groups[1].Value;
-
-                            // validation Artist
-                            if (IgnoreSpecialChars(Artist).Equals(IgnoreSpecialChars(artistInPage).Trim()))
-                            {
-                                validateArtist = true;
-                            }
-                        }
-                    }
-                    */
-
                     if (!foundStart)
                     {
                         // Try to find lyrics start in line
                         var findLyricsPageMatch = Regex.Match(line, LyricsStartSearchPattern, RegexOptions.IgnoreCase);
 
-                        if (findLyricsPageMatch.Groups.Count == 2)
+                        if (findLyricsPageMatch.Success)
                         {
                             foundStart = true;
-
-                            // Here's where we use the data from the validation - just when we hit the first lyrics row
-                            if (!((validateArtist && validateTitle) || validateArtistAndTitle))
-                            {
-                                throw new ArgumentException(CannotFindExactMatch);
-                            }
 
                             // Initialize with first line
                             lyricTemp.Append(findLyricsPageMatch.Groups[1].Value).Append(Environment.NewLine);
@@ -358,10 +248,11 @@ namespace LyricsEngine.LyricsSites
                     {
                         // Try to find lyrics end in line
                         var findLyricsPageMatch = Regex.Match(line, LyricsEndSearchPattern, RegexOptions.IgnoreCase);
-                        if (findLyricsPageMatch.Groups.Count == 2)
+                        if (findLyricsPageMatch.Success)
                         {
                             // Add last line
                             lyricTemp.Append(findLyricsPageMatch.Groups[1].Value).Append(Environment.NewLine);
+                            
                             thisMayBeTheCorrectLyric = true;
                             break;
                         }
@@ -380,6 +271,10 @@ namespace LyricsEngine.LyricsSites
                     {
                         LyricText = NotFound;
                     }
+                }
+                else
+                {
+                    LyricText = NotFound;
                 }
             }
             catch
@@ -401,16 +296,14 @@ namespace LyricsEngine.LyricsSites
             }
         }
 
-        private static string IgnoreSpecialChars(string orig)
-        {
-            return orig.Replace("\'", "").Replace("\"", "").Trim();
-        }
-
         private static string CleanLyrics(StringBuilder lyricTemp)
         {
             lyricTemp.Replace("<br>", "");
             lyricTemp.Replace("<br/>", "");
             lyricTemp.Replace("&quot;", "\"");
+
+            lyricTemp.Replace(LyricsStartSearchPattern, "");
+            lyricTemp.Replace(LyricsEndSearchPattern, "");
 
             return lyricTemp.ToString().Trim();
         }
