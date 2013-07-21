@@ -34,20 +34,28 @@ Screens:
 Compatible with MediaPortal 1.4.0
 
 Changes and fixes since version 1.7.3
-- Rewritten everything
-Rework everything. All lyrics search sites are now implementing a common interface. An abstract site class now handles timings and common stuff. Site implementation now only has to do the specific site things such as parsing. GUI is dynamically created according to the number of active implementations. Implementation now also responsible in GUI categories, i.e. in which search priority to enable it when in Lyrics mode. 
-The reason for doing such a work, which was practically rewriting almost everything, is this: Effort of adding a new search site is now very very small. Since sites often change, there's a need to be able to disable a site by changing a single word in code, and not by searching all the places it is being used (GUI, configuration, etc.)
+Reworked everything. All lyrics search sites are now implementing a common interface. An abstract site class now handles timings and common stuff. Site implementation now only has to do the specific site things such as the parsing. GUI is dynamically created according to the number of active implementations. Site implementation now also responsible of the search categories, i.e. in which search priority to enable it when in Lyrics mode.
+(Sorry if the previous paragraph was too low level)
+The reason for doing such a work, which was practically rewriting almost everything, is this: Adding a new search site was hell, but now the effort is very very small. Since sites often change, there's a need to be able to disable a site by changing a single word in code, and not by searching all the places it is being used (GUI, configuration, etc.)
 Other changes:
--	Added skin files for Default 4:3
--	Added www.lyrster.com (took 1 hour)
--	Changed Shironet to only work on Hebrew artists/titles.
--	Removed LyricsPluginSite
--	Removed HotLyrics
--	Fixed progress bar in batch search. 2 step progress bar: First for counting candidate songs  for search, the second for the search itself (The reason the first is not filling till the end is because looping over all artists and all songs does not total to the number of songs due to "various" or missing titles…)
--	Removed any hardcoded references to GUILocalizeStrings.
--	Update #Play.Current.Lyrics on lyrics found
--	Some GUI overhaul done. Fixed a few inconsistencies
--	Implement required changes for MPTagThat, so that it can use latest LyricsEngine from plugin.
+- Added skin files for Default 4:3
+- Added www.lyrster.com (took 1 hour now with the new interface ;) )
+- Added www.ViewLyrics.com
+- Added www.lyricsmode.com
+- Added www.lyrics.net
+- Changed Shironet to only work on Hebrew artists/titles.
+- Removed LyricsPluginSite
+- Removed HotLyrics
+- Removed LyricWiki
+- Fixed progress bar in batch search. 2 step progress bar: First for counting candidate songs for search, the second for the search itself (The reason the first is not filling till the end is because looping over all artists and all songs does not total to the number of songs due to "various" or missing titles…)
+- Removed any hardcoded references to GUILocalizeStrings.
+- Update #Play.Current.Lyrics on lyrics found
+- Some GUI overhaul done. Fixed a few inconsistencies.
+- Fix URL in about tab (and remove the use of IE. Now calls default browser)
+- Start using the correct configuration file (the MediaPortal.xml from ProgramData and not Program Files)
+- Change logger to print nicer.
+- Split About tab into 2 tabs: About & Help. About now contains list of supported sites, and credits section
+- Implement required changes for MPTagThat, so that it can use latest LyricsEngine from plugin.
 
 Changes and fixes since version 1.7.2
 - Fixed Lyrics007 parser (rewritten)
