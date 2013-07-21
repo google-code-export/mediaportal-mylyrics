@@ -12,7 +12,6 @@ using LyricsEngine;
 using LyricsEngine.LyricsSites;
 using MediaPortal.Configuration;
 using MediaPortal.Music.Database;
-using MediaPortal.Profile;
 using MediaPortal.TagReader;
 using MediaPortal.Util;
 using MyLyrics.XmlSettings;
@@ -32,8 +31,7 @@ namespace MyLyrics
 
         public delegate void DelegateLyricNotFound(String artist, String title, String message, String site, int row);
 
-        public delegate void DelegateStatusUpdate(
-            Int32 noOfLyricsToSearch, Int32 noOfLyricsSearched, Int32 noOfLyricsFound, Int32 noOfLyricsNotFound);
+        public delegate void DelegateStatusUpdate(Int32 noOfLyricsToSearch, Int32 noOfLyricsSearched, Int32 noOfLyricsFound, Int32 noOfLyricsNotFound);
 
         public delegate void DelegateStringUpdate(String message, String site);
 
@@ -206,7 +204,7 @@ namespace MyLyrics
         public void CopyCheckedListBox(CheckedListBox copy)
         {
             copy.Items.Clear();
-            
+
         }
 
         private void InitSitesList()
@@ -235,16 +233,13 @@ namespace MyLyrics
                 {
                     rbUserSelectMode.Checked = true;
 
-                    Setup.ActiveSites.Clear();
                     for (var index = 0; index < sitesList.Items.Count; index++)
                     {
                         var active = SettingManager.GetParamAsBool(SettingManager.SitePrefix + (sitesList.Items[index]), true);
                         sitesList.SetItemChecked(index, active);
-                        if (active)
-                        {
-                            Setup.ActiveSites.Add((string) (sitesList.Items[index]));
-                        }
                     }
+                    
+                    Setup.GetInstance().UpdateActiveSitesInSetup(sitesList);                
                 }
                 else
                 {
@@ -274,7 +269,8 @@ namespace MyLyrics
 
                 cbUploadLrcAutomatically.Checked = SettingManager.GetParamAsBool(SettingManager.UploadLrcToLrcFinder, false);
 
-                cbAlwaysAskForUploadToLrcFinder.Checked = SettingManager.GetParamAsBool(SettingManager.AlwaysAskUploadLrcToLrcFinder, false);
+                cbAlwaysAskForUploadToLrcFinder.Checked =
+                    SettingManager.GetParamAsBool(SettingManager.AlwaysAskUploadLrcToLrcFinder, false);
 
                 lbSongsLimitNote.Text = ("(You have currently " + m_TotalTitles.ToString() + " titles in your music database)");
 
@@ -317,7 +313,7 @@ namespace MyLyrics
                 {
                     m_guid = Guid.NewGuid();
                     m_guidString = m_guid.ToString("P");
-                    
+
                     SettingManager.SetParam(SettingManager.Guid, m_guidString);
                 }
                 else
@@ -334,7 +330,6 @@ namespace MyLyrics
 
             #endregion
         }
-
 
         // Stop worker thread if it is running.
         // Called when user presses Stop button of form is closed.
@@ -490,7 +485,7 @@ namespace MyLyrics
             lbDisregardedSongs2.Text = "-";
 
             var sitesToSearch = new ArrayList();
-            foreach (var site in Setup.ActiveSites)
+            foreach (var site in Setup.GetInstance().ActiveSites)
             {
                 sitesToSearch.Add(site);
             }
@@ -564,12 +559,12 @@ namespace MyLyrics
                     DatabaseUtil.LYRIC_NOT_FOUND))
             {
                 MyLyricsUtils.LyricsMarkedDB.Add(DatabaseUtil.CorrectKeyFormat(capArtist, capTitle),
-                                                    new LyricsItem(capArtist, capTitle, "", ""));
+                                                 new LyricsItem(capArtist, capTitle, "", ""));
             }
 
             m_SongsWithMark += 1;
             lbSongsWithMark2.Text = m_SongsWithMark.ToString();
-            
+
             string logText = "No match found to " + capArtist + " - " + capTitle;
             lbLastActivity2.Text = logText;
             logger.Info("Miss: {0}", logText);
@@ -615,12 +610,14 @@ namespace MyLyrics
                 lbStep2a.Text = "Completed";
             }
 
-            lbMessage.Text = "#" + ((int) (++m_noOfMessages)).ToString() + " - " + message + "\r\n" + lbMessage.Text + "\r\n";
+            lbMessage.Text = "#" + ((int) (++m_noOfMessages)).ToString() + " - " + message + "\r\n" + lbMessage.Text +
+                             "\r\n";
             btStartBatchSearch.Enabled = true;
             btCancel.Enabled = false;
             isSearching(false);
-            
-            string logText = string.Format("The search has ended with {0} found and {1} missed.", m_LyricsFound, m_LyricsNotFound);
+
+            string logText = string.Format("The search has ended with {0} found and {1} missed.", m_LyricsFound,
+                                           m_LyricsNotFound);
             lbLastActivity2.Text = logText;
 
             logger.Info("{0}", logText);
@@ -695,7 +692,8 @@ namespace MyLyrics
                         {
                             m_DisregardedSongs += 1;
                         }
-                        else if ((m_DisregardSongWithLyricInTag && ((tag = TagReader.ReadTag(song.FileName)) != null) && tag.Lyrics.Length > 0))
+                        else if ((m_DisregardSongWithLyricInTag && ((tag = TagReader.ReadTag(song.FileName)) != null) &&
+                                  tag.Lyrics.Length > 0))
                         {
                             m_SongsWithLyric += 1;
 
@@ -707,28 +705,31 @@ namespace MyLyrics
                                              Equals(DatabaseUtil.LYRIC_NOT_FOUND))
                             {
                                 MyLyricsUtils.LyricsDB.Add(DatabaseUtil.CorrectKeyFormat(capArtist, capTitle),
-                                                              new LyricsItem(capArtist, capTitle, tag.Lyrics,
-                                                                             "music tag"));
+                                                           new LyricsItem(capArtist, capTitle, tag.Lyrics,
+                                                                          "music tag"));
                             }
 
                             if (
                                 DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsUtils.LyricsMarkedDB, capArtist,
-                                                                          capTitle).Equals(DatabaseUtil.LYRIC_MARKED))
+                                                                          capTitle)
+                                            .Equals(DatabaseUtil.LYRIC_MARKED))
                             {
                                 MyLyricsUtils.LyricsMarkedDB.Remove(DatabaseUtil.CorrectKeyFormat(capArtist,
-                                                                                                     capTitle));
+                                                                                                  capTitle));
                             }
                         }
                         else
                         {
-                            var status = DatabaseUtil.IsSongInLyricsDatabase(MyLyricsUtils.LyricsDB, song.Artist, song.Title);
+                            var status = DatabaseUtil.IsSongInLyricsDatabase(MyLyricsUtils.LyricsDB, song.Artist,
+                                                                             song.Title);
 
                             if (!m_DisregardKnownLyric && status.Equals(DatabaseUtil.LYRIC_FOUND)
                                 ||
                                 (!m_DisregardMarkedLyric &&
                                  ((DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsUtils.LyricsMarkedDB,
                                                                              song.Artist, song.Title).Equals(
-                                                                                 DatabaseUtil.LYRIC_MARKED)) || status.Equals(DatabaseUtil.LYRIC_MARKED)))
+                                                                                 DatabaseUtil.LYRIC_MARKED)) ||
+                                  status.Equals(DatabaseUtil.LYRIC_MARKED)))
                                 ||
                                 (status.Equals(DatabaseUtil.LYRIC_NOT_FOUND) &&
                                  !DatabaseUtil.IsSongInLyricsMarkedDatabase(MyLyricsUtils.LyricsMarkedDB,
@@ -977,7 +978,7 @@ namespace MyLyrics
             string path = Config.GetFile(Config.Dir.Database, MyLyricsUtils.LyricsDBName);
 
             // Open database to read data from
-            FileStream fs = new FileStream(path, FileMode.Open);
+            var fs = new FileStream(path, FileMode.Open);
 
             // Create a BinaryFormatter object to perform the deserialization
             BinaryFormatter bf = new BinaryFormatter();
@@ -1063,41 +1064,29 @@ namespace MyLyrics
 
         private void trackBar_Scroll(object sender, EventArgs e)
         {
+            var lyricsSites = new List<string>();
             switch (trackBar.Value)
             {
                 case 0:
-                    var lyricsSitesFast = LyricsSiteFactory.LyricsSitesBySpeed(SiteSpeed.Fast);
-                    for (var index = 0; index < sitesList.Items.Count; index++)
-                    {
-                        sitesList.SetItemChecked(index, lyricsSitesFast.Contains(sitesList.Items[index].ToString()));
-                    }
-                    Setup.ActiveSites = lyricsSitesFast;
+                    lyricsSites = LyricsSiteFactory.LyricsSitesBySpeed(SiteSpeed.Fast);
                     break;
                 case 1:
-                    var lyricsSitesMedium = LyricsSiteFactory.LyricsSitesBySpeed(SiteSpeed.Medium);
-                    for (var index = 0; index < sitesList.Items.Count; index++)
-                    {
-                        sitesList.SetItemChecked(index, lyricsSitesMedium.Contains(sitesList.Items[index].ToString()));
-                    }
-                    Setup.ActiveSites = lyricsSitesMedium;
+                    lyricsSites = LyricsSiteFactory.LyricsSitesBySpeed(SiteSpeed.Medium);
                     break;
                 case 2:
-                    var lyricsSitesSlow = LyricsSiteFactory.LyricsSitesBySpeed(SiteSpeed.Slow);
-                    for (var index = 0; index < sitesList.Items.Count; index++)
-                    {
-                        sitesList.SetItemChecked(index, lyricsSitesSlow.Contains(sitesList.Items[index].ToString()));
-                    }
-                    Setup.ActiveSites = lyricsSitesSlow;
+                    lyricsSites = LyricsSiteFactory.LyricsSitesBySpeed(SiteSpeed.Slow);
                     break;
                 case 3:
-                    var lyricsSitesVerySlow = LyricsSiteFactory.LyricsSitesBySpeed(SiteSpeed.VerySlow);
-                    for (var index = 0; index < sitesList.Items.Count; index++)
-                    {
-                        sitesList.SetItemChecked(index, lyricsSitesVerySlow.Contains(sitesList.Items[index].ToString()));
-                    }
-                    Setup.ActiveSites = lyricsSitesVerySlow;
+                    lyricsSites = LyricsSiteFactory.LyricsSitesBySpeed(SiteSpeed.VerySlow);
                     break;
             }
+            
+            // Update sitesList & Setup
+            for (var index = 0; index < sitesList.Items.Count; index++)
+            {
+                sitesList.SetItemChecked(index, lyricsSites.Contains(sitesList.Items[index].ToString()));
+            }
+            Setup.GetInstance().UpdateActiveSitesInSetup(sitesList);
 
             if (sender != null)
             {
@@ -1111,7 +1100,7 @@ namespace MyLyrics
             {
                 trackBar.Enabled = true;
                 sitesList.Enabled = false;
-                
+
                 trackBar_Scroll(null, null);
 
                 cbMusicTagAlwaysCheck.Checked = true;
@@ -1128,15 +1117,15 @@ namespace MyLyrics
             else if (rbLrcMode.Checked)
             {
                 trackBar.Enabled = false;
-                
+
                 var lyricsSitesLrc = LyricsSiteFactory.LrcLyricsSiteNames();
                 for (var index = 0; index < sitesList.Items.Count; index++)
                 {
                     sitesList.SetItemChecked(index, lyricsSitesLrc.Contains(sitesList.Items[index].ToString()));
                 }
                 sitesList.Enabled = false;
-                Setup.ActiveSites = lyricsSitesLrc;
-                
+                Setup.GetInstance().ActiveSites = lyricsSitesLrc;
+
                 cbMusicTagAlwaysCheck.Checked = false;
                 cbMusicTagWrite.Checked = true;
 
@@ -1166,9 +1155,15 @@ namespace MyLyrics
             SettingManager.SetParam(SettingManager.DefaultSitesModeValue, trackBar.Value.ToString());
             SettingManager.SetParam(SettingManager.Limit, tbLimit.Text);
 
+            Setup.GetInstance().ActiveSites.Clear();
             foreach (var site in sitesList.Items)
             {
-                SettingManager.SetParamAsBool(SettingManager.SitePrefix + (string) site, sitesList.CheckedItems.Contains(site));
+                var active = sitesList.CheckedItems.Contains(site);
+                if (active)
+                {
+                    Setup.GetInstance().ActiveSites.Add(site as string);
+                }
+                SettingManager.SetParamAsBool(SettingManager.SitePrefix + (string)site, active);
             }
 
             SettingManager.SetParamAsBool(SettingManager.UseAutoscroll, cbUseAutoScrollAsDefault.Checked);
@@ -1224,7 +1219,7 @@ namespace MyLyrics
 
         public Object[] UpdateString
         {
-            set { m_StatusText = ((String) value[0]).ToString() + " - " + ((String) value[1]).ToString(); }
+            set { m_StatusText = value[0] + " - " + value[1]; }
         }
 
         public Object[] UpdateStatus
@@ -1263,5 +1258,5 @@ namespace MyLyrics
         }
 
         #endregion
-        }
+    }
 }

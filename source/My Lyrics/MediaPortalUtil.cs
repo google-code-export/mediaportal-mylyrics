@@ -1,5 +1,6 @@
 using System;
 using LyricsEngine;
+using MyLyrics.XmlSettings;
 
 namespace MyLyrics
 {
@@ -10,7 +11,7 @@ namespace MyLyrics
       public static string[] GetStrippedPrefixStringArray()
       {
           string strippedPrefixes = "";
-          using (var xmlreader = MyLyricsCore.MediaPortalSettings)
+          using (var xmlreader = SettingManager.MediaPortalSettings)
           {
               strippedPrefixes = (xmlreader.GetValueAsString("musicfiles", "artistprefixes", "the,les,die"));
           }
