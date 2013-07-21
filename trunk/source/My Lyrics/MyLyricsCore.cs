@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using MediaPortal.Configuration;
 using MediaPortal.Services;
+using MyLyrics.XmlSettings;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
@@ -81,10 +82,10 @@ namespace MyLyrics
             LogManager.Configuration = config;
         }
 
-        private LogLevel GetMediaportalLogLevel()
+        private static LogLevel GetMediaportalLogLevel()
         {
             LogLevel logLevel;
-            var xmlreader = MediaPortalSettings;
+            var xmlreader = SettingManager.MediaPortalSettings;
             switch ((Level)xmlreader.GetValueAsInt("general", "loglevel", 0))
             {
                 case Level.Error:
@@ -109,14 +110,6 @@ namespace MyLyrics
             var ver = Assembly.GetExecutingAssembly().GetName().Version;
             logger.Info(String.Format("MyLyrics ({0}.{1}.{2}.{3})", ver.Major, ver.Minor, ver.Build, ver.Revision));
             logger.Info("Plugin launched");
-        }
-
-        public static MediaPortal.Profile.Settings MediaPortalSettings
-        {
-            get
-            {
-                return new MediaPortal.Profile.Settings(Config.GetFile(Config.Dir.Config, MyLyricsUtils.SettingsFileName));
-            }
         }
 
         /*

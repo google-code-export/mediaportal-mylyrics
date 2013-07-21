@@ -306,7 +306,7 @@ namespace MyLyrics
                         {
                             if (_SearchingState == (int) SEARCH_STATE.NOT_SEARCHING)
                             {
-                                var lrcActiveSites = LyricsSiteFactory.LrcLyricsSiteNames().Where(lrcSite => Setup.ActiveSites.Contains(lrcSite)).ToList();
+                                var lrcActiveSites = LyricsSiteFactory.LrcLyricsSiteNames().Where(lrcSite => Setup.GetInstance().ActiveSites.Contains(lrcSite)).ToList();
                                 if (lrcActiveSites.Count > 0 &&
                                     (_SearchType == (int) SEARCH_TYPES.BOTH_LRCS_AND_LYRICS
                                      || _SearchType == (int) SEARCH_TYPES.ONLY_LRCS))
@@ -653,7 +653,7 @@ namespace MyLyrics
             resetGUI(_selectedScreen);
 
             // Get MediaPortal internal configuration
-            using (var xmlreader = MyLyricsCore.MediaPortalSettings)
+            using (var xmlreader = SettingManager.MediaPortalSettings)
             {
                 _UseID3 = xmlreader.GetValueAsBool("musicfiles", "showid3", true);
 
@@ -662,10 +662,10 @@ namespace MyLyrics
                 _crossfade = xmlreader.GetValueAsInt("audioplayer", "crossfade", 2000);
             }
 
-            Setup.ActiveSites.Clear();
+            Setup.GetInstance().ActiveSites.Clear();
             foreach (var site in from site in LyricsSiteFactory.LyricsSitesNames() let active = SettingManager.GetParamAsBool(SettingManager.SitePrefix + site, false) where active select site)
             {
-                Setup.ActiveSites.Add(site);
+                Setup.GetInstance().ActiveSites.Add(site);
             }
 
             _AutomaticWriteToMusicTag = SettingManager.GetParamAsBool(SettingManager.AutomaticWriteToMusicTag, false);
@@ -726,7 +726,7 @@ namespace MyLyrics
 
             _strippedPrefixStrings = MediaPortalUtil.GetStrippedPrefixStringArray();
 
-            _nonLrcSitesToSearch = Setup.ActiveSites.Where(site => !LyricsSiteFactory.LrcLyricsSiteNames().Contains(site)).ToList();
+            _nonLrcSitesToSearch = Setup.GetInstance().ActiveSites.Where(site => !LyricsSiteFactory.LrcLyricsSiteNames().Contains(site)).ToList();
 
             _settingsRead = true;
 
@@ -1022,7 +1022,7 @@ namespace MyLyrics
                                 //if (hasValidLRC && _SearchType == (int)SEARCH_TYPES.ONLY_LYRICS)
                                 //    _SearchType = (int)SEARCH_TYPES.ONLY_LRCS;
 
-                                var lrcActiveSites = LyricsSiteFactory.LrcLyricsSiteNames().Where(lrcSite => Setup.ActiveSites.Contains(lrcSite)).ToList();
+                                var lrcActiveSites = LyricsSiteFactory.LrcLyricsSiteNames().Where(lrcSite => Setup.GetInstance().ActiveSites.Contains(lrcSite)).ToList();
                                 if (_SearchType != (int)SEARCH_TYPES.ONLY_LYRICS && lrcActiveSites.Count == 0)
                                 {
                                     _SearchType = (int) SEARCH_TYPES.ONLY_LYRICS;
@@ -1258,7 +1258,7 @@ namespace MyLyrics
             switch (dlg.SelectedLabelText)
             {
                 case "Find LRC":
-                    var lrcActiveSites = LyricsSiteFactory.LrcLyricsSiteNames().Where(lrcSite => Setup.ActiveSites.Contains(lrcSite)).ToList();
+                    var lrcActiveSites = LyricsSiteFactory.LrcLyricsSiteNames().Where(lrcSite => Setup.GetInstance().ActiveSites.Contains(lrcSite)).ToList();
                     if (lrcActiveSites.Count > 0)
                     {
                         _SearchType = (int) SEARCH_TYPES.ONLY_LRCS;
@@ -1586,16 +1586,12 @@ namespace MyLyrics
 
                     #region 3) Search the Internet for a LRC
 
-                    var lrcActiveSites =
-                        LyricsSiteFactory.LrcLyricsSiteNames()
-                                         .Where(lrcSite => Setup.ActiveSites.Contains(lrcSite))
-                                         .ToList();
+                    var lrcActiveSites = LyricsSiteFactory.LrcLyricsSiteNames().Where(lrcSite => Setup.GetInstance().ActiveSites.Contains(lrcSite)).ToList();
                     if (lrcActiveSites.Count > 0)
                     {
                         _lyricsFound = false;
 
-                        _lc = new LyricsController(this, _EventStopThread, lrcActiveSites.ToArray(), false, false, _Find,
-                                                   _Replace);
+                        _lc = new LyricsController(this, _EventStopThread, lrcActiveSites.ToArray(), false, false, _Find, _Replace);
 
                         // create worker thread instance
                         ThreadStart job = delegate { _lc.Run(); };
@@ -1604,8 +1600,7 @@ namespace MyLyrics
                         _LyricControllerThread.Name = "LRC search";
                         _LyricControllerThread.Start();
 
-                        _lc.AddNewLyricSearch(_artist, _title,
-                                              MediaPortalUtil.GetStrippedPrefixArtist(_artist, _strippedPrefixStrings));
+                        _lc.AddNewLyricSearch(_artist, _title, MediaPortalUtil.GetStrippedPrefixArtist(_artist, _strippedPrefixStrings));
 
                         _LyriccontrollerIsWorking = true;
                     }
