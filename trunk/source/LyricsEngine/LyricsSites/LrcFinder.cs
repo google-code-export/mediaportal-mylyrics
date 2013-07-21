@@ -30,7 +30,8 @@ namespace LyricsEngine.LyricsSites
 
         protected override void FindLyricsWithTimer()
         {
-            FindLRC();
+            var findLRC = FindLRC();
+            LyricText = !string.IsNullOrEmpty(findLRC) ? findLRC : NotFound;
         }
 
         public override string Name
