@@ -59,7 +59,7 @@ namespace MyLyricsTests
             {
                 site.FindLyrics();
                 var splitLyrics = site.Lyric.Split(' ');
-                Assert.AreEqual("I've", splitLyrics[0]);
+                Assert.AreEqual("And", splitLyrics[0]);
                 Assert.AreEqual("songs.", splitLyrics[splitLyrics.Length - 1]);
             }
         }
