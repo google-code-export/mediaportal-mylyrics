@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using LyricsEngine.lrcfinder;
+using System.Threading;
+using LyricsEngine.LyricsSites;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MyLyricsTests
@@ -28,24 +29,28 @@ namespace MyLyricsTests
         [TestMethod]
         public void TestLrcFinder()
         {
-            var site = new LrcFinder(); 
-            var lrcLyrics = site.FindLRC("U2", "With Or Without You");
+            var site = new LrcFinder("U2", "With Or Without You", new ManualResetEvent(false), 100000);
 
-            const string lrcPattern = @"\[.*?\]";
-            const string lrcPatternReplacement = "";
-            var lrcRegex = new Regex(lrcPattern);
-            var lyrics = lrcRegex.Replace(lrcLyrics, lrcPatternReplacement);
+            if (site.SiteActive())
+            {
+                site.FindLyrics();
+                var lrcLyrics = site.Lyric;
 
-            const string pattern = @"\s+";
-            const string patternReplacement = " ";
-            var regex = new Regex(pattern);
-            lyrics = regex.Replace(lyrics, patternReplacement);
+                const string lrcPattern = @"\[.*?\]";
+                const string lrcPatternReplacement = "";
+                var lrcRegex = new Regex(lrcPattern);
+                var lyrics = lrcRegex.Replace(lrcLyrics, lrcPatternReplacement);
 
-            lyrics = lyrics.Trim();
+                const string pattern = @"\s+";
+                const string patternReplacement = " ";
+                var regex = new Regex(pattern);
+                lyrics = regex.Replace(lyrics, patternReplacement);
 
-            var splitUwowy = lyrics.Split(' ');
-            Assert.AreEqual("See", splitUwowy[0]);
-            Assert.AreEqual("you", splitUwowy[splitUwowy.Length - 1]);
+                var lyricsSpit = lyrics.Trim().Split(' ');
+
+                Assert.AreEqual("See", lyricsSpit[0]);
+                Assert.AreEqual("you", lyricsSpit[lyricsSpit.Length - 1]);
+            }
         }
     }
 }

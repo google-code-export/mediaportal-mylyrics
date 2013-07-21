@@ -28,20 +28,26 @@ namespace MyLyricsTests
         public void TestLyricWiki()
         {
             var site = new LyricWiki("U2", "With Or Without You", new ManualResetEvent(false), 300000);
-            site.FindLyrics();
-            var splitLyrics = site.Lyric.Split(' ');
-            Assert.AreEqual("See", splitLyrics[0]);
-            Assert.AreEqual("you", splitLyrics[splitLyrics.Length - 1]);
+            if (site.SiteActive())
+            {
+                site.FindLyrics();
+                var splitLyrics = site.Lyric.Split(' ');
+                Assert.AreEqual("See", splitLyrics[0]);
+                Assert.AreEqual("you", splitLyrics[splitLyrics.Length - 1]);
+            }
         }
 
         [TestMethod]
         public void TestLyricWikiNotFound()
         {
             var site = new LyricWiki("Foo", "Bar", new ManualResetEvent(false), 30000);
-            site.FindLyrics();
-            var splitLyrics = site.Lyric.Split(' ');
-            Assert.AreEqual("Not", splitLyrics[0]);
-            Assert.AreEqual("found", splitLyrics[splitLyrics.Length - 1]);
+            if (site.SiteActive())
+            {
+                site.FindLyrics();
+                var splitLyrics = site.Lyric.Split(' ');
+                Assert.AreEqual("Not", splitLyrics[0]);
+                Assert.AreEqual("found", splitLyrics[splitLyrics.Length - 1]);
+            }
         }
     }
 }
