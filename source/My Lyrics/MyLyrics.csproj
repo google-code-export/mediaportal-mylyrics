@@ -149,7 +149,6 @@
     <Compile Include="MyLyricsCore.cs" />
     <Compile Include="MyLyricsExternCode.cs" />
     <Compile Include="MyLyricsSettings.cs" />
-    <Compile Include="MyLyrics Configuration\MyLyricsSetup_test.cs" />
     <Compile Include="DatabaseUtil.cs" />
     <Compile Include="MyLyrics.cs" />
     <Compile Include="MyLyrics Configuration\MyLyricsSetup.cs">
