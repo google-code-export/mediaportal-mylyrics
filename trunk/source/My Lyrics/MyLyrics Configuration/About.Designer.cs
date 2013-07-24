@@ -35,7 +35,7 @@ namespace MyLyrics
             this.label2 = new System.Windows.Forms.Label();
             this.supportedSitesPanel = new System.Windows.Forms.Panel();
             this.supportedSites = new System.Windows.Forms.DataGridView();
-            this.Site = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SiteName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Url = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label8 = new System.Windows.Forms.Label();
             this.linkLabelForum = new System.Windows.Forms.LinkLabel();
@@ -116,7 +116,7 @@ namespace MyLyrics
             this.supportedSites.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.supportedSites.ColumnHeadersVisible = false;
             this.supportedSites.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Site,
+            this.SiteName,
             this.Url});
             this.supportedSites.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.supportedSites.Location = new System.Drawing.Point(6, 3);
@@ -131,13 +131,13 @@ namespace MyLyrics
             // 
             // Site
             // 
-            this.Site.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.Site.FillWeight = 30F;
-            this.Site.HeaderText = "Site";
-            this.Site.Name = "Site";
-            this.Site.ReadOnly = true;
-            this.Site.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.Site.Width = 135;
+            this.SiteName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.SiteName.FillWeight = 30F;
+            this.SiteName.HeaderText = "Site";
+            this.SiteName.Name = "Site";
+            this.SiteName.ReadOnly = true;
+            this.SiteName.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.SiteName.Width = 135;
             // 
             // Url
             // 
@@ -241,10 +241,9 @@ namespace MyLyrics
     private System.Windows.Forms.LinkLabel linkLabelForum;
     private System.Windows.Forms.Label label11;
     private System.Windows.Forms.DataGridView supportedSites;
-      private System.Windows.Forms.Label label1;
+    private System.Windows.Forms.Label label1;
     private System.Windows.Forms.Label label3;
-    private System.Windows.Forms.DataGridViewTextBoxColumn SiteName;
     private System.Windows.Forms.DataGridViewTextBoxColumn Url;
-    private System.Windows.Forms.DataGridViewTextBoxColumn Site;
+    private System.Windows.Forms.DataGridViewTextBoxColumn SiteName;
   }
 }
