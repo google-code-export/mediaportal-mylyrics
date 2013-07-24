@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
@@ -90,7 +91,9 @@ namespace MyLyrics
         private bool m_MarkSongsWhenNoLyricFound = true;
         private int m_noOfArtistsToSearch = 0;
         private int m_NoOfCurrentSearchesAllowed = 6;
-        private int m_noOfMessages = 0;
+
+        // Statistics
+        private readonly Dictionary<string, int> _lyricsFoundBySite = new Dictionary<string, int>();
 
         // Collections and arrays
         private string m_replace = string.Empty;
@@ -443,8 +446,6 @@ namespace MyLyrics
 
             m_EventStopThread = new ManualResetEvent(false);
 
-            m_noOfMessages = 0;
-
             btStartBatchSearch.Enabled = false;
 
             m_DisregardKnownLyric = cbDontSearchSongsInLyricDB.Enabled && cbDontSearchSongsInLyricDB.Checked;
@@ -519,14 +520,16 @@ namespace MyLyrics
             m_SongsWithLyric += 1;
             m_LyricsFound += 1;
 
+            IncrementLyricsFoundBySite(site);
+
             lbSongsWithLyric2.Text = m_SongsWithLyric.ToString();
             lbLyricsFound2.Text = m_LyricsFound.ToString();
 
             var capArtist = LyricUtil.CapatalizeString(m_artist);
             var capTitle = LyricUtil.CapatalizeString(m_track);
 
-            DatabaseUtil.WriteToLyricsDatabase(MyLyricsUtils.LyricsDB, MyLyricsUtils.LyricsMarkedDB, capArtist,
-                                               capTitle, lyricStrings, site);
+            DatabaseUtil.WriteToLyricsDatabase(MyLyricsUtils.LyricsDB, MyLyricsUtils.LyricsMarkedDB, capArtist, capTitle, lyricStrings, site);
+            lbMessage.Text = GetLyricsFoundBySite();
 
             if (!site.Equals("music tag") && m_automaticWriteToMusicTag)
             {
@@ -540,6 +543,36 @@ namespace MyLyrics
 
             progressBar.PerformStep();
             Update();
+        }
+
+        private void IncrementLyricsFoundBySite(string site)
+        {
+            if (_lyricsFoundBySite.ContainsKey(site))
+            {
+                _lyricsFoundBySite[site] += 1;
+
+            }
+            else
+            {
+                _lyricsFoundBySite.Add(site, 1);
+            }
+        }
+
+        private string GetLyricsFoundBySite()
+        {
+            var output = new StringBuilder();
+            output.Append("Lyrics found during this search (by site):").Append(Environment.NewLine);
+
+            // Sort by value
+            var sortedDictByValue = (from entry in _lyricsFoundBySite orderby entry.Value descending select entry).ToDictionary(pair => pair.Key, pair => pair.Value);
+            
+            foreach (var siteCount in sortedDictByValue)
+            {
+                output.AppendFormat("{0}: {1}{2}", siteCount.Key, siteCount.Value, Environment.NewLine);
+            }
+            output.Append(Environment.NewLine);
+
+            return output.ToString();
         }
 
         private void LyricNotFoundMethod(String artist, String title, String message, String site, int row)
@@ -609,8 +642,8 @@ namespace MyLyrics
                 lbStep2a.Text = "Completed";
             }
 
-            lbMessage.Text = "#" + ((int) (++m_noOfMessages)).ToString() + " - " + message + "\r\n" + lbMessage.Text +
-                             "\r\n";
+            lbMessage.Text += message + Environment.NewLine;
+
             btStartBatchSearch.Enabled = true;
             btCancel.Enabled = false;
             isSearching(false);
@@ -630,11 +663,6 @@ namespace MyLyrics
 
         private void bgWorkerSearch_DoWork(object sender, DoWorkEventArgs e)
         {
-            //            Thread.CurrentThread.Name = "bgWorker - Search";
-
-            //try
-            //{
-
             #region 1. Sorting song
 
             lyricConfigInfosQueue = new Queue();
@@ -862,31 +890,6 @@ namespace MyLyrics
 
             #endregion
 
-            //}
-            //catch (Exception ex)
-            //{
-            //    StreamReader sr = File.OpenText(logFullFileName);
-            //    log = sr.ReadToEnd();
-            //    sr.Close();
-            //    string logText = "Message:" + ex.Message + "\r\n";
-            //    logText += "StackTrace:" + ex.StackTrace + "\r\n";
-            //    logText += "Source:" + ex.Source + "\r\n";
-            //    logText += "latestArtistBeforeCrash:" + latestArtistBeforeCrash + "\r\n";
-            //    logText += "latestTitleBeforeCrash:" + latestTitleBeforeCrash + "\r\n";
-
-            //    if (ex.InnerException != null)
-            //    {
-            //        logText = "InnerException.Message:" + ex.InnerException.Message + "\r\n";
-            //        logText += "InnerException.StackTrace:" + ex.InnerException.StackTrace + "\r\n";
-            //        logText += "InnerException.Source:" + ex.InnerException.Source + "\r\n";
-            //    }
-
-            //    log += DateTime.Now.ToString() + " " + logText;
-            //    lbLastActivity2.Text = logText;
-            //    System.IO.StreamWriter writerLog = new System.IO.StreamWriter(logFullFileName);
-            //    writerLog.Write(log);
-            //    writerLog.Close();
-            //}
         }
 
         private void bgWorkerSearch_ProgressChanged(object sender, ProgressChangedEventArgs e)

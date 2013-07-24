@@ -49,7 +49,7 @@ namespace MyLyrics
             this.btCancel = new MediaPortal.UserInterface.Controls.MPButton();
             this.mpLabel3 = new MediaPortal.UserInterface.Controls.MPLabel();
             this.gbMessages = new MediaPortal.UserInterface.Controls.MPGroupBox();
-            this.lbMessage = new MediaPortal.UserInterface.Controls.MPLabel();
+            this.lbMessage = new MediaPortal.UserInterface.Controls.MPTextBox();
             this.gbProgress = new MediaPortal.UserInterface.Controls.MPGroupBox();
             this.lbTimer = new MediaPortal.UserInterface.Controls.MPLabel();
             this.lbTimeElapsed = new MediaPortal.UserInterface.Controls.MPLabel();
@@ -376,8 +376,11 @@ namespace MyLyrics
             // 
             // lbMessage
             // 
+            this.lbMessage.BorderColor = System.Drawing.Color.Empty;
             this.lbMessage.Location = new System.Drawing.Point(6, 17);
+            this.lbMessage.Multiline = true;
             this.lbMessage.Name = "lbMessage";
+            this.lbMessage.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.lbMessage.Size = new System.Drawing.Size(272, 119);
             this.lbMessage.TabIndex = 28;
             // 
@@ -1121,6 +1124,7 @@ namespace MyLyrics
             this.mpGroupBox1.ResumeLayout(false);
             this.mpGroupBox1.PerformLayout();
             this.gbMessages.ResumeLayout(false);
+            this.gbMessages.PerformLayout();
             this.gbProgress.ResumeLayout(false);
             this.gbMusicDBSearchStats.ResumeLayout(false);
             this.tabPageSetup.ResumeLayout(false);
@@ -1172,7 +1176,7 @@ namespace MyLyrics
     private MediaPortal.UserInterface.Controls.MPLabel lbLyricsNotFound2;
     private MediaPortal.UserInterface.Controls.MPLabel lbLyricsNotFound;
     private MediaPortal.UserInterface.Controls.MPGroupBox gbMessages;
-    private MediaPortal.UserInterface.Controls.MPLabel lbMessage;
+    private MediaPortal.UserInterface.Controls.MPTextBox lbMessage;
     private MediaPortal.UserInterface.Controls.MPLabel lbDisregardedSongs2;
     private MediaPortal.UserInterface.Controls.MPLabel lbDisregardedSongs;
     private System.ComponentModel.BackgroundWorker bgWorkerSearch;
