@@ -122,18 +122,25 @@
 
 Also when run in configuration mode, you will be able to work on your lyrics database, import and export lyrics from music tags, and perform various types of searches.</value>
   </data>
-  <metadata name="SiteName.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <metadata name="Site.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="Url.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="Site.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <metadata name="Url.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <data name="label1.Text" xml:space="preserve">
-    <value>mackey - author of original plugin
+    <value>yoavain - rewriting the plugin
+mackey - author of original plugin
 Søren - maintaining the plugin for a while
 BennieBoy - LRC Finder feature
 SilentException - various bug fixes
 ysmp - skin files
-Dadeo, catavolt, Dragy - forum feedback and support</value>
+Dadeo, catavolt, Dragy, sdf - forum feedback and support</value>
   </data>
 </root>
