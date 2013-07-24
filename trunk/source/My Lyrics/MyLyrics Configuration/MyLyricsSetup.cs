@@ -238,8 +238,6 @@ namespace MyLyrics
                         var active = SettingManager.GetParamAsBool(SettingManager.SitePrefix + (sitesList.Items[index]), true);
                         sitesList.SetItemChecked(index, active);
                     }
-                    
-                    Setup.GetInstance().UpdateActiveSitesInSetup(sitesList);                
                 }
                 else
                 {
@@ -247,6 +245,7 @@ namespace MyLyrics
                 }
 
                 rdTrackBar_CheckedChanged(null, null);
+                Setup.GetInstance().UpdateActiveSitesInSetup(sitesList);                
 
                 tbLimit.Text = SettingManager.GetParamAsString(SettingManager.Limit, m_TotalTitles.ToString());
                 tbPluginName.Text = SettingManager.GetParamAsString(SettingManager.PluginsName, SettingManager.DefaultPluginName);
