@@ -31,7 +31,7 @@ namespace MyLyrics
         private readonly bool _mAutomaticUpdate = true;
         private readonly bool _mAutomaticWriteToMusicTag = true;
         
-        private string _mFind = string.Empty;
+        private readonly string _mFind = string.Empty;
         
         private readonly bool _mMoveLyricFromMarkedDatabase = true;
         private readonly string _mReplace = string.Empty;
@@ -72,8 +72,8 @@ namespace MyLyrics
             _treeTitleIndex = treeTitleIndex;
 
             // initialize delegates
-            MDelegateStringUpdate = updateStringMethod;
-            MDelegateStatusUpdate = updateStatusMethod;
+            MDelegateStringUpdate = UpdateStringMethod;
+            MDelegateStatusUpdate = UpdateStatusMethod;
             MDelegateLyricFound = LyricFoundMethod;
             MDelegateLyricNotFound = LyricNotFoundMethod;
             MDelegateThreadFinished = ThreadFinishedMethod;
@@ -272,7 +272,7 @@ namespace MyLyrics
         #region delegate called methods
 
         // Called from worker thread using delegate and Control.Invoke
-        private void updateStringMethod(String message, String site)
+        private static void UpdateStringMethod(String message, String site)
         {
             //string m_message = message.ToString();
             //int siteIndex = System.Array.IndexOf<string>(Setup.AllSites(), site);
@@ -281,14 +281,13 @@ namespace MyLyrics
         }
 
         // Called from worker thread using delegate and Control.Invoke
-        private void updateStatusMethod(Int32 noOfLyricsToSearch, Int32 noOfLyricsSearched, Int32 noOfLyricsFound,
-                                        Int32 noOfLyricsNotFound)
+        private static void UpdateStatusMethod(Int32 noOfLyricsToSearch, Int32 noOfLyricsSearched, Int32 noOfLyricsFound, Int32 noOfLyricsNotFound)
         {
         }
 
         private void LyricFoundMethod(String lyricStrings, String artist, String title, String site, int row)
         {
-            ListViewItem item = new ListViewItem(site);
+            var item = new ListViewItem(site);
             item.SubItems.Add("yes");
             item.SubItems.Add(lyricStrings);
             lvSearchResults.Items.Add(item);
@@ -343,7 +342,7 @@ namespace MyLyrics
                                                          lyric, site);
                     DatabaseUtil.SerializeDBs();
                     _parent.UpdateInfo();
-                    _parent.highlightSong(_originalArtist, _originalTitle, false);
+                    _parent.HighlightSong(_originalArtist, _originalTitle, false);
                 }
                 else
                 {

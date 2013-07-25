@@ -162,7 +162,7 @@ namespace LyricsEngine.LyricsSites
                 reply = e.Result;
                 reader = new StreamReader(reply, Encoding.Default);
 
-                string line = "";
+                var line = "";
 
                 while (line.IndexOf("GOOGLE END", StringComparison.Ordinal) == -1)
                 {

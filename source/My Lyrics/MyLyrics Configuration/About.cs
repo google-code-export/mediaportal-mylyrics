@@ -6,11 +6,8 @@ namespace MyLyrics
 {
     public partial class Information : UserControl
     {
-        private Form _parent;
-
-        public Information(Form parent)
+        public Information()
         {
-            _parent = parent;
             InitializeComponent();
             InitSitesList();
         }
