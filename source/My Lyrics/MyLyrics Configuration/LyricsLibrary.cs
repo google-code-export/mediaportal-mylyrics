@@ -9,7 +9,6 @@ using LyricsEngine.LRC;
 using LyricsEngine.LyricsSites;
 using MediaPortal.Configuration;
 using MediaPortal.Music.Database;
-using MediaPortal.Profile;
 using MediaPortal.TagReader;
 using MyLyrics.XmlSettings;
 
@@ -348,7 +347,7 @@ namespace MyLyrics
             var lrc = new SimpleLRC(capArtist, capTitle, lyrics);
             if (lrc.IsValid && parent.cbUploadLrcAutomatically.Checked)
             {
-                LrcFinder.SaveLrcWithGuid(lyrics, parent.m_guid);
+                LrcFinder.SaveLrcWithGuid(lyrics, parent.MGuid);
             }
 
             btSave.Enabled = false;
