@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
@@ -8,43 +7,40 @@ using LyricsEngine;
 using LyricsEngine.LRC;
 using LyricsEngine.LyricsSites;
 using MediaPortal.Configuration;
-using MediaPortal.Music.Database;
-using MediaPortal.TagReader;
 using MyLyrics.XmlSettings;
 
 namespace MyLyrics
 {
     public partial class LyricsLibrary : UserControl
     {
-        private const int SHIFT_WHEN_HIT = 15;
-        internal static LyricsDatabase CurrentDB;
-        private static string m_CurrentArtist = "";
-        private static string m_CurrentTitle = "";
-        private int currentDBIndex = 0;
-        private SimpleLRC lrc;
+        internal static LyricsDatabase CurrentLyricsDatabase;
+        private static string _mCurrentArtist = "";
+        private static string _mCurrentTitle = "";
+        private int _currentDbIndex;
+        private SimpleLRC _lrc;
 
-        private int m_NoOfArtists;
-        private int m_NoOfTitles;
+        private int _mNoOfArtists;
+        private int _mNoOfTitles;
 
-        private bool m_OnlyShowLRCs = false;
-        private string m_OriginalLyric = "";
+        private bool _mOnlyShowLRCs;
+        private string _mOriginalLyric = "";
 
-        private MyLyricsSetup parent = null;
+        private readonly MyLyricsSetup _parentMyLyricsSetup;
 
 
         public LyricsLibrary(Form form)
         {
-            parent = form as MyLyricsSetup;
+            _parentMyLyricsSetup = form as MyLyricsSetup;
             InitializeComponent();
             comboDatabase.SelectedIndex = 0;
-            updateLyricsTree(false);
+            UpdateLyricsTree(false);
         }
 
-        internal void updateLyricsTree(bool onlyShowLRCs)
+        internal void UpdateLyricsTree(bool onlyShowLRCs)
         {
-            m_OnlyShowLRCs = onlyShowLRCs;
+            _mOnlyShowLRCs = onlyShowLRCs;
 
-            if (CurrentDB == null)
+            if (CurrentLyricsDatabase == null)
             {
                 return;
             }
@@ -52,14 +48,14 @@ namespace MyLyrics
             try
             {
                 treeView.Nodes.Clear();
-                m_NoOfArtists = 0;
-                m_NoOfTitles = 0;
+                _mNoOfArtists = 0;
+                _mNoOfTitles = 0;
 
                 if (onlyShowLRCs)
                 {
-                    foreach (KeyValuePair<string, LyricsItem> kvp in CurrentDB)
+                    foreach (var kvp in CurrentLyricsDatabase)
                     {
-                        if (isSelectedLyricLRC(kvp.Value.Artist, kvp.Value.Title))
+                        if (IsSelectedLyricLRC(kvp.Value.Artist, kvp.Value.Title))
                         {
                             AddSong(kvp.Value);
                         }
@@ -67,30 +63,26 @@ namespace MyLyrics
                 }
                 else
                 {
-                    foreach (KeyValuePair<string, LyricsItem> kvp in CurrentDB)
+                    foreach (var kvp in CurrentLyricsDatabase)
                     {
                         AddSong(kvp.Value);
                     }
                 }
             }
-            catch
-            {
-                ;
-            }
             finally
             {
                 treeView.Sort();
-                updateLyricDatabaseStats();
+                UpdateLyricDatabaseStats();
             }
         }
 
-        internal void updateLyricDatabaseStats()
+        internal void UpdateLyricDatabaseStats()
         {
-            lbArtists2.Text = m_NoOfArtists.ToString();
-            lbSongs2.Text = m_NoOfTitles.ToString();
+            lbArtists2.Text = _mNoOfArtists.ToString();
+            lbSongs2.Text = _mNoOfTitles.ToString();
         }
 
-        private void resetFields()
+        private void ResetFields()
         {
             lbArtists2.Text = "";
             lbTitle.Text = "";
@@ -101,9 +93,9 @@ namespace MyLyrics
 
         private ArrayList getTitlesByArtist(string artist)
         {
-            ArrayList titles = new ArrayList();
+            var titles = new ArrayList();
 
-            foreach (KeyValuePair<string, LyricsItem> kvp in CurrentDB)
+            foreach (var kvp in CurrentLyricsDatabase)
             {
                 if (kvp.Value.Artist.Equals(artist))
                 {
@@ -116,46 +108,46 @@ namespace MyLyrics
         /// <summary>
         /// AddSong adds a lyric to the treeView and not to the lyric database
         /// </summary>
-        /// <param name="artist"></param>
-        /// <param name="title"></param>
-        private void AddSong(LyricsItem item)
+        /// <param name="lyricsItem">lyrics item</param>
+        private void AddSong(LyricsItem lyricsItem)
         {
-            string artist = LyricUtil.CapatalizeString(item.Artist);
-            string title = LyricUtil.CapatalizeString(item.Title);
+            string artist = LyricUtil.CapatalizeString(lyricsItem.Artist);
+            string title = LyricUtil.CapatalizeString(lyricsItem.Title);
 
             // add artist, if it doesn't exists
             if (!treeView.Nodes.ContainsKey(artist))
             {
                 treeView.Nodes.Add(artist, artist);
-                ++m_NoOfArtists;
+                ++_mNoOfArtists;
             }
 
             // add title, if it doesn't exists
-            int artistIndex = treeView.Nodes.IndexOfKey(artist);
+            var artistIndex = treeView.Nodes.IndexOfKey(artist);
             if (!treeView.Nodes[artistIndex].Nodes.ContainsKey(title))
             {
                 treeView.Nodes[artistIndex].Nodes.Add(title, title);
-                treeView.Nodes[artistIndex].Nodes[treeView.Nodes[artistIndex].Nodes.Count - 1].Tag = item;
-                ++m_NoOfTitles;
+                treeView.Nodes[artistIndex].Nodes[treeView.Nodes[artistIndex].Nodes.Count - 1].Tag = lyricsItem;
+                ++_mNoOfTitles;
             }
         }
 
         /// <summary>
         /// AddSong with tree parameters adds a lyric to the treeView and the lyric database
         /// </summary>
-        /// <param name="artist"></param>
-        /// <param name="title"></param>
-        /// <param name="lyric"></param>
+        /// <param name="artist">artist</param>
+        /// <param name="title">title</param>
+        /// <param name="lyrics">lyircs</param>
+        /// <param name="site">site</param>
         private bool AddSong(string artist, string title, string lyrics, string site)
         {
-            LyricsItem item = new LyricsItem(artist, title, lyrics, site);
+            var item = new LyricsItem(artist, title, lyrics, site);
 
-            if (DatabaseUtil.IsSongInLyricsDatabase(CurrentDB, artist, title).Equals(DatabaseUtil.LYRIC_NOT_FOUND))
+            if (DatabaseUtil.IsSongInLyricsDatabase(CurrentLyricsDatabase, artist, title).Equals(DatabaseUtil.LYRIC_NOT_FOUND))
             {
-                CurrentDB.Add(DatabaseUtil.CorrectKeyFormat(artist, title), item);
+                CurrentLyricsDatabase.Add(DatabaseUtil.CorrectKeyFormat(artist, title), item);
                 AddSong(item);
                 treeView.Update();
-                DatabaseUtil.SerializeDB(CurrentDB);
+                DatabaseUtil.SerializeDB(CurrentLyricsDatabase);
 
                 if (SettingManager.GetParamAsBool(SettingManager.AutomaticWriteToMusicTag, true))
                 {
@@ -164,35 +156,23 @@ namespace MyLyrics
 
                 return true;
             }
-            else
-            {
-                return false;
-            }
-        }
-
-        private void RemoveArtist(string artist)
-        {
-            m_NoOfTitles -= getTitlesByArtist(artist).Count;
-            --m_NoOfArtists;
-            int artistIndex = treeView.Nodes.IndexOfKey(artist);
-            treeView.Nodes.RemoveAt(artistIndex);
-            treeView.Update();
+            return false;
         }
 
         public void RemoveSong(string artist, string title, bool serializeDB)
         {
             try
             {
-                int artistIndex = treeView.Nodes.IndexOfKey(artist);
-                int titleIndex = treeView.Nodes[artistIndex].Nodes.IndexOfKey(title);
+                var artistIndex = treeView.Nodes.IndexOfKey(artist);
+                var titleIndex = treeView.Nodes[artistIndex].Nodes.IndexOfKey(title);
                 treeView.Nodes[artistIndex].Nodes.RemoveAt(titleIndex);
-                --m_NoOfTitles;
+                --_mNoOfTitles;
 
                 // remove title from treeView
                 if (treeView.Nodes[artistIndex].Nodes.Count == 0)
                 {
                     treeView.Nodes.RemoveAt(artistIndex);
-                    --m_NoOfArtists;
+                    --_mNoOfArtists;
                 }
             }
             catch
@@ -200,7 +180,7 @@ namespace MyLyrics
                 if (artist.Length == 0 && title.Length == 0)
                 {
                     treeView.Nodes.RemoveAt(0);
-                    --m_NoOfArtists;
+                    --_mNoOfArtists;
                     treeView.Update();
                 }
             }
@@ -209,39 +189,36 @@ namespace MyLyrics
                 treeView.Update();
 
                 // remove title from database
-                CurrentDB.Remove(DatabaseUtil.CorrectKeyFormat(artist, title));
+                CurrentLyricsDatabase.Remove(DatabaseUtil.CorrectKeyFormat(artist, title));
 
                 if (serializeDB)
                 {
-                    DatabaseUtil.SerializeDB(CurrentDB);
+                    DatabaseUtil.SerializeDB(CurrentLyricsDatabase);
                 }
             }
         }
 
-        private bool isSelectedLyricLRC(string artist, string title)
+        private static bool IsSelectedLyricLRC(string artist, string title)
         {
             if (artist.Length != 0 && title.Length != 0)
             {
-                string lyricsText = (string) CurrentDB[DatabaseUtil.CorrectKeyFormat(artist, title)].Lyrics;
+                string lyricsText = CurrentLyricsDatabase[DatabaseUtil.CorrectKeyFormat(artist, title)].Lyrics;
 
-                SimpleLRC lrc = new SimpleLRC(artist, title, lyricsText);
+                var lrc = new SimpleLRC(artist, title, lyricsText);
                 if (lrc.IsValid)
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
 
             return false;
         }
 
-        public void updateInfo()
+        public void UpdateInfo()
         {
-            m_CurrentArtist = "";
-            m_CurrentTitle = "";
+            _mCurrentArtist = "";
+            _mCurrentTitle = "";
             tbLyrics.Text = "";
             lbTitle.Text = "";
             lbLRCTest.Text = "";
@@ -251,29 +228,27 @@ namespace MyLyrics
             // Selected a title
             if (treeView.SelectedNode != null && treeView.SelectedNode.Parent != null)
             {
-                string artist = treeView.SelectedNode.Parent.Text;
-                string title = treeView.SelectedNode.Text;
+                var artist = treeView.SelectedNode.Parent.Text;
+                var title = treeView.SelectedNode.Text;
 
                 if (artist.Length != 0 && title.Length != 0)
                 {
-                    m_CurrentArtist = LyricUtil.CapatalizeString(artist);
-                    m_CurrentTitle = LyricUtil.CapatalizeString(title);
+                    _mCurrentArtist = LyricUtil.CapatalizeString(artist);
+                    _mCurrentTitle = LyricUtil.CapatalizeString(title);
 
                     if (
-                        DatabaseUtil.IsSongInLyricsDatabase(CurrentDB, m_CurrentArtist, m_CurrentTitle).Equals(
-                            DatabaseUtil.LYRIC_FOUND))
+                        DatabaseUtil.IsSongInLyricsDatabase(CurrentLyricsDatabase, _mCurrentArtist, _mCurrentTitle).Equals(DatabaseUtil.LYRIC_FOUND))
                     {
-                        LyricsItem item = CurrentDB[DatabaseUtil.CorrectKeyFormat(m_CurrentArtist, m_CurrentTitle)];
-                        string lyricsText = item.Lyrics;
+                        var item = CurrentLyricsDatabase[DatabaseUtil.CorrectKeyFormat(_mCurrentArtist, _mCurrentTitle)];
+                        var lyricsText = item.Lyrics;
 
                         lyricsText = LyricUtil.ReturnEnvironmentNewLine(lyricsText);
 
-                        m_OriginalLyric = lyricsText;
-                        tbLyrics.Text = m_OriginalLyric;
+                        _mOriginalLyric = lyricsText;
+                        tbLyrics.Text = _mOriginalLyric;
                         tbLyrics.Enabled = true;
 
-                        lbTitle.Text = "\"" + m_CurrentArtist + " - " + m_CurrentTitle + "\"" +
-                                       (!item.Source.Equals("") ? " found at " + item.Source : "");
+                        lbTitle.Text = "\"" + _mCurrentArtist + " - " + _mCurrentTitle + "\"" + (!item.Source.Equals("") ? " found at " + item.Source : "");
 
                         btSearchSingle.Enabled = true;
                     }
@@ -282,27 +257,14 @@ namespace MyLyrics
                 // Selected an artist
             else if (treeView.SelectedNode != null)
             {
-                string artist = treeView.SelectedNode.Text;
-                m_CurrentArtist = LyricUtil.CapatalizeString(artist);
+                var artist = treeView.SelectedNode.Text;
+                _mCurrentArtist = LyricUtil.CapatalizeString(artist);
                 btSearchSingle.Enabled = false;
             }
             else
             {
                 btSearchSingle.Enabled = false;
             }
-        }
-
-        private MusicTag GetTag(Song song)
-        {
-            MusicTag tag = new MusicTag();
-            tag.Album = song.Album;
-            tag.Artist = song.Artist;
-            tag.Duration = song.Duration;
-            tag.Genre = song.Genre;
-            tag.Title = song.Title;
-            tag.Track = song.Track;
-            tag.Year = song.Year;
-            return tag;
         }
 
 
@@ -323,20 +285,20 @@ namespace MyLyrics
 
         private void btSave_Click(object sender, EventArgs e)
         {
-            string capArtist = LyricUtil.CapatalizeString(m_CurrentArtist);
-            string capTitle = LyricUtil.CapatalizeString(m_CurrentTitle);
+            var capArtist = LyricUtil.CapatalizeString(_mCurrentArtist);
+            var capTitle = LyricUtil.CapatalizeString(_mCurrentTitle);
 
-            string lyrics = LyricUtil.FixLyrics(tbLyrics.Text);
+            var lyrics = LyricUtil.FixLyrics(tbLyrics.Text);
 
-            CurrentDB[DatabaseUtil.CorrectKeyFormat(capArtist, capTitle)].Lyrics = lyrics;
-            DatabaseUtil.SerializeDB(CurrentDB);
+            CurrentLyricsDatabase[DatabaseUtil.CorrectKeyFormat(capArtist, capTitle)].Lyrics = lyrics;
+            DatabaseUtil.SerializeDB(CurrentLyricsDatabase);
             
             if (SettingManager.GetParamAsBool(SettingManager.AutomaticWriteToMusicTag, true))
             {
                 TagReaderUtil.WriteLyrics(capArtist, capTitle, lyrics);
             }
 
-            if (CurrentDB.Equals(MyLyricsUtils.LyricsMarkedDB))
+            if (CurrentLyricsDatabase.Equals(MyLyricsUtils.LyricsMarkedDB))
             {
                 if (SettingManager.GetParamAsBool(SettingManager.MoveLyricFromMarkedDatabase, true))
                 {
@@ -345,9 +307,9 @@ namespace MyLyrics
             }
 
             var lrc = new SimpleLRC(capArtist, capTitle, lyrics);
-            if (lrc.IsValid && parent.cbUploadLrcAutomatically.Checked)
+            if (lrc.IsValid && _parentMyLyricsSetup.cbUploadLrcAutomatically.Checked)
             {
-                LrcFinder.SaveLrcWithGuid(lyrics, parent.MGuid);
+                LrcFinder.SaveLrcWithGuid(lyrics, _parentMyLyricsSetup.MGuid);
             }
 
             btSave.Enabled = false;
@@ -356,36 +318,32 @@ namespace MyLyrics
 
         private void tbLyrics_KeyUp(object sender, KeyEventArgs e)
         {
-            if (m_OriginalLyric.Equals(tbLyrics.Text) || m_CurrentTitle.Length == 0)
+            if (_mOriginalLyric.Equals(tbLyrics.Text) || _mCurrentTitle.Length == 0)
                 btSave.Enabled = false;
             else
                 btSave.Enabled = true;
         }
 
-        private void btImport_Click(object sender, EventArgs e)
-        {
-        }
-
 
         private void btDelete_Click(object sender, EventArgs e)
         {
-            if (m_CurrentTitle.Length == 0)
+            if (_mCurrentTitle.Length == 0)
             {
-                ArrayList titles = getTitlesByArtist(m_CurrentArtist);
+                var titles = getTitlesByArtist(_mCurrentArtist);
                 if (titles != null)
                 {
-                    for (int i = 0; i < titles.Count; i++)
+                    for (var i = 0; i < titles.Count; i++)
                     {
-                        RemoveSong(m_CurrentArtist, (string) titles[i], i == titles.Count - 1);
+                        RemoveSong(_mCurrentArtist, (string) titles[i], i == titles.Count - 1);
                     }
                 }
             }
             else
             {
-                RemoveSong(m_CurrentArtist, m_CurrentTitle, true);
-                highlightSong(m_CurrentArtist, m_CurrentTitle, true);
+                RemoveSong(_mCurrentArtist, _mCurrentTitle, true);
+                highlightSong(_mCurrentArtist, _mCurrentTitle, true);
             }
-            updateLyricDatabaseStats();
+            UpdateLyricDatabaseStats();
             treeView.Focus();
             treeView.Select();
         }
@@ -393,15 +351,15 @@ namespace MyLyrics
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            updateInfo();
+            UpdateInfo();
 
             if (treeView.SelectedNode != null && treeView.SelectedNode.Parent != null)
             {
                 string title = treeView.SelectedNode.Text;
-                m_CurrentArtist = treeView.SelectedNode.Parent.Text;
-                m_CurrentTitle = LyricUtil.CapatalizeString(title);
+                _mCurrentArtist = treeView.SelectedNode.Parent.Text;
+                _mCurrentTitle = LyricUtil.CapatalizeString(title);
 
-                if (isSelectedLyricLRC(m_CurrentArtist, title))
+                if (IsSelectedLyricLRC(_mCurrentArtist, title))
                 {
                     lbLRCTest.Text = "(valid LRC)";
                 }
@@ -414,19 +372,19 @@ namespace MyLyrics
 
         private void btAdd_Click(object sender, EventArgs e)
         {
-            AddNewSong addNewSongForm = new AddNewSong(this);
-            updateLyricDatabaseStats();
+            new AddNewSong(this);
+            UpdateLyricDatabaseStats();
         }
 
-        internal void addNewSongToDatabase(string artist, string title, string lyrics)
+        internal void AddNewSongToDatabase(string artist, string title, string lyrics)
         {
-            m_CurrentArtist = LyricUtil.CapatalizeString(artist);
-            m_CurrentTitle = LyricUtil.CapatalizeString(title);
+            _mCurrentArtist = LyricUtil.CapatalizeString(artist);
+            _mCurrentTitle = LyricUtil.CapatalizeString(title);
 
-            if (AddSong(m_CurrentArtist, m_CurrentTitle, lyrics, "Manual added"))
+            if (AddSong(_mCurrentArtist, _mCurrentTitle, lyrics, "Manual added"))
             {
-                highlightSong(m_CurrentArtist, m_CurrentTitle, false);
-                updateLyricDatabaseStats();
+                highlightSong(_mCurrentArtist, _mCurrentTitle, false);
+                UpdateLyricDatabaseStats();
             }
             else
             {
@@ -444,8 +402,8 @@ namespace MyLyrics
             treeView.Select();
             treeView.Focus();
 
-            int artistIndex = treeView.Nodes.IndexOfKey(artist);
-            TreeNode artistNode = treeView.Nodes[artistIndex];
+            var artistIndex = treeView.Nodes.IndexOfKey(artist);
+            var artistNode = treeView.Nodes[artistIndex];
 
             if (title.Length == 0)
             {
@@ -453,17 +411,17 @@ namespace MyLyrics
                 return;
             }
 
-            int titleIndex = artistNode.Nodes.IndexOfKey(title);
+            var titleIndex = artistNode.Nodes.IndexOfKey(title);
             if (previousSong && titleIndex > 0)
                 titleIndex -= 1;
             treeView.SelectedNode = artistNode.Nodes[titleIndex];
         }
 
-        internal void highlightNextSong(int artistIndex, int titleIndex)
+        internal void HighlightNextSong(int artistIndex, int titleIndex)
         {
-            int index = 0;
-            TreeNode artistNode = treeView.Nodes[artistIndex];
-            int nextSongIndex = titleIndex + 1;
+            var index = 0;
+            var artistNode = treeView.Nodes[artistIndex];
+            var nextSongIndex = titleIndex + 1;
 
             if (artistNode.Nodes.Count > nextSongIndex)
             {
@@ -471,7 +429,7 @@ namespace MyLyrics
             }
             else
             {
-                int nextArtistIndex = ++artistIndex;
+                var nextArtistIndex = ++artistIndex;
                 if (treeView.Nodes.Count > nextArtistIndex)
                 {
                     artistNode = treeView.Nodes[nextArtistIndex];
@@ -484,13 +442,12 @@ namespace MyLyrics
 
         private void MoveLyricToOtherDatabase()
         {
-            string temp = "";
-            string artist = "";
-            string title = "";
+            var artist = "";
+            var title = "";
 
             if (treeView.SelectedNode != null)
             {
-                temp = treeView.SelectedNode.Text;
+                var temp = treeView.SelectedNode.Text;
 
                 if (treeView.SelectedNode.Parent != null)
                 {
@@ -509,10 +466,10 @@ namespace MyLyrics
             }
             else if (title.Length == 0)
             {
-                TreeNode artistNode = treeView.SelectedNode;
+                var artistNode = treeView.SelectedNode;
 
                 LyricsDatabase otherDatabase = null;
-                if (CurrentDB.Equals(MyLyricsUtils.LyricsDB))
+                if (CurrentLyricsDatabase.Equals(MyLyricsUtils.LyricsDB))
                 {
                     otherDatabase = MyLyricsUtils.LyricsMarkedDB;
                 }
@@ -523,13 +480,11 @@ namespace MyLyrics
 
                 foreach (TreeNode node in artistNode.Nodes)
                 {
-                    string key = DatabaseUtil.CorrectKeyFormat(artist, node.Text);
-                    LyricsItem item = CurrentDB[key];
-                    CurrentDB.Remove(key);
+                    var key = DatabaseUtil.CorrectKeyFormat(artist, node.Text);
+                    var item = CurrentLyricsDatabase[key];
+                    CurrentLyricsDatabase.Remove(key);
 
-                    if (
-                        !DatabaseUtil.IsSongInLyricsDatabase(otherDatabase, artist, item.Title).Equals(
-                             DatabaseUtil.LYRIC_NOT_FOUND))
+                    if (!DatabaseUtil.IsSongInLyricsDatabase(otherDatabase, artist, item.Title).Equals(DatabaseUtil.LYRIC_NOT_FOUND))
                     {
                         otherDatabase.Add(key, item);
                     }
@@ -538,19 +493,19 @@ namespace MyLyrics
                         otherDatabase[key] = item;
                     }
                 }
-                updateLyricsTree(false);
+                UpdateLyricsTree(false);
                 DatabaseUtil.SerializeDBs();
             }
             else
             {
-                string key = DatabaseUtil.CorrectKeyFormat(artist, title);
-                LyricsItem item = CurrentDB[key];
+                var key = DatabaseUtil.CorrectKeyFormat(artist, title);
+                var item = CurrentLyricsDatabase[key];
 
                 // remove song from treeview and current database
                 RemoveSong(artist, title, true);
 
                 // add song to other database and serialize it
-                if (CurrentDB.Equals(MyLyricsUtils.LyricsDB))
+                if (CurrentLyricsDatabase.Equals(MyLyricsUtils.LyricsDB))
                 {
                     MyLyricsUtils.LyricsMarkedDB.Add(key, item);
                     DatabaseUtil.SerializeDB(MyLyricsUtils.LyricsMarkedDB);
@@ -560,17 +515,12 @@ namespace MyLyrics
                     MyLyricsUtils.LyricsDB.Add(key, item);
                     DatabaseUtil.SerializeDB(MyLyricsUtils.LyricsDB);
                 }
-                updateLyricDatabaseStats();
+                UpdateLyricDatabaseStats();
             }
 
             treeView.Focus();
         }
 
-
-        private void btClose_Click(object sender, EventArgs e)
-        {
-            parent.Close();
-        }
 
         private void btImportSingle_Click(object sender, EventArgs e)
         {
@@ -578,15 +528,15 @@ namespace MyLyrics
             {
                 try
                 {
-                    string[] files = openFileDialog1.FileNames;
-                    for (int i = 0; i < files.Length; i++)
+                    var files = openFileDialog1.FileNames;
+                    for (var i = 0; i < files.Length; i++)
                     {
-                        string fileName = new FileInfo(files[i]).Name;
+                        var fileName = new FileInfo(files[i]).Name;
                         if (fileName.Contains("-"))
                         {
-                            if (inspectFileNameAndAddToDatabaseIfValidLyrics(files[i]) != (int) TYPEOFLYRICS.NONE)
+                            if (InspectFileNameAndAddToDatabaseIfValidLyrics(files[i]) != (int) TypeOfLyrics.None)
                             {
-                                updateLyricDatabaseStats();
+                                UpdateLyricDatabaseStats();
                             }
                             else
                             {
@@ -595,8 +545,7 @@ namespace MyLyrics
                         }
                         else
                         {
-                            MessageBox.Show("The file \"" + fileName +
-                                            "\" does not have a valid filename ([Artist]-[Title].txt or *.lrc).");
+                            MessageBox.Show("The file \"" + fileName + "\" does not have a valid filename ([Artist]-[Title].txt or *.lrc).");
                         }
                     }
                 }
@@ -607,22 +556,18 @@ namespace MyLyrics
             }
         }
 
-        private int inspectFileNameAndAddToDatabaseIfValidLyrics(string filePath)
+        private int InspectFileNameAndAddToDatabaseIfValidLyrics(string filePath)
         {
-            TextReader textReader = null;
-
-
-            FileInfo fileInfo = new FileInfo(filePath);
-
+            var fileInfo = new FileInfo(filePath);
 
             if (fileInfo.Extension.Equals(".txt"))
             {
-                string fileStringArtist = "";
-                string fileStringTitle = "";
-                string fileName = fileInfo.Name;
+                var fileStringArtist = "";
+                var fileStringTitle = "";
+                var fileName = fileInfo.Name;
 
 
-                int index = fileName.IndexOf("-");
+                var index = fileName.IndexOf("-");
                 fileStringArtist = fileName.Substring(0, index);
                 fileStringTitle = fileName.Substring(index + 1);
                 fileStringArtist = fileStringArtist.Trim();
@@ -631,9 +576,9 @@ namespace MyLyrics
                 index = fileStringTitle.LastIndexOf('.');
                 fileStringTitle = fileStringTitle.Substring(0, index);
 
-                textReader = new StreamReader(filePath);
-                string line = "";
-                string lyrics = "";
+                var textReader = new StreamReader(filePath);
+                string line;
+                var lyrics = "";
 
                 while ((line = textReader.ReadLine()) != null)
                 {
@@ -642,50 +587,22 @@ namespace MyLyrics
                 lyrics = lyrics.Trim();
                 textReader.Close();
 
-                string capArtist = LyricUtil.CapatalizeString(fileStringArtist);
-                string capTitle = LyricUtil.CapatalizeString(fileStringTitle);
+                var capArtist = LyricUtil.CapatalizeString(fileStringArtist);
+                var capTitle = LyricUtil.CapatalizeString(fileStringTitle);
 
-                if (AddSong(capArtist, capTitle, lyrics, "Text file"))
-                {
-                    return (int) TYPEOFLYRICS.NORMAL;
-                }
-                else
-                {
-                    return (int) TYPEOFLYRICS.NONE;
-                }
+                return AddSong(capArtist, capTitle, lyrics, "Text file") ? (int) TypeOfLyrics.Normal : (int) TypeOfLyrics.None;
             }
-            else
+            
+            _lrc = new SimpleLRC(filePath);
+
+            if (_lrc.IsValid && _lrc.Artist.Length != 0 && _lrc.Title.Length != 0)
             {
-                lrc = new SimpleLRC(filePath);
-
-                if (lrc.IsValid && lrc.Artist.Length != 0 && lrc.Title.Length != 0)
-                {
-                    if (AddSong(lrc.Artist, lrc.Title, lrc.LyricAsLRC.Trim(), "LRC-file"))
-                    {
-                        return (int) TYPEOFLYRICS.LRC;
-                    }
-                    else
-                    {
-                        return (int) TYPEOFLYRICS.NONE;
-                    }
-                }
-                else
-                {
-                    return (int) TYPEOFLYRICS.NONE;
-                }
+                return AddSong(_lrc.Artist, _lrc.Title, _lrc.LyricAsLRC.Trim(), "LRC-file") ? (int) TypeOfLyrics.LRC : (int) TypeOfLyrics.None;
             }
+            
+            return (int) TypeOfLyrics.None;
         }
 
-
-        private void btUpgradeDatabase_Click(object sender, EventArgs e)
-        {
-            if (
-                MessageBox.Show(this, "Are you sure the lyrics database should be upgraded?", "Upgrade lyrics database",
-                                MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
-            {
-                updateLyricsTree(false);
-            }
-        }
 
         private void btImportDIRS_Click(object sender, EventArgs e)
         {
@@ -693,26 +610,25 @@ namespace MyLyrics
             {
                 try
                 {
-                    string path = folderBrowserDialog1.SelectedPath;
+                    var path = folderBrowserDialog1.SelectedPath;
 
-                    int numberOfLyrics = 0;
-                    int numberOfLRCS = 0;
-                    int numberOfExisting = 0;
+                    var numberOfLyrics = 0;
+                    var numberOfLrcs = 0;
+                    var numberOfExisting = 0;
 
-                    DirectoryInfo dirInfo = new DirectoryInfo(path);
-                    FileInfo[] fileInfos = dirInfo.GetFiles("*-*.txt", SearchOption.AllDirectories);
+                    var dirInfo = new DirectoryInfo(path);
+                    var fileInfos = dirInfo.GetFiles("*-*.txt", SearchOption.AllDirectories);
 
-                    foreach (FileInfo fileInfo in fileInfos)
+                    foreach (var fileInfo in fileInfos)
                     {
                         int typeAdded;
-                        if ((typeAdded = inspectFileNameAndAddToDatabaseIfValidLyrics(fileInfo.FullName)) ==
-                            (int) TYPEOFLYRICS.NORMAL)
+                        if ((typeAdded = InspectFileNameAndAddToDatabaseIfValidLyrics(fileInfo.FullName)) == (int) TypeOfLyrics.Normal)
                         {
                             ++numberOfLyrics;
                         }
-                        else if (typeAdded == (int) TYPEOFLYRICS.LRC)
+                        else if (typeAdded == (int) TypeOfLyrics.LRC)
                         {
-                            ++numberOfLRCS;
+                            ++numberOfLrcs;
                         }
                         else
                         {
@@ -723,17 +639,16 @@ namespace MyLyrics
                     dirInfo = new DirectoryInfo(path);
                     fileInfos = dirInfo.GetFiles("*.lrc", SearchOption.AllDirectories);
 
-                    foreach (FileInfo fileInfo in fileInfos)
+                    foreach (var fileInfo in fileInfos)
                     {
                         int typeAdded;
-                        if ((typeAdded = inspectFileNameAndAddToDatabaseIfValidLyrics(fileInfo.FullName)) ==
-                            (int) TYPEOFLYRICS.NORMAL)
+                        if ((typeAdded = InspectFileNameAndAddToDatabaseIfValidLyrics(fileInfo.FullName)) == (int) TypeOfLyrics.Normal)
                         {
                             ++numberOfLyrics;
                         }
-                        else if (typeAdded == (int) TYPEOFLYRICS.LRC)
+                        else if (typeAdded == (int) TypeOfLyrics.LRC)
                         {
-                            ++numberOfLRCS;
+                            ++numberOfLrcs;
                         }
                         else
                         {
@@ -742,12 +657,12 @@ namespace MyLyrics
                     }
 
 
-                    updateLyricDatabaseStats();
+                    UpdateLyricDatabaseStats();
 
-                    MessageBox.Show("Number of lyris added :" + (numberOfLRCS + numberOfLyrics + numberOfExisting) +
+                    MessageBox.Show("Number of lyris added :" + (numberOfLrcs + numberOfLyrics + numberOfExisting) +
                                     Environment.NewLine
                                     + "Number of basic lyrics added:" + numberOfLyrics + Environment.NewLine
-                                    + "Number of LRCs added: " + numberOfLRCS + Environment.NewLine
+                                    + "Number of LRCs added: " + numberOfLrcs + Environment.NewLine
                                     + "Number of lyrics already in database: " + numberOfExisting);
                 }
                 catch (Exception ex)
@@ -760,38 +675,38 @@ namespace MyLyrics
 
         private void comboDatabase_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (comboDatabase.SelectedIndex == 0 && (currentDBIndex != 0 || m_OnlyShowLRCs))
+            if (comboDatabase.SelectedIndex == 0 && (_currentDbIndex != 0 || _mOnlyShowLRCs))
             {
-                resetFields();
-                currentDBIndex = 0;
-                CurrentDB = MyLyricsUtils.LyricsDB;
+                ResetFields();
+                _currentDbIndex = 0;
+                CurrentLyricsDatabase = MyLyricsUtils.LyricsDB;
                 btImportFiles.Enabled = true;
                 btImportDirs.Enabled = true;
                 btImportTags.Enabled = true;
                 btExportTags.Enabled = true;
-                updateLyricsTree(false);
+                UpdateLyricsTree(false);
             }
             else if (comboDatabase.SelectedIndex == 1)
             {
-                resetFields();
-                currentDBIndex = 0;
-                CurrentDB = MyLyricsUtils.LyricsDB;
+                ResetFields();
+                _currentDbIndex = 0;
+                CurrentLyricsDatabase = MyLyricsUtils.LyricsDB;
                 btImportFiles.Enabled = true;
                 btImportDirs.Enabled = true;
                 btImportTags.Enabled = false;
                 btExportTags.Enabled = false;
-                updateLyricsTree(true);
+                UpdateLyricsTree(true);
             }
-            else if (comboDatabase.SelectedIndex == 2 && currentDBIndex != 1)
+            else if (comboDatabase.SelectedIndex == 2 && _currentDbIndex != 1)
             {
-                resetFields();
-                currentDBIndex = 1;
-                CurrentDB = MyLyricsUtils.LyricsMarkedDB;
+                ResetFields();
+                _currentDbIndex = 1;
+                CurrentLyricsDatabase = MyLyricsUtils.LyricsMarkedDB;
                 btImportFiles.Enabled = false;
                 btImportDirs.Enabled = false;
                 btImportTags.Enabled = false;
                 btExportTags.Enabled = false;
-                updateLyricsTree(false);
+                UpdateLyricsTree(false);
             }
         }
 
@@ -801,53 +716,50 @@ namespace MyLyrics
                 MessageBox.Show(this, "Are you sure the Lyrics database should be deleted?", "Delete Lyrics database",
                                 MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
             {
-                string path = Config.GetFolder(Config.Dir.Database) + "\\" + MyLyricsUtils.LyricsDBName;
-                FileStream fs = new FileStream(path, FileMode.Create);
-                BinaryFormatter bf = new BinaryFormatter();
+                var path = Config.GetFolder(Config.Dir.Database) + "\\" + MyLyricsUtils.LyricsDBName;
+                var fs = new FileStream(path, FileMode.Create);
+                var bf = new BinaryFormatter();
                 MyLyricsUtils.LyricsDB = new LyricsDatabase();
                 bf.Serialize(fs, MyLyricsUtils.LyricsDB);
                 fs.Close();
 
-                CurrentDB = MyLyricsUtils.LyricsDB;
+                CurrentLyricsDatabase = MyLyricsUtils.LyricsDB;
                 comboDatabase.SelectedIndex = 0;
-                updateLyricsTree(false);
-                updateInfo();
+                UpdateLyricsTree(false);
+                UpdateInfo();
             }
         }
 
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (
-                MessageBox.Show(this, "Are you sure you want to delete the database with marked titles?",
-                                "Delete title database", MessageBoxButtons.YesNo, MessageBoxIcon.Information) ==
-                DialogResult.Yes)
+            if (MessageBox.Show(this, "Are you sure you want to delete the database with marked titles?",
+                                "Delete title database", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
             {
-                string path = Config.GetFolder(Config.Dir.Database) + "\\" + MyLyricsUtils.LyricsMarkedDBName;
-                FileStream fs = new FileStream(path, FileMode.Create);
-                BinaryFormatter bf = new BinaryFormatter();
+                var path = Config.GetFolder(Config.Dir.Database) + "\\" + MyLyricsUtils.LyricsMarkedDBName;
+                var fs = new FileStream(path, FileMode.Create);
+                var bf = new BinaryFormatter();
                 MyLyricsUtils.LyricsMarkedDB = new LyricsDatabase();
                 bf.Serialize(fs, MyLyricsUtils.LyricsMarkedDB);
                 fs.Close();
 
-                CurrentDB = MyLyricsUtils.LyricsMarkedDB;
+                CurrentLyricsDatabase = MyLyricsUtils.LyricsMarkedDB;
                 comboDatabase.SelectedIndex = 2;
-                updateLyricsTree(false);
-                updateInfo();
+                UpdateLyricsTree(false);
+                UpdateInfo();
             }
         }
 
         private void btSearchSingle_Click(object sender, EventArgs e)
         {
-            string temp = "";
-            string artist = "";
-            string title = "";
-            int treeArtistIndex = 0;
-            int treeTitleIndex = 0;
+            var artist = "";
+            var title = "";
+            var treeArtistIndex = 0;
+            var treeTitleIndex = 0;
 
             if (treeView.SelectedNode != null)
             {
-                temp = treeView.SelectedNode.Text;
+                var temp = treeView.SelectedNode.Text;
                 treeTitleIndex = treeView.SelectedNode.Index;
 
                 if (treeView.SelectedNode.Parent != null)
@@ -862,9 +774,7 @@ namespace MyLyrics
                 }
             }
 
-
-            FindLyric std = new FindLyric(this, artist, title, CurrentDB.Equals(MyLyricsUtils.LyricsMarkedDB),
-                                          treeArtistIndex, treeTitleIndex);
+            new FindLyric(this, artist, title, CurrentLyricsDatabase.Equals(MyLyricsUtils.LyricsMarkedDB), treeArtistIndex, treeTitleIndex);
         }
 
         private void btSwitch_Click(object sender, EventArgs e)
@@ -872,36 +782,30 @@ namespace MyLyrics
             MoveLyricToOtherDatabase();
         }
 
-        private void mpButton1_Click(object sender, EventArgs e)
-        {
-            List<Song> songs = new List<Song>();
-            MusicDatabase mdb = MusicDatabase.Instance;
-        }
-
         private void btImportTags_Click(object sender, EventArgs e)
         {
-            ImportTags importTags = new ImportTags();
+            var importTags = new ImportTags();
             importTags.ShowDialog();
-            updateLyricsTree(false);
+            UpdateLyricsTree(false);
         }
 
         private void btExportTags_Click(object sender, EventArgs e)
         {
-            ExportTags exportTags = new ExportTags();
+            var exportTags = new ExportTags();
             exportTags.ShowDialog();
         }
 
         private void btRefresh_Click(object sender, EventArgs e)
         {
-            updateLyricsTree(m_OnlyShowLRCs);
+            UpdateLyricsTree(_mOnlyShowLRCs);
         }
 
         #region Nested type: TYPEOFLYRICS
 
-        private enum TYPEOFLYRICS : int
+        private enum TypeOfLyrics : int
         {
-            NONE,
-            NORMAL,
+            None,
+            Normal,
             LRC
         } ;
 

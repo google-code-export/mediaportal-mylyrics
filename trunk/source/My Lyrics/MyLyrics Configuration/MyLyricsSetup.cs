@@ -189,11 +189,11 @@ namespace MyLyrics
                 DeserializeBothDB();
             }
 
-            LyricsLibrary.CurrentDB = MyLyricsUtils.LyricsDB;
+            LyricsLibrary.CurrentLyricsDatabase = MyLyricsUtils.LyricsDB;
 
             #endregion
 
-            _lyricsLibraryUserControl.updateLyricsTree(false);
+            _lyricsLibraryUserControl.UpdateLyricsTree(false);
         }
 
         public void CopyCheckedListBox(CheckedListBox copy)
@@ -614,7 +614,7 @@ namespace MyLyrics
             {
                 _lyricsController.StopSearches = true;
                 DatabaseUtil.SerializeDBs();
-                _lyricsLibraryUserControl.updateLyricsTree(false);
+                _lyricsLibraryUserControl.UpdateLyricsTree(false);
             }
             bgWorkerSearch.CancelAsync();
             StopThread();
@@ -1030,7 +1030,7 @@ namespace MyLyrics
             {
                 if (UpdateLibraryUI)
                 {
-                    _lyricsLibraryUserControl.updateLyricsTree(false);
+                    _lyricsLibraryUserControl.UpdateLyricsTree(false);
                     UpdateLibraryUI = false;
                 }
                 _lyricsLibraryUserControl.treeView.Select();

@@ -229,7 +229,7 @@ namespace MyLyrics
             StopSearch();
             Close();
 
-            _parent.highlightNextSong(_treeArtistIndex, _treeTitleIndex);
+            _parent.HighlightNextSong(_treeArtistIndex, _treeTitleIndex);
         }
 
         private void lvSearchResults_SelectedIndexChanged(object sender, EventArgs e)
@@ -335,14 +335,14 @@ namespace MyLyrics
                     var key = DatabaseUtil.CorrectKeyFormat(_originalArtist, _originalTitle);
                     MyLyricsUtils.LyricsDB[key] = new LyricsItem(_originalArtist, _originalTitle, lyric, site);
                     DatabaseUtil.SerializeLyricDB();
-                    _parent.updateInfo();
+                    _parent.UpdateInfo();
                 }
                 else if (_markedDatabase)
                 {
                     DatabaseUtil.ReplaceInLyricsDatabase(MyLyricsUtils.LyricsMarkedDB, _originalArtist, _originalTitle,
                                                          lyric, site);
                     DatabaseUtil.SerializeDBs();
-                    _parent.updateInfo();
+                    _parent.UpdateInfo();
                     _parent.highlightSong(_originalArtist, _originalTitle, false);
                 }
                 else
@@ -350,8 +350,8 @@ namespace MyLyrics
                     DatabaseUtil.ReplaceInLyricsDatabase(MyLyricsUtils.LyricsDB, _originalArtist, _originalTitle, lyric,
                                                          site);
                     DatabaseUtil.SerializeDBs();
-                    _parent.updateInfo();
-                    _parent.highlightNextSong(_treeArtistIndex, _treeTitleIndex);
+                    _parent.UpdateInfo();
+                    _parent.HighlightNextSong(_treeArtistIndex, _treeTitleIndex);
                 }
 
                 if (_mAutomaticWriteToMusicTag)
@@ -359,7 +359,7 @@ namespace MyLyrics
                     TagReaderUtil.WriteLyrics(_originalArtist, _originalTitle, lyric);
                 }
 
-                _parent.updateLyricDatabaseStats();
+                _parent.UpdateLyricDatabaseStats();
             }
         }
 

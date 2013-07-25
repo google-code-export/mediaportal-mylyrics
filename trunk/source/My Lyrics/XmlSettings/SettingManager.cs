@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using MediaPortal.Configuration;
+﻿using MediaPortal.Configuration;
 
 namespace MyLyrics.XmlSettings
 {
