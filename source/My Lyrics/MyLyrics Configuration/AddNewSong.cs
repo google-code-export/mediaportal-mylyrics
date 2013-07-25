@@ -16,7 +16,7 @@ namespace MyLyrics
 
         private void btOK_Click(object sender, EventArgs e)
         {
-            parent.addNewSongToDatabase(tbArtist.Text, tbTitle.Text, tbLyric.Text);
+            parent.AddNewSongToDatabase(tbArtist.Text, tbTitle.Text, tbLyric.Text);
             Close();
         }
 
