@@ -10,16 +10,16 @@ namespace MyLyrics
 
       public static string[] GetStrippedPrefixStringArray()
       {
-          string strippedPrefixes = "";
+          string strippedPrefixes;
           using (var xmlreader = SettingManager.MediaPortalSettings)
           {
               strippedPrefixes = (xmlreader.GetValueAsString("musicfiles", "artistprefixes", "the,les,die"));
           }
-          string[] strippedPrefixesArray = strippedPrefixes.Split(new string[1] { "," }, StringSplitOptions.RemoveEmptyEntries);
+          var strippedPrefixesArray = strippedPrefixes.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
-          for (int i = 0; i < strippedPrefixesArray.Length; i++)
+          for (var i = 0; i < strippedPrefixesArray.Length; i++)
           {
-              string temp = strippedPrefixesArray[i];
+              var temp = strippedPrefixesArray[i];
               strippedPrefixesArray[i] = LyricUtil.CapatalizeString(", " + temp.Trim());
           }
 
@@ -28,12 +28,12 @@ namespace MyLyrics
 
       public static string GetStrippedPrefixArtist(string artist, string[] strippedPrefixStringArray)
     {
-      foreach (string s in strippedPrefixStringArray)
+      foreach (var s in strippedPrefixStringArray)
       {
-        int index = artist.IndexOf(s);
+        var index = artist.IndexOf(s, StringComparison.Ordinal);
         if (index != -1)
         {
-          string prefix = artist.Substring(index + 2);
+          var prefix = artist.Substring(index + 2);
           artist = prefix + " " + artist.Replace(s, "");
           break;
         }

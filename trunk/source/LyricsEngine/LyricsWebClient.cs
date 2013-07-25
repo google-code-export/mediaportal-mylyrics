@@ -43,7 +43,7 @@ namespace LyricsEngine
 
         protected override WebRequest GetWebRequest(Uri address)
         {
-            WebRequest request = base.GetWebRequest(address);
+            var request = base.GetWebRequest(address);
 
             if (request != null && request.GetType() == typeof (HttpWebRequest))
             {

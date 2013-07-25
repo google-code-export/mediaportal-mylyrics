@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Threading;
 using System.Windows.Forms;
 using LyricsEngine;
@@ -13,10 +14,10 @@ namespace MyLyrics
 {
     public partial class ExportTags : Form
     {
-        private ArrayList artists;
-        private List<Song> songs;
-        private int totalSongsSearched;
-        private int totalSongsToSearch;
+        private ArrayList _artists;
+        private List<Song> _songs;
+        private int _totalSongsSearched;
+        private int _totalSongsToSearch;
 
         public ExportTags()
         {
@@ -33,56 +34,53 @@ namespace MyLyrics
             btCancel.Enabled = true;
             btClose.Enabled = false;
 
-            MusicDatabase mDB = MusicDatabase.Instance;
-            artists = new ArrayList();
-            songs = new List<Song>();
-            mDB.GetAllArtists(ref artists);
+            var mDB = MusicDatabase.Instance;
+            _artists = new ArrayList();
+            _songs = new List<Song>();
+            mDB.GetAllArtists(ref _artists);
             //mDB.GetArtists(0, "", ref artists);
             //mDB.Get
 
-            artists.Sort();
+            _artists.Sort();
 
             progressBar.ResetText();
             progressBar.Enabled = true;
             progressBar.Value = 0;
-            progressBar.Maximum = artists.Count;
-            totalSongsToSearch = mDB.GetTotalSongs();
-            lbTotalSongs2.Text = totalSongsToSearch.ToString();
+            progressBar.Maximum = _artists.Count;
+            _totalSongsToSearch = mDB.GetTotalSongs();
+            lbTotalSongs2.Text = _totalSongsToSearch.ToString(CultureInfo.InvariantCulture);
 
             bw.RunWorkerAsync();
         }
 
         private void bw_DoWork(object sender, DoWorkEventArgs e)
         {
-            MusicDatabase mDB = MusicDatabase.Instance;
-            int counter = 0;
+            var mDB = MusicDatabase.Instance;
+            var counter = 0;
 
-            for (int i = 0; i < artists.Count; i++)
+            for (var i = 0; i < _artists.Count; i++)
             {
                 if (bw.CancellationPending)
                 {
                     return;
                 }
 
-                string artist = (string) artists[i];
+                var artist = (string) _artists[i];
                 Thread.Sleep(100); // Give the GUI thread some time to update
                 bw.ReportProgress(counter, artist);
                 try
                 {
-                    mDB.GetSongsByArtist(artist, ref songs);
+                    mDB.GetSongsByArtist(artist, ref _songs);
 
-                    foreach (Song song in songs)
+                    foreach (var song in _songs)
                     {
-                        string capArtist = LyricUtil.CapatalizeString(song.Artist);
-                        string capTitle = LyricUtil.CapatalizeString(song.Title);
+                        var capArtist = LyricUtil.CapatalizeString(song.Artist);
+                        var capTitle = LyricUtil.CapatalizeString(song.Title);
 
-                        if (
-                            DatabaseUtil.IsSongInLyricsDatabase(MyLyricsUtils.LyricsDB, capArtist, capTitle).Equals(
-                                DatabaseUtil.LYRIC_FOUND))
+                        if (DatabaseUtil.IsSongInLyricsDatabase(MyLyricsUtils.LyricsDB, capArtist, capTitle).Equals(DatabaseUtil.LyricFound))
                         {
-                            string lyric =
-                                MyLyricsUtils.LyricsDB[DatabaseUtil.CorrectKeyFormat(capArtist, capTitle)].Lyrics;
-                            SimpleLRC lrcInLyricsDb = new SimpleLRC(capArtist, capTitle, lyric);
+                            var lyric = MyLyricsUtils.LyricsDB[DatabaseUtil.CorrectKeyFormat(capArtist, capTitle)].Lyrics;
+                            var lrcInLyricsDb = new SimpleLRC(capArtist, capTitle, lyric);
 
                             // If the lyricsDB lyric is LRC always export
                             if (lrcInLyricsDb.IsValid)
@@ -94,13 +92,13 @@ namespace MyLyrics
                                 continue;
                             }
 
-                            MusicTag tag = TagReader.ReadTag(song.FileName);
+                            var tag = TagReader.ReadTag(song.FileName);
 
                             // If there is a musictag lyric
                             if (tag != null && !tag.Lyrics.Equals(string.Empty))
                             {
                                 // if there is no LRC lyric in the tag, then simple export
-                                SimpleLRC lrcInTag = new SimpleLRC(capArtist, capTitle, tag.Lyrics);
+                                var lrcInTag = new SimpleLRC(capArtist, capTitle, tag.Lyrics);
                                 if (!lrcInTag.IsValid)
                                 {
                                     if (TagReaderUtil.WriteLyrics(song.FileName, lyric))
@@ -108,8 +106,6 @@ namespace MyLyrics
                                         ++counter;
                                     }
                                 }
-
-                                continue;
                             }
                                 // Al if no lyric in musictag simple export
                             else
@@ -122,24 +118,24 @@ namespace MyLyrics
                         }
                     }
                 }
-                catch (Exception e2)
+                catch (Exception)
                 {
-                    string s = e2.Message;
+                    ;
                 }
             }
         }
 
         private void bw_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            MusicDatabase mDB = MusicDatabase.Instance;
-            string artist = e.UserState as string;
-            List<Song> songs = new List<Song>();
+            var mDB = MusicDatabase.Instance;
+            var artist = e.UserState as string;
+            var songs = new List<Song>();
             mDB.GetSongsByArtist(artist, ref songs);
-            totalSongsSearched += songs.Count;
+            _totalSongsSearched += songs.Count;
             lbCurrentArtist.Text = artist;
             progressBar.PerformStep();
-            lbLyricsFound2.Text = e.ProgressPercentage.ToString();
-            lbSongsToSearch2.Text = string.Format("{0}", totalSongsToSearch - totalSongsSearched);
+            lbLyricsFound2.Text = e.ProgressPercentage.ToString(CultureInfo.InvariantCulture);
+            lbSongsToSearch2.Text = string.Format("{0}", _totalSongsToSearch - _totalSongsSearched);
         }
 
 

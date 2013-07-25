@@ -6,177 +6,141 @@ using MediaPortal.Configuration;
 
 namespace MyLyrics
 {
-  internal class DatabaseUtil
-  {
-    internal const int LRC_FOUND = 2;
-    internal const int LRC_NOT_FOUND = 3;
-    internal const int LYRIC_FOUND = 1;
-    internal const int LYRIC_MARKED = 0;
-    internal const int LYRIC_NOT_FOUND = -1;
-    internal const string MARK = "(no lyric attached)";
-
-    internal static int IsSongInLyricsDatabase(LyricsDatabase lyricDB, string artist, string title)
+    internal class DatabaseUtil
     {
-      string lyricText = "";
+        internal const int LRCFound = 2;
+        internal const int LRCNotFound = 3;
+        internal const int LyricFound = 1;
+        internal const int LyricMarked = 0;
+        internal const int LyricNotFound = -1;
+        internal const string Mark = "(no lyric attached)";
 
-      string capatalizedArtist = LyricUtil.CapatalizeString(artist);
-      string capatalizedTitle = LyricUtil.CapatalizeString(title);
-
-      string key = CorrectKeyFormat(capatalizedArtist, capatalizedTitle);
-
-      if (lyricDB.ContainsKey(key))
-      {
-        lyricText = lyricDB[key].Lyrics;
-
-        if (lyricText.Equals(MARK))
+        internal static int IsSongInLyricsDatabase(LyricsDatabase lyricDB, string artist, string title)
         {
-          return LYRIC_MARKED;
+            var capatalizedArtist = LyricUtil.CapatalizeString(artist);
+            var capatalizedTitle = LyricUtil.CapatalizeString(title);
+
+            var key = CorrectKeyFormat(capatalizedArtist, capatalizedTitle);
+
+            if (lyricDB.ContainsKey(key))
+            {
+                var lyricText = lyricDB[key].Lyrics;
+
+                return lyricText.Equals(Mark) ? LyricMarked : LyricFound;
+            }
+            
+            return LyricNotFound;
         }
-        else
+
+        internal static int IsSongInLyricsMarkedDatabase(LyricsDatabase lyricMarkedDB, string artist, string title)
         {
-          return LYRIC_FOUND;
+            var key = CorrectKeyFormat(LyricUtil.CapatalizeString(artist), LyricUtil.CapatalizeString(title));
+
+            return lyricMarkedDB.ContainsKey(key) ? LyricMarked : LyricNotFound;
         }
-      }
-      else
-      {
-        return LYRIC_NOT_FOUND;
-      }
-    }
 
-    internal static int IsSongInLyricsMarkedDatabase(LyricsDatabase lyricMarkedDB, string artist, string title)
-    {
-      string key = CorrectKeyFormat(LyricUtil.CapatalizeString(artist), LyricUtil.CapatalizeString(title));
-
-      if (lyricMarkedDB.ContainsKey(key))
-      {
-        return LYRIC_MARKED;
-      }
-      else
-      {
-        return LYRIC_NOT_FOUND;
-      }
-    }
-
-    internal static int IsSongInLyricsDatabaseAsLRC(LyricsDatabase lyricDB, string artist, string title)
-    {
-      string lyricText = "";
-
-      string capatalizedArtist = LyricUtil.CapatalizeString(artist);
-      string capatalizedTitle = LyricUtil.CapatalizeString(title);
-
-      string key = CorrectKeyFormat(capatalizedArtist, capatalizedTitle);
-
-      if (lyricDB.ContainsKey(key))
-      {
-        lyricText = lyricDB[key].Lyrics;
-
-        if (new SimpleLRC(capatalizedArtist, capatalizedTitle, lyricText).IsValid)
+        internal static int IsSongInLyricsDatabaseAsLRC(LyricsDatabase lyricDB, string artist, string title)
         {
-          return LRC_FOUND;
+            var capatalizedArtist = LyricUtil.CapatalizeString(artist);
+            var capatalizedTitle = LyricUtil.CapatalizeString(title);
+
+            var key = CorrectKeyFormat(capatalizedArtist, capatalizedTitle);
+
+            if (lyricDB.ContainsKey(key))
+            {
+                var lyricText = lyricDB[key].Lyrics;
+
+                return new SimpleLRC(capatalizedArtist, capatalizedTitle, lyricText).IsValid ? LRCFound : LyricFound;
+            }
+            
+            return LRCNotFound;
         }
-        else
+
+
+        public static string CorrectKeyFormat(string artist, string title)
         {
-          return LYRIC_FOUND;
+            return artist + "-" + title;
         }
-      }
-      else
-      {
-        return LRC_NOT_FOUND;
-      }
+
+
+        public static void WriteToLyricsDatabase(LyricsDatabase lyricsDB, LyricsDatabase lyricsMarkedDB,
+            string capArtist, string capTitle, string lyric, string site)
+        {
+            if (IsSongInLyricsDatabase(lyricsDB, capArtist, capTitle).Equals(LyricNotFound))
+            {
+                lyricsDB.Add(CorrectKeyFormat(capArtist, capTitle), new LyricsItem(capArtist, capTitle, lyric, site));
+            }
+
+            if (IsSongInLyricsMarkedDatabase(lyricsMarkedDB, capArtist, capTitle).Equals(LyricMarked))
+            {
+                lyricsMarkedDB.Remove(CorrectKeyFormat(capArtist, capTitle));
+            }
+        }
+
+        public static void ReplaceInLyricsDatabase(LyricsDatabase currentLyricsDB, string capArtist, string capTitle,
+            string lyric, string site)
+        {
+            var otherDatabase = GetOtherLyricsDatabase(currentLyricsDB);
+
+            var key = CorrectKeyFormat(capArtist, capTitle);
+            if (IsSongInLyricsDatabase(currentLyricsDB, capArtist, capTitle).Equals(LyricNotFound) == false)
+            {
+                currentLyricsDB.Remove(key);
+            }
+
+            currentLyricsDB.Add(key, new LyricsItem(capArtist, capTitle, lyric, site));
+
+            if (IsSongInLyricsMarkedDatabase(otherDatabase, capArtist, capTitle).Equals(LyricMarked))
+            {
+                otherDatabase.Remove(CorrectKeyFormat(capArtist, capTitle));
+            }
+        }
+
+        public static void SerializeDB(LyricsDatabase lyricsDatabase)
+        {
+            if (lyricsDatabase == MyLyricsUtils.LyricsDB)
+            {
+                SerializeLyricDB();
+            }
+            else
+            {
+                SerializeLyricMarkedDB();
+            }
+        }
+
+        public static void SerializeDBs()
+        {
+            SerializeLyricDB();
+            SerializeLyricMarkedDB();
+        }
+
+        public static void SerializeLyricDB()
+        {
+            var path = Config.GetFile(Config.Dir.Database, MyLyricsUtils.LyricsDBName);
+            using (var fs = new FileStream(path, FileMode.Open))
+            {
+                var bf = new BinaryFormatter();
+                MyLyricsUtils.LyricsDB.SetLastModified();
+                bf.Serialize(fs, MyLyricsUtils.LyricsDB);
+                fs.Close();
+            }
+        }
+
+        public static void SerializeLyricMarkedDB()
+        {
+            var path = Config.GetFile(Config.Dir.Database, MyLyricsUtils.LyricsMarkedDBName);
+            using (var fs = new FileStream(path, FileMode.Open))
+            {
+                var bf = new BinaryFormatter();
+                MyLyricsUtils.LyricsMarkedDB.SetLastModified();
+                bf.Serialize(fs, MyLyricsUtils.LyricsMarkedDB);
+                fs.Close();
+            }
+        }
+
+        public static LyricsDatabase GetOtherLyricsDatabase(LyricsDatabase currentDatabase)
+        {
+            return currentDatabase.Equals(MyLyricsUtils.LyricsDB) ? MyLyricsUtils.LyricsMarkedDB : MyLyricsUtils.LyricsDB;
+        }
     }
-
-
-    public static string CorrectKeyFormat(string artist, string title)
-    {
-      return artist + "-" + title;
-    }
-
-
-    public static void WriteToLyricsDatabase(LyricsDatabase lyricsDB, LyricsDatabase lyricsMarkedDB,
-                                             string capArtist, string capTitle, string lyric, string site)
-    {
-      if (IsSongInLyricsDatabase(lyricsDB, capArtist, capTitle).Equals(LYRIC_NOT_FOUND))
-      {
-        lyricsDB.Add(CorrectKeyFormat(capArtist, capTitle), new LyricsItem(capArtist, capTitle, lyric, site));
-      }
-
-      if (IsSongInLyricsMarkedDatabase(lyricsMarkedDB, capArtist, capTitle).Equals(LYRIC_MARKED))
-      {
-        lyricsMarkedDB.Remove(CorrectKeyFormat(capArtist, capTitle));
-      }
-    }
-
-    public static void ReplaceInLyricsDatabase(LyricsDatabase currentLyricsDB, string capArtist, string capTitle,
-                                               string lyric, string site)
-    {
-      LyricsDatabase otherDatabase = GetOtherLyricsDatabase(currentLyricsDB);
-
-      string key = CorrectKeyFormat(capArtist, capTitle);
-      if (IsSongInLyricsDatabase(currentLyricsDB, capArtist, capTitle).Equals(LYRIC_NOT_FOUND) == false)
-      {
-        currentLyricsDB.Remove(key);
-      }
-
-      currentLyricsDB.Add(key, new LyricsItem(capArtist, capTitle, lyric, site));
-
-      if (IsSongInLyricsMarkedDatabase(otherDatabase, capArtist, capTitle).Equals(LYRIC_MARKED))
-      {
-        otherDatabase.Remove(CorrectKeyFormat(capArtist, capTitle));
-      }
-    }
-
-    public static void SerializeDB(LyricsDatabase lyricsDatabase)
-    {
-      if (lyricsDatabase == MyLyricsUtils.LyricsDB)
-      {
-        SerializeLyricDB();
-      }
-      else
-      {
-        SerializeLyricMarkedDB();
-      }
-    }
-
-    public static void SerializeDBs()
-    {
-      SerializeLyricDB();
-      SerializeLyricMarkedDB();
-    }
-
-    public static void SerializeLyricDB()
-    {
-      string path = Config.GetFile(Config.Dir.Database, MyLyricsUtils.LyricsDBName);
-      using (FileStream fs = new FileStream(path, FileMode.Open))
-      {
-        BinaryFormatter bf = new BinaryFormatter();
-        MyLyricsUtils.LyricsDB.SetLastModified();
-        bf.Serialize(fs, MyLyricsUtils.LyricsDB);
-        fs.Close();
-      }
-    }
-
-    public static void SerializeLyricMarkedDB()
-    {
-      string path = Config.GetFile(Config.Dir.Database, MyLyricsUtils.LyricsMarkedDBName);
-      using (FileStream fs = new FileStream(path, FileMode.Open))
-      {
-        BinaryFormatter bf = new BinaryFormatter();
-        MyLyricsUtils.LyricsMarkedDB.SetLastModified();
-        bf.Serialize(fs, MyLyricsUtils.LyricsMarkedDB);
-        fs.Close();
-      }
-    }
-
-    public static LyricsDatabase GetOtherLyricsDatabase(LyricsDatabase currentDatabase)
-    {
-      if (currentDatabase.Equals(MyLyricsUtils.LyricsDB))
-      {
-        return MyLyricsUtils.LyricsMarkedDB;
-      }
-      else
-      {
-        return MyLyricsUtils.LyricsDB;
-      }
-    }
-  }
 }

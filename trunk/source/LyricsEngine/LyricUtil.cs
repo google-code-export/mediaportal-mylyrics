@@ -6,24 +6,24 @@ namespace LyricsEngine
 {
   public class LyricUtil
   {
-    private static readonly string[] charsToDelete = new string[11]
-                                                             {
-                                                                 ".", ",", "&", "'", "!", "\"", "&", "?", "(", ")", "+"
-                                                                 /*, "ä", "ö", "ü", "Ä", "Ö", "Ü", "ß" */
-                                                             };
+    private static readonly string[] CharsToDelete =
+    {
+        ".", ",", "&", "'", "!", "\"", "&", "?", "(", ")", "+"
+        /*, "ä", "ö", "ü", "Ä", "Ö", "Ü", "ß" */
+    };
 
-    private static readonly string[] parenthesesAndAlike = new string[3] { "(", "[", "{" };
+    private static readonly string[] ParenthesesAndAlike = { "(", "[", "{" };
 
     // capatalize string and make ready for XML
     public static string CapatalizeString(string s)
     {
       s = s.Replace("\"", "");
 
-      char[] space = new char[1] { ' ' };
-      string[] words = s.Split(space, StringSplitOptions.RemoveEmptyEntries);
+      char[] space = { ' ' };
+      var words = s.Split(space, StringSplitOptions.RemoveEmptyEntries);
 
-      StringBuilder result = new StringBuilder();
-      for (int i = 0; i < words.Length; i++)
+      var result = new StringBuilder();
+      for (var i = 0; i < words.Length; i++)
       {
         result.Append(words[i].Substring(0, 1).ToUpper() +
                       (words[i].Length > 1 ? words[i].Substring(1, words[i].Length - 1).ToLower() : "") + " ");
@@ -33,7 +33,7 @@ namespace LyricsEngine
 
     public static string RemoveFeatComment(string str)
     {
-      int index = str.IndexOf("(Feat");
+      var index = str.IndexOf("(Feat", StringComparison.Ordinal);
       if (index != -1)
         str = str.Substring(0, index).Trim();
       return str;
@@ -41,9 +41,9 @@ namespace LyricsEngine
 
     public static string TrimForParenthesis(string str)
     {
-      for (int i = 0; i < parenthesesAndAlike.Length; i++)
+      for (var i = 0; i < ParenthesesAndAlike.Length; i++)
       {
-        int index = str.IndexOf(parenthesesAndAlike[i], StringComparison.OrdinalIgnoreCase);
+        var index = str.IndexOf(ParenthesesAndAlike[i], StringComparison.OrdinalIgnoreCase);
         if (index != -1)
         {
           str = str.Substring(0, index).Trim();
@@ -54,16 +54,16 @@ namespace LyricsEngine
 
     public static string DeleteSpecificChars(string str)
     {
-      for (int i = 0; i < charsToDelete.Length; i++)
+      for (var i = 0; i < CharsToDelete.Length; i++)
       {
-        str = str.Replace(charsToDelete[i], "");
+        str = str.Replace(CharsToDelete[i], "");
       }
       return str;
     }
 
     public static string ChangeAnds(string str)
     {
-      string strTemp = str;
+      var strTemp = str;
       if (str.Contains("&"))
       {
         strTemp = str.Replace("&", "And");
@@ -73,17 +73,15 @@ namespace LyricsEngine
 
     public static string ReturnEnvironmentNewLine(string str)
     {
-      string justNewLine = "\n";
-      string environmentNewLine = Environment.NewLine;
+      const string justNewLine = "\n";
 
-      if (str.Split(justNewLine.ToCharArray()).Length == str.Split(Environment.NewLine.ToCharArray()).Length)
+        if (str.Split(justNewLine.ToCharArray()).Length == str.Split(Environment.NewLine.ToCharArray()).Length)
       {
         str = str.Replace(justNewLine, Environment.NewLine);
       }
 
       return str;
     }
-
 
     public static string FixLyrics(string lyrics)
     {
@@ -97,9 +95,9 @@ namespace LyricsEngine
 
       if (find != null)
       {
-        int valueIndex = 0;
+        var valueIndex = 0;
 
-        foreach (string findValue in find)
+        foreach (var findValue in find)
         {
           if (findValue != "")
           {

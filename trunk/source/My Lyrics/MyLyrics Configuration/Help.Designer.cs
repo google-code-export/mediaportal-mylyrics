@@ -88,8 +88,8 @@ namespace MyLyrics
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(371, 26);
             this.label5.TabIndex = 7;
-            this.label5.Text = "- Search lyrics for your complete MP music database in a single batch search.\r\n- " +
-    "Search lyrics for songs in your marked database database.";
+            this.label5.Text = "- Search lyrics for your complete MP music database in a single batch search.\r\n- " + 
+                "Search lyrics for songs in your marked database database.";
             // 
             // panel1
             // 
