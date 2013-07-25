@@ -56,6 +56,8 @@ Other changes:
 - Change logger to print nicer.
 - Split About tab into 2 tabs: About & Help. About now contains list of supported sites, and credits section
 - Implement required changes for MPTagThat, so that it can use latest LyricsEngine from plugin.
+- Added Lyrics by site counter to batch search in the message box
+- Separated import from music tags and export to music tags (to be more readable)
 
 Changes and fixes since version 1.7.2
 - Fixed Lyrics007 parser (rewritten)
