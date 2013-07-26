@@ -12,7 +12,7 @@ namespace MyLyrics
 {
     public class MyLyricsCore
     {
-        private static readonly Logger CoreLogger = LogManager.GetCurrentClassLogger();
+        private static Logger logger = LogManager.GetCurrentClassLogger();
 
         #region Singleton
 
@@ -54,7 +54,7 @@ namespace MyLyrics
             }
             catch (Exception e)
             {
-                CoreLogger.ErrorException(String.Format("Error setting up logging paths{0}", Environment.NewLine), e);
+                logger.ErrorException(String.Format("Error setting up logging paths{0}", Environment.NewLine), e);
             }
 
             var config = LogManager.Configuration ?? new LoggingConfiguration();
@@ -108,8 +108,8 @@ namespace MyLyrics
         private void LogStartupBanner()
         {
             var ver = Assembly.GetExecutingAssembly().GetName().Version;
-            CoreLogger.Info(String.Format("MyLyrics ({0}.{1}.{2}.{3})", ver.Major, ver.Minor, ver.Build, ver.Revision));
-            CoreLogger.Info("Plugin launched");
+            logger.Info(String.Format("MyLyrics ({0}.{1}.{2}.{3})", ver.Major, ver.Minor, ver.Build, ver.Revision));
+            logger.Info("Plugin launched");
         }
 
         /*

@@ -21,7 +21,7 @@ namespace LyricsEngine.LyricsSites
         #region reflection
 
         private static readonly Type ClassType = typeof (AbstractSite);
-        private static readonly Type[] ConstructorArgs = {typeof (string), typeof (string), typeof(WaitHandle), typeof (int)};
+        private static readonly Type[] ConstructorArgs = new[] {typeof (string), typeof (string), typeof(WaitHandle), typeof (int)};
 
         private static readonly Dictionary<string, Type> ClassRegistry = new Dictionary<string, Type>();
         private static readonly Dictionary<string, ConstructorDelegate> ClassConstructors = new Dictionary<string, ConstructorDelegate>();

@@ -1,16 +1,18 @@
+using System.Collections.Generic;
 using System.Xml;
 using MediaPortal.Profile;
 
-namespace MyLyrics.Convert
+namespace MyLyrics
 {
   internal class ConvertFromXMLtoLyricsDatabase
   {
     public LyricsDatabase Convert(string path)
     {
-        var db = new LyricsDatabase();
-        var tr = new XmlTextReader(path);
+        LyricsDatabase db = new LyricsDatabase();
+        XmlTextReader tr = new XmlTextReader(path);
 
-        var currentArtist = "";
+        string currentArtist = "";
+        string currentTitle = "";
         while (tr.Read())
         {
             switch (tr.Name)
@@ -24,8 +26,8 @@ namespace MyLyrics.Convert
                 case "entry":
                     if (tr.AttributeCount == 1)
                     {
-                        var currentTitle = tr.GetAttribute(0);
-                        var item = new LyricsItem(currentArtist, currentTitle, "", "");
+                        currentTitle = tr.GetAttribute(0);
+                        LyricsItem item = new LyricsItem(currentArtist, currentTitle, "", "");
                         db.Add(DatabaseUtil.CorrectKeyFormat(currentArtist, currentTitle), item);
                     }
                     break;
@@ -33,13 +35,14 @@ namespace MyLyrics.Convert
         }
         tr.Close();
 
-        var lyricsDatabase = new LyricsDatabase();
+        LyricsDatabase lyricsDatabase = new LyricsDatabase();
 
-        using (var xmlreader = new Settings(path, false))
+        using (Settings xmlreader = new Settings(path, false))
         {
-            foreach (var kvp in db)
+            string lyrics;
+            foreach (KeyValuePair<string, LyricsItem> kvp in db)
             {
-                var lyrics = xmlreader.GetValueAsString(kvp.Value.Artist, kvp.Value.Title, "");
+                lyrics = xmlreader.GetValueAsString(kvp.Value.Artist, kvp.Value.Title, "");
                 lyricsDatabase.Add(DatabaseUtil.CorrectKeyFormat(kvp.Value.Artist, kvp.Value.Title),
                                    new LyricsItem(kvp.Value.Artist, kvp.Value.Title, lyrics, "old database entry"));
             }

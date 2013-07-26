@@ -1,84 +1,69 @@
 using System;
-using System.Globalization;
 
 namespace LyricsEngine.LRC
 {
-    public class SimpleLRCTimeAndLine : IComparable
+  public class SimpleLRCTimeAndLine : IComparable
+  {
+    int min, sec, msec;
+    string line;
+
+    public SimpleLRCTimeAndLine(int min, int sec, int msec, string line)
     {
-        private int _min;
-        private int _sec;
-        private int _msec;
-        private readonly string _line;
-
-        public SimpleLRCTimeAndLine(int min, int sec, int msec, string line)
-        {
-            _min = min;
-            _sec = sec;
-            _msec = msec;
-            _line = line;
-        }
-
-        public SimpleLRCTimeAndLine IncludeOffset(int offset)
-        {
-            if ((_min*60*1000 + _sec*1000 + _msec) < offset)
-            {
-                _min = 0;
-                _sec = 0;
-                _msec = 0;
-                return this;
-            }
-
-            var time = new DateTime(1111, 11, 11, 0, _min, _sec, _msec);
-            time = time.AddMilliseconds(-offset);
-
-            _min = time.Minute;
-            _sec = time.Second;
-            _msec = time.Millisecond;
-
-            return this;
-        }
-
-
-        public long Time
-        {
-            get { return _min*60*1000 + _sec*1000 + _msec; }
-        }
-
-        public string TimeString
-        {
-            get
-            {
-                return "[" + _min + ":" +
-                       (_sec.ToString(CultureInfo.InvariantCulture).Length == 2
-                           ? _sec.ToString(CultureInfo.InvariantCulture)
-                           : "0" + _sec) + "." +
-                       (_msec.ToString(CultureInfo.InvariantCulture).Length >= 2
-                           ? _msec.ToString(CultureInfo.InvariantCulture).Substring(0, 2)
-                           : _msec + "0") + "]";
-            }
-        }
-
-        public string Line
-        {
-            get { return _line; }
-        }
-
-        public int CompareTo(object obj)
-        {
-            var objSLRC = (SimpleLRCTimeAndLine) obj;
-            long thisTime = _min*60*1000 + _sec*1000 + _msec;
-            long objTime = objSLRC._min*60*1000 + objSLRC._sec*1000 + objSLRC._msec;
-
-            if (thisTime > objTime)
-            {
-                return -1;
-            }
-            
-            if (thisTime < objTime)
-            {
-                return 1;
-            }
-            return 0;
-        }
+      this.min = min;
+      this.sec = sec;
+      this.msec = msec;
+      this.line = line;
     }
+
+    public SimpleLRCTimeAndLine IncludeOffset(int offset)
+    {
+      if ((this.min * 60 * 1000 + this.sec * 1000 + this.msec) < offset)
+      {
+        this.min = 0;
+        this.sec = 0;
+        this.msec = 0;
+        return this;
+      }
+
+      DateTime time = new DateTime(1111, 11, 11, 0, this.min, this.sec, this.msec);
+      time = time.AddMilliseconds(-offset);
+
+      this.min = time.Minute;
+      this.sec = time.Second;
+      this.msec = time.Millisecond;
+
+      return this;
+    }
+
+
+    public long Time
+    {
+      get { return min * 60 * 1000 + sec * 1000 + msec; }
+    }
+
+    public string TimeString
+    {
+      get { return "[" + min.ToString() + ":" + (sec.ToString().Length == 2 ? sec.ToString() : "0" + sec.ToString()) + "." + (msec.ToString().Length >= 2 ? msec.ToString().Substring(0, 2) : msec.ToString() + "0") + "]"; }
+
+    }
+
+    public string Line
+    {
+      get { return line; }
+    }
+
+    public int CompareTo(object obj)
+    {
+      SimpleLRCTimeAndLine objSLRC = (SimpleLRCTimeAndLine)obj;
+      long thisTime = this.min * 60 * 1000 + this.sec * 1000 + this.msec;
+      long objTime = objSLRC.min * 60 * 1000 + objSLRC.sec * 1000 + objSLRC.msec;
+
+      if (thisTime > objTime)
+        return -1;
+      else if (thisTime < objTime)
+        return 1;
+      else
+        return 0;
+    }
+  }
 }

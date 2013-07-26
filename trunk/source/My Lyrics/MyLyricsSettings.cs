@@ -10,8 +10,8 @@ namespace MyLyrics
     {
       LYRICS = 0,
       LRC = 1,
-      LRCEditor = 2,
-      LRCPick = 3
+      LRC_EDITOR = 2,
+      LRC_PICK = 3
     }
 
     #endregion
