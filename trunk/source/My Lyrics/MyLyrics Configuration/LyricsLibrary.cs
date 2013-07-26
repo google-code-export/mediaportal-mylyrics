@@ -58,7 +58,14 @@ namespace MyLyrics
                     {
                         if (IsSelectedLyricLRC(kvp.Value.Artist, kvp.Value.Title))
                         {
-                            AddSong(kvp.Value);
+                            try
+                            {
+                                AddSong(kvp.Value);
+                            }
+                            catch
+                            {
+                                ;
+                            }
                         }
                     }
                 }
@@ -66,7 +73,14 @@ namespace MyLyrics
                 {
                     foreach (var kvp in CurrentLyricsDatabase)
                     {
-                        AddSong(kvp.Value);
+                        try
+                        {
+                            AddSong(kvp.Value);
+                        }
+                        catch
+                        {
+                            ;
+                        }
                     }
                 }
             }
@@ -124,7 +138,7 @@ namespace MyLyrics
 
             // add title, if it doesn't exists
             var artistIndex = treeView.Nodes.IndexOfKey(artist);
-            if (!treeView.Nodes[artistIndex].Nodes.ContainsKey(title))
+            if (artistIndex >= 0 && !treeView.Nodes[artistIndex].Nodes.ContainsKey(title))
             {
                 treeView.Nodes[artistIndex].Nodes.Add(title, title);
                 treeView.Nodes[artistIndex].Nodes[treeView.Nodes[artistIndex].Nodes.Count - 1].Tag = lyricsItem;
@@ -146,7 +160,14 @@ namespace MyLyrics
             if (DatabaseUtil.IsSongInLyricsDatabase(CurrentLyricsDatabase, artist, title).Equals(DatabaseUtil.LyricNotFound))
             {
                 CurrentLyricsDatabase.Add(DatabaseUtil.CorrectKeyFormat(artist, title), item);
-                AddSong(item);
+                try
+                {
+                    AddSong(item);
+                }
+                catch
+                {
+                    ;
+                }
                 treeView.Update();
                 DatabaseUtil.SerializeDB(CurrentLyricsDatabase);
 
