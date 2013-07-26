@@ -138,7 +138,7 @@ namespace LyricsEngine.LyricsSites
                 }
                 catch
                 {
-                    //lrcs = null;
+                    ;
                 }
             }
 
@@ -214,7 +214,7 @@ namespace LyricsEngine.LyricsSites
                 {
                     var domains = lrcFinder.NewDomain();
                     var r = new Random();
-                    Domain = domains[r.Next(domains.Length)] as string;
+                    Domain = domains[r.Next(domains.Length)];
                 }
 
                 return Domain + @"/LrcFinder.asmx";
