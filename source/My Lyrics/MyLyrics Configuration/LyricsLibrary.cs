@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
@@ -79,8 +78,8 @@ namespace MyLyrics
 
         internal void UpdateLyricDatabaseStats()
         {
-            lbArtists2.Text = _mNoOfArtists.ToString(CultureInfo.InvariantCulture);
-            lbSongs2.Text = _mNoOfTitles.ToString(CultureInfo.InvariantCulture);
+            lbArtists2.Text = _mNoOfArtists.ToString();
+            lbSongs2.Text = _mNoOfTitles.ToString();
         }
 
         private void ResetFields()
@@ -92,7 +91,7 @@ namespace MyLyrics
             tbLyrics.Text = "";
         }
 
-        private static ArrayList GetTitlesByArtist(string artist)
+        private ArrayList getTitlesByArtist(string artist)
         {
             var titles = new ArrayList();
 
@@ -112,8 +111,8 @@ namespace MyLyrics
         /// <param name="lyricsItem">lyrics item</param>
         private void AddSong(LyricsItem lyricsItem)
         {
-            var artist = LyricUtil.CapatalizeString(lyricsItem.Artist);
-            var title = LyricUtil.CapatalizeString(lyricsItem.Title);
+            string artist = LyricUtil.CapatalizeString(lyricsItem.Artist);
+            string title = LyricUtil.CapatalizeString(lyricsItem.Title);
 
             // add artist, if it doesn't exists
             if (!treeView.Nodes.ContainsKey(artist))
@@ -143,7 +142,7 @@ namespace MyLyrics
         {
             var item = new LyricsItem(artist, title, lyrics, site);
 
-            if (DatabaseUtil.IsSongInLyricsDatabase(CurrentLyricsDatabase, artist, title).Equals(DatabaseUtil.LyricNotFound))
+            if (DatabaseUtil.IsSongInLyricsDatabase(CurrentLyricsDatabase, artist, title).Equals(DatabaseUtil.LYRIC_NOT_FOUND))
             {
                 CurrentLyricsDatabase.Add(DatabaseUtil.CorrectKeyFormat(artist, title), item);
                 AddSong(item);
@@ -203,7 +202,7 @@ namespace MyLyrics
         {
             if (artist.Length != 0 && title.Length != 0)
             {
-                var lyricsText = CurrentLyricsDatabase[DatabaseUtil.CorrectKeyFormat(artist, title)].Lyrics;
+                string lyricsText = CurrentLyricsDatabase[DatabaseUtil.CorrectKeyFormat(artist, title)].Lyrics;
 
                 var lrc = new SimpleLRC(artist, title, lyricsText);
                 if (lrc.IsValid)
@@ -238,7 +237,7 @@ namespace MyLyrics
                     _mCurrentTitle = LyricUtil.CapatalizeString(title);
 
                     if (
-                        DatabaseUtil.IsSongInLyricsDatabase(CurrentLyricsDatabase, _mCurrentArtist, _mCurrentTitle).Equals(DatabaseUtil.LyricFound))
+                        DatabaseUtil.IsSongInLyricsDatabase(CurrentLyricsDatabase, _mCurrentArtist, _mCurrentTitle).Equals(DatabaseUtil.LYRIC_FOUND))
                     {
                         var item = CurrentLyricsDatabase[DatabaseUtil.CorrectKeyFormat(_mCurrentArtist, _mCurrentTitle)];
                         var lyricsText = item.Lyrics;
@@ -330,7 +329,7 @@ namespace MyLyrics
         {
             if (_mCurrentTitle.Length == 0)
             {
-                var titles = GetTitlesByArtist(_mCurrentArtist);
+                var titles = getTitlesByArtist(_mCurrentArtist);
                 if (titles != null)
                 {
                     for (var i = 0; i < titles.Count; i++)
@@ -342,7 +341,7 @@ namespace MyLyrics
             else
             {
                 RemoveSong(_mCurrentArtist, _mCurrentTitle, true);
-                HighlightSong(_mCurrentArtist, _mCurrentTitle, true);
+                highlightSong(_mCurrentArtist, _mCurrentTitle, true);
             }
             UpdateLyricDatabaseStats();
             treeView.Focus();
@@ -356,7 +355,7 @@ namespace MyLyrics
 
             if (treeView.SelectedNode != null && treeView.SelectedNode.Parent != null)
             {
-                var title = treeView.SelectedNode.Text;
+                string title = treeView.SelectedNode.Text;
                 _mCurrentArtist = treeView.SelectedNode.Parent.Text;
                 _mCurrentTitle = LyricUtil.CapatalizeString(title);
 
@@ -384,7 +383,7 @@ namespace MyLyrics
 
             if (AddSong(_mCurrentArtist, _mCurrentTitle, lyrics, "Manual added"))
             {
-                HighlightSong(_mCurrentArtist, _mCurrentTitle, false);
+                highlightSong(_mCurrentArtist, _mCurrentTitle, false);
                 UpdateLyricDatabaseStats();
             }
             else
@@ -393,7 +392,7 @@ namespace MyLyrics
             }
         }
 
-        internal void HighlightSong(string artist, string title, bool previousSong)
+        internal void highlightSong(string artist, string title, bool previousSong)
         {
             if (artist.Length == 0 || title.Length == 0)
             {
@@ -469,7 +468,7 @@ namespace MyLyrics
             {
                 var artistNode = treeView.SelectedNode;
 
-                LyricsDatabase otherDatabase;
+                LyricsDatabase otherDatabase = null;
                 if (CurrentLyricsDatabase.Equals(MyLyricsUtils.LyricsDB))
                 {
                     otherDatabase = MyLyricsUtils.LyricsMarkedDB;
@@ -485,7 +484,7 @@ namespace MyLyrics
                     var item = CurrentLyricsDatabase[key];
                     CurrentLyricsDatabase.Remove(key);
 
-                    if (!DatabaseUtil.IsSongInLyricsDatabase(otherDatabase, artist, item.Title).Equals(DatabaseUtil.LyricNotFound))
+                    if (!DatabaseUtil.IsSongInLyricsDatabase(otherDatabase, artist, item.Title).Equals(DatabaseUtil.LYRIC_NOT_FOUND))
                     {
                         otherDatabase.Add(key, item);
                     }
@@ -563,10 +562,14 @@ namespace MyLyrics
 
             if (fileInfo.Extension.Equals(".txt"))
             {
+                var fileStringArtist = "";
+                var fileStringTitle = "";
                 var fileName = fileInfo.Name;
-                var index = fileName.IndexOf("-", StringComparison.Ordinal);
-                var fileStringArtist = fileName.Substring(0, index);
-                var fileStringTitle = fileName.Substring(index + 1);
+
+
+                var index = fileName.IndexOf("-");
+                fileStringArtist = fileName.Substring(0, index);
+                fileStringTitle = fileName.Substring(index + 1);
                 fileStringArtist = fileStringArtist.Trim();
                 fileStringTitle = fileStringTitle.Trim();
 
@@ -799,7 +802,7 @@ namespace MyLyrics
 
         #region Nested type: TYPEOFLYRICS
 
-        private enum TypeOfLyrics
+        private enum TypeOfLyrics : int
         {
             None,
             Normal,

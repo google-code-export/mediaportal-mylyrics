@@ -5,37 +5,37 @@ namespace MyLyrics
 {
     public partial class AddNewSong : Form
     {
-        private readonly LyricsLibrary _parentLyricsLibrary;
+        private LyricsLibrary parent;
 
-        public AddNewSong(LyricsLibrary parentLyricsLibrary)
+        public AddNewSong(LyricsLibrary parent)
         {
             InitializeComponent();
-            _parentLyricsLibrary = parentLyricsLibrary;
+            this.parent = parent;
             ShowDialog();
         }
 
         private void btOK_Click(object sender, EventArgs e)
         {
-            _parentLyricsLibrary.AddNewSongToDatabase(tbArtist.Text, tbTitle.Text, tbLyric.Text);
+            parent.AddNewSongToDatabase(tbArtist.Text, tbTitle.Text, tbLyric.Text);
             Close();
         }
 
         private void tbArtist_KeyUp(object sender, KeyEventArgs e)
         {
-            ValidateText();
+            validateText();
         }
 
         private void tbTitle_KeyUp(object sender, KeyEventArgs e)
         {
-            ValidateText();
+            validateText();
         }
 
         private void tbLyric_KeyUp(object sender, KeyEventArgs e)
         {
-            ValidateText();
+            validateText();
         }
 
-        private void ValidateText()
+        private void validateText()
         {
             if (tbArtist.Text.Length != 0 && tbTitle.Text.Length != 0 && tbLyric.Text.Length != 0)
                 btOK.Enabled = true;

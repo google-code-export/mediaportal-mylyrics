@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -17,6 +16,7 @@ using LyricsEngine.LyricsSites;
 using MediaPortal.Configuration;
 using MediaPortal.Dialogs;
 using MediaPortal.GUI.Library;
+using MediaPortal.Music.Database;
 using MediaPortal.Player;
 using MediaPortal.Playlists;
 using MediaPortal.TagReader;
@@ -33,9 +33,9 @@ namespace MyLyrics
     public partial class GUIMyLyrics : GUIWindow, ILyricForm, ISetupForm
     {
         // Make sure everything initialize
-        private readonly MyLyricsCore _core = MyLyricsCore.GetInstance();
+        private MyLyricsCore _core = MyLyricsCore.GetInstance();
         // Logger
-        private static readonly Logger PluginLogger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         #region Fields related to the MyLyrics in general
 
@@ -43,107 +43,119 @@ namespace MyLyrics
         internal const string MLyricsMarkedDbName = "LyricsMarkedDatabaseV2.db";
         internal static LyricsDatabase LyricsDb;
         internal static LyricsDatabase LyricsMarkedDb;
-        public static int WindowMylyrics = 90478;
-        private readonly ManualResetEvent _eventStopThread;
+        public static int WINDOW_MYLYRICS = 90478;
+        private readonly ManualResetEvent _EventStopThread;
 
         private readonly object _imageMutex;
-        private readonly List<String> _imagePathContainer;
-        private readonly PlayListPlayer _playlistPlayer;
-        internal int ControlLyricSelected = 20;
+        private readonly List<String> _ImagePathContainer;
+        private readonly PlayListPlayer _PlaylistPlayer;
+        internal int CONTROL_LYRIC_SELECTED = 20;
         private bool _alreadyValidLRC;
 
         // Track info
         private string _artist = "";
-        private bool _automaticReadFromMusicTag = true;
-        private bool _automaticWriteToMusicTag = true;
+        private bool _AutomaticReadFromMusicTag = true;
+        private bool _AutomaticWriteToMusicTag = true;
 
-        private string _currentThumbFileName = string.Empty;
-        private string _currentTrackFileName = string.Empty;
-        private string _nextTrackFileName = string.Empty;
-        private MusicTag _currentTrackTag;
-        private MusicTag _nextTrackTag;
+        private int _crossfade;
+        private string _CurrentThumbFileName = string.Empty;
+        private string _CurrentTrackFileName = string.Empty;
+        private string _NextTrackFileName = string.Empty;
+        private MusicTag _CurrentTrackTag;
+        private MusicTag _NextTrackTag;
+        private MusicTag _PreviousTrackTag;
 
-        private string _find = string.Empty;
+        private string _Find = string.Empty;
         private Guid _guid;
         private string _guidString;
-        private Timer _imageChangeTimer;
-        private string _lastStreamFile = string.Empty;
-        private LyricsController _lyricsController;
-        private DataTable _lrcTable;
+        private Timer _ImageChangeTimer;
+        private string _LastFileName = "";
+        //private string _LastLyricText = "";
+        private string _LastStreamFile = string.Empty;
+        private LyricsController _lc;
+        internal string _logName = "MyLyrics.log";
+        private DataTable _LrcTable;
 
-        private bool _lyriccontrollerIsWorking;
-        private Thread _lyricControllerThread;
+        private bool _LyriccontrollerIsWorking;
+        private Thread _LyricControllerThread;
         private bool _lyricsFound;
 
         private List<string> _nonLrcSitesToSearch = new List<string>();
-        private const string LyricsScreenXml = "MyLyrics.xml";
-        private List<string[]> _lyricsToWriteToTag;
-        private string _lyricText = "";
+        private string _lyricsScreenXML = "MyLyrics.xml";
+        private List<string[]> _LyricsToWriteToTag;
+        private string _LyricText = "";
         private bool _newTrack;
-        private string _replace = string.Empty;
-        private int _searchingState;
+        private string _Replace = string.Empty;
+        private int _SearchingState;
         private int _selectedScreen;
+        private string _skin = "";
         private int _startingScrollSpeedVertical;
-        private string _statusText = "";
+        private string _StatusText = "";
         private string[] _strippedPrefixStrings;
         private string _title = "";
+        private string _TrackText = "";
         private string _translationLanguage = string.Empty;
         private string _translationLanguageCode = string.Empty;
+        private bool _UseID3;
 
-        private Timer _writeTagTimer;
+        private bool _ValidLrcLyric;
+        // A valid LRC-lyric always overwrites a normal lyric in both Lyrics db and music tag (if allowed)
 
-        private int _selectedinLRCPicker;
-        private Timer _lrcPickTimer;
-        private bool _isInTranslation;
-        private readonly BackgroundWorker _worker = new BackgroundWorker();
-        private bool _settingsRead;
-        private IDictionary _defines;
+        private Timer _WriteTagTimer;
+
+        private int _selectedinLRCPicker = 0;
+        private Timer _LRCPickTimer;
+        private string _lastLRCPickLabel = "";
+        private bool _isInTranslation = false;
+        private BackgroundWorker worker = new BackgroundWorker();
+        private bool _settingsRead = false;
+        private IDictionary defines = null;
 
         #endregion
 
-        [SkinControl((int) GUILRCControls.ControlArtAlbumArt)] protected GUIImage GuIelementImgCoverArt;
-        [SkinControl((int) GUILRCControls.ControlArtProgress)] protected GUIProgressControl GuIelementProgTrack;
+        [SkinControl((int) GUI_LRC_Controls.CONTROL_ART_ALBUMART)] protected GUIImage GUIelement_ImgCoverArt;
+        [SkinControl((int) GUI_LRC_Controls.CONTROL_ART_PROGRESS)] protected GUIProgressControl GUIelement_ProgTrack;
 
-        private int _searchType;
+        private int _SearchType;
 
         #region Fields related to LRC mode
 
-        internal bool ConfirmedNoUploadLrcToLrcFinder;
-        internal string LrcTaggingName;
-        internal string LrcTaggingOffset;
+        internal bool _confirmedNoUploadLrcToLrcFinder;
+        internal string _LrcTaggingName;
+        internal string _LrcTaggingOffset;
 
-        private SimpleLRCTimeAndLineCollection _lrcTimeCollection;
-        private SimpleLRC _simpleLrc;
-        private Stopwatch _stopwatch;
-        internal bool UploadLrcToLrcFinder;
-        internal bool UseAutoOnLyricLength;
-        internal bool UseAutoScrollAsDefault;
-        internal bool AlwaysAskUploadLrcToLrcFinder;
+        private SimpleLRCTimeAndLineCollection _LrcTimeCollection;
+        private SimpleLRC _SimpleLrc;
+        private Stopwatch _Stopwatch;
+        internal bool _uploadLrcToLrcFinder;
+        internal bool _useAutoOnLyricLength;
+        internal bool _useAutoScrollAsDefault;
+        internal bool _alwaysAskUploadLrcToLrcFinder;
 
         #endregion
 
         #region Fields releated to the editor mode
 
-        internal const int TagInRound = 13;
-        internal int NextLRCLineIndex;
+        internal const int _TAG_IN_ROUND = 13;
+        internal int nextLRCLineIndex;
         private string[] _lines;
-        internal int LRCLinesTotal;
-        internal int Min;
-        internal int Msec;
-        internal int Sec;
-        internal int TagRoundFinished;
+        internal int _LRCLinesTotal;
+        internal int _min;
+        internal int _msec;
+        internal int _sec;
+        internal int _tagRoundFinished;
 
         #endregion
 
         public GUIMyLyrics()
         {
-            _eventStopThread = new ManualResetEvent(false);
+            _EventStopThread = new ManualResetEvent(false);
 
-            _imagePathContainer = new List<string>();
+            _ImagePathContainer = new List<string>();
             _imageMutex = new Object();
-            _playlistPlayer = PlayListPlayer.SingletonPlayer;
+            _PlaylistPlayer = PlayListPlayer.SingletonPlayer;
 
-            GetID = WindowMylyrics;
+            GetID = WINDOW_MYLYRICS;
         }
 
         public override bool Init()
@@ -153,25 +165,25 @@ namespace MyLyrics
             _startingScrollSpeedVertical = GUIGraphicsContext.ScrollSpeedVertical;
             GUIGraphicsContext.ScrollSpeedVertical = 0;
 
-            _worker.DoWork += SaveLyricToTagLists;
+            worker.DoWork += SaveLyricToTagLists;
 
-            LoadSkinSettings(GUIGraphicsContext.Skin + @"\" + LyricsScreenXml);
+            loadSkinSettings(GUIGraphicsContext.Skin + @"\" + _lyricsScreenXML);
 
-            return Load(GUIGraphicsContext.Skin + @"\" + LyricsScreenXml);
+            return Load(GUIGraphicsContext.Skin + @"\" + _lyricsScreenXML);
         }
 
 
         private void UpdateNextTrackInfo()
         {
-            if (_nextTrackTag != null)
+            if (_NextTrackTag != null)
             {
-                GUIPropertyManager.SetProperty("#Play.Next.Title", _nextTrackTag.Title);
-                GUIPropertyManager.SetProperty("#Play.Next.Track", _nextTrackTag.Track > 0 ? _nextTrackTag.Track.ToString(CultureInfo.InvariantCulture) : string.Empty);
-                GUIPropertyManager.SetProperty("#Play.Next.Album", _nextTrackTag.Album);
-                GUIPropertyManager.SetProperty("#Play.Next.Artist", _nextTrackTag.Artist);
-                GUIPropertyManager.SetProperty("#Play.Next.Genre", _nextTrackTag.Genre);
-                GUIPropertyManager.SetProperty("#Play.Next.Year", _nextTrackTag.Year > 1900 ? _nextTrackTag.Year.ToString(CultureInfo.InvariantCulture) : string.Empty);
-                GUIPropertyManager.SetProperty("#Play.Next.Rating", (System.Convert.ToDecimal(2*_nextTrackTag.Rating + 1)).ToString(CultureInfo.InvariantCulture));
+                GUIPropertyManager.SetProperty("#Play.Next.Title", _NextTrackTag.Title);
+                GUIPropertyManager.SetProperty("#Play.Next.Track", _NextTrackTag.Track > 0 ? _NextTrackTag.Track.ToString() : string.Empty);
+                GUIPropertyManager.SetProperty("#Play.Next.Album", _NextTrackTag.Album);
+                GUIPropertyManager.SetProperty("#Play.Next.Artist", _NextTrackTag.Artist);
+                GUIPropertyManager.SetProperty("#Play.Next.Genre", _NextTrackTag.Genre);
+                GUIPropertyManager.SetProperty("#Play.Next.Year", _NextTrackTag.Year > 1900 ? _NextTrackTag.Year.ToString() : string.Empty);
+                GUIPropertyManager.SetProperty("#Play.Next.Rating", (Convert.ToDecimal(2*_NextTrackTag.Rating + 1)).ToString());
             }
             else
             {
@@ -187,7 +199,7 @@ namespace MyLyrics
 
         public override void Process()
         {
-            if ((_newTrack || _searchingState != (int) SearchState.NotSearching)
+            if ((_newTrack || _SearchingState != (int) SEARCH_STATE.NOT_SEARCHING)
                 && (!g_Player.IsRadio || !string.IsNullOrEmpty(_artist)))
                 //&& (!g_Player.IsRadio || _CurrentTrackTag!=null))
             {
@@ -195,29 +207,39 @@ namespace MyLyrics
                 {
                     _alreadyValidLRC = false;
 
-                    _imagePathContainer.Clear();
+                    _ImagePathContainer.Clear();
 
                     _lyricsFound = false;
                     StopThread();
                     _newTrack = false;
 
-                    GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlLrcPickStatus, "");
+                    MusicDatabase mDB = MusicDatabase.Instance;
+
+                    GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_LRCPICK_STATUS, "");
 
                     if (g_Player.IsRadio == false)
                     {
-                        _currentTrackFileName = g_Player.CurrentFile;
-                        _nextTrackFileName = PlayListPlayer.SingletonPlayer.GetNext();
+                        string currentFile = null;
+                        string currentLyrics = null;
+                        if (_CurrentTrackTag != null)
+                        {
+                            currentFile = _CurrentTrackTag.FileName;
+                            currentLyrics = _CurrentTrackTag.Lyrics;
+                        }
+
+                        _CurrentTrackFileName = g_Player.CurrentFile;
+                        _NextTrackFileName = PlayListPlayer.SingletonPlayer.GetNext();
                         //_CurrentTrackTag = mDB.GetTag(g_Player.CurrentFile);
                         GetTrackTags();
 
-                        if (_currentTrackTag != null)
+                        if (_CurrentTrackTag != null)
                         {
-                            _artist = _currentTrackTag.Artist.Trim();
+                            _artist = _CurrentTrackTag.Artist.Trim();
                             _artist = _artist.Replace("| ", "");
                             _artist = _artist.Replace(" |", "");
                             _artist = _artist.Replace("''", "'");
                             _artist = LyricUtil.CapatalizeString(_artist);
-                            _title = _currentTrackTag.Title.Trim();
+                            _title = _CurrentTrackTag.Title.Trim();
                             _title = _title.Replace("''", "'");
                             _title = LyricUtil.CapatalizeString(_title);
 
@@ -237,15 +259,16 @@ namespace MyLyrics
                         {
                             _artist = "";
                             _title = "";
-                            _lyricText = "";
-                            _imagePathContainer.Clear();
-                            GuIelementImgCoverArt.Dispose();
+                            _TrackText = "";
+                            _LyricText = "";
+                            _ImagePathContainer.Clear();
+                            GUIelement_ImgCoverArt.Dispose();
 
-                            ResetLrcFields();
-                            ResetGUI(_selectedScreen);
+                            resetLrcFields();
+                            resetGUI(_selectedScreen);
 
-                            _statusText = "No music file is playing";
-                            GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
+                            _StatusText = "No music file is playing";
+                            GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, _StatusText);
                         }
                     }
                     else
@@ -254,81 +277,81 @@ namespace MyLyrics
                     }
                 }
 
-                if (_currentTrackTag != null || g_Player.IsRadio)
+                if (_CurrentTrackTag != null || g_Player.IsRadio)
                 {
                     if (!g_Player.IsRadio)
                     {
-                        GUIPropertyManager.SetProperty("#Play.Current.Title", _currentTrackTag.Title);
-                        GUIPropertyManager.SetProperty("#Play.Current.Track", _currentTrackTag.Track > 0 ? _currentTrackTag.Track.ToString(CultureInfo.InvariantCulture) : string.Empty);
-                        GUIPropertyManager.SetProperty("#Play.Current.Album", _currentTrackTag.Album);
-                        GUIPropertyManager.SetProperty("#Play.Current.Artist", _currentTrackTag.Artist);
-                        GUIPropertyManager.SetProperty("#Play.Current.Genre", _currentTrackTag.Genre);
-                        GUIPropertyManager.SetProperty("#Play.Current.Year", _currentTrackTag.Year > 1900 ? _currentTrackTag.Year.ToString(CultureInfo.InvariantCulture) : string.Empty);
-                        GUIPropertyManager.SetProperty("#Play.Current.Rating", (System.Convert.ToDecimal(2 * _currentTrackTag.Rating + 1)).ToString(CultureInfo.InvariantCulture));
-                        GUIPropertyManager.SetProperty("#duration", MediaPortal.Util.Utils.SecondsToHMSString(_currentTrackTag.Duration));
+                        GUIPropertyManager.SetProperty("#Play.Current.Title", _CurrentTrackTag.Title);
+                        GUIPropertyManager.SetProperty("#Play.Current.Track", _CurrentTrackTag.Track > 0 ? _CurrentTrackTag.Track.ToString() : string.Empty);
+                        GUIPropertyManager.SetProperty("#Play.Current.Album", _CurrentTrackTag.Album);
+                        GUIPropertyManager.SetProperty("#Play.Current.Artist", _CurrentTrackTag.Artist);
+                        GUIPropertyManager.SetProperty("#Play.Current.Genre", _CurrentTrackTag.Genre);
+                        GUIPropertyManager.SetProperty("#Play.Current.Year", _CurrentTrackTag.Year > 1900 ? _CurrentTrackTag.Year.ToString() : string.Empty);
+                        GUIPropertyManager.SetProperty("#Play.Current.Rating", (Convert.ToDecimal(2 * _CurrentTrackTag.Rating + 1)).ToString());
+                        GUIPropertyManager.SetProperty("#duration", MediaPortal.Util.Utils.SecondsToHMSString(_CurrentTrackTag.Duration));
 
                         //_CurrentTrackTag.Artist = LyricUtil.CapatalizeString(GUIPropertyManager.GetProperty("#Play.Current.Artist"));
                         //_CurrentTrackTag.Title = LyricUtil.CapatalizeString(GUIPropertyManager.GetProperty("#Play.Current.Title"));
-                        _currentTrackTag.Lyrics = LyricUtil.FixLyrics(_currentTrackTag.Lyrics);
+                        _CurrentTrackTag.Lyrics = LyricUtil.FixLyrics(_CurrentTrackTag.Lyrics);
 
                         UpdateNextTrackInfo();
                     }
 
                     if (_selectedScreen == (int) MyLyricsSettings.Screen.LYRICS
                         || _selectedScreen == (int) MyLyricsSettings.Screen.LRC
-                        || _selectedScreen == (int) MyLyricsSettings.Screen.LRCPick)
+                        || _selectedScreen == (int) MyLyricsSettings.Screen.LRC_PICK)
                     {
                         // Get lyric
                         if (_artist.Length != 0 && _title.Length != 0)
                         {
-                            if (_searchingState == (int) SearchState.NotSearching)
+                            if (_SearchingState == (int) SEARCH_STATE.NOT_SEARCHING)
                             {
                                 var lrcActiveSites = LyricsSiteFactory.LrcLyricsSiteNames().Where(lrcSite => Setup.GetInstance().ActiveSites.Contains(lrcSite)).ToList();
                                 if (lrcActiveSites.Count > 0 &&
-                                    (_searchType == (int) SearchTypes.BothLRCsAndLyrics
-                                     || _searchType == (int) SearchTypes.OnlyLRCs))
+                                    (_SearchType == (int) SEARCH_TYPES.BOTH_LRCS_AND_LYRICS
+                                     || _SearchType == (int) SEARCH_TYPES.ONLY_LRCS))
                                 {
-                                    var lrcFoundInTagOrLyricDb = FindLrc();
+                                    bool lrcFoundInTagOrLyricDb = FindLrc();
                                     if (lrcFoundInTagOrLyricDb)
                                     {
-                                        _searchingState = (int) SearchState.NotSearching;
+                                        _SearchingState = (int) SEARCH_STATE.NOT_SEARCHING;
                                     }
                                     else
                                     {
-                                        _searchingState = (int) SearchState.SearchingForLRC;
+                                        _SearchingState = (int) SEARCH_STATE.SEARCHING_FOR_LRC;
                                     }
                                 }
                                 else
                                 {
-                                    var lyricFoundInTagOrLyricDb = FindLyric();
+                                    bool lyricFoundInTagOrLyricDb = FindLyric();
                                     if (lyricFoundInTagOrLyricDb)
                                     {
-                                        _searchingState = (int) SearchState.NotSearching;
+                                        _SearchingState = (int) SEARCH_STATE.NOT_SEARCHING;
                                     }
                                     else
                                     {
-                                        _searchingState = (int) SearchState.SearchingForLyric;
+                                        _SearchingState = (int) SEARCH_STATE.SEARCHING_FOR_LYRIC;
                                     }
                                 }
                             }
-                            else if (_searchingState == (int) SearchState.SearchingForLRC &&
-                                     !_lyriccontrollerIsWorking)
+                            else if (_SearchingState == (int) SEARCH_STATE.SEARCHING_FOR_LRC &&
+                                     !_LyriccontrollerIsWorking)
                             {
-                                if (_searchType == (int) SearchTypes.BothLRCsAndLyrics
-                                    || _searchType == (int) SearchTypes.OnlyLYRICS)
+                                if (_SearchType == (int) SEARCH_TYPES.BOTH_LRCS_AND_LYRICS
+                                    || _SearchType == (int) SEARCH_TYPES.ONLY_LYRICS)
                                 {
                                     FindLyric();
-                                    _searchingState = (int) SearchState.SearchingForLyric;
+                                    _SearchingState = (int) SEARCH_STATE.SEARCHING_FOR_LYRIC;
                                 }
                                 else
                                 {
-                                    _searchingState = (int) SearchState.NotSearching;
+                                    _SearchingState = (int) SEARCH_STATE.NOT_SEARCHING;
                                 }
                             }
-                            else if (_searchingState == (int) SearchState.SearchingForLyric &&
-                                     !_lyriccontrollerIsWorking)
+                            else if (_SearchingState == (int) SEARCH_STATE.SEARCHING_FOR_LYRIC &&
+                                     !_LyriccontrollerIsWorking)
                             {
-                                _searchingState = (int) SearchState.NotSearching;
+                                _SearchingState = (int) SEARCH_STATE.NOT_SEARCHING;
                             }
                         }
                         else if ((_artist.Length == 0 && _title.Length > 0) || (_title.Length == 0 && _artist.Length > 0))
@@ -336,48 +359,49 @@ namespace MyLyrics
                             //_ImagePathContainer.Clear();
                             //GUIelement_ImgCoverArt.Dispose();
 
-                            ResetLrcFields();
-                            ResetGUI(_selectedScreen);
+                            resetLrcFields();
+                            resetGUI(_selectedScreen);
 
-                            _statusText = "Not enough data for lyric search";
-                            GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
+                            _StatusText = "Not enough data for lyric search";
+                            GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, _StatusText);
                         }
                         else
                         {
                             _artist = "";
                             _title = "";
-                            _lyricText = "";
-                            _imagePathContainer.Clear();
-                            GuIelementImgCoverArt.Dispose();
+                            _TrackText = "";
+                            _LyricText = "";
+                            _ImagePathContainer.Clear();
+                            GUIelement_ImgCoverArt.Dispose();
 
-                            ResetLrcFields();
+                            resetLrcFields();
 
-                            ResetGUI(_selectedScreen);
+                            resetGUI(_selectedScreen);
 
-                            _statusText = "No music file is playing";
-                            GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
+                            _StatusText = "No music file is playing";
+                            GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, _StatusText);
                         }
                     }
-                    else if (_selectedScreen == (int) MyLyricsSettings.Screen.LRCEditor)
+                    else if (_selectedScreen == (int) MyLyricsSettings.Screen.LRC_EDITOR)
                     {
                         _newTrack = false;
-                        NextLRCLineIndex = 0;
-                        LRCLinesTotal = 0;
-                        TagRoundFinished = 0;
+                        nextLRCLineIndex = 0;
+                        _LRCLinesTotal = 0;
+                        _tagRoundFinished = 0;
 
                         _artist = LyricUtil.CapatalizeString(GUIPropertyManager.GetProperty("#Play.Current.Artist"));
                         _title = LyricUtil.CapatalizeString(GUIPropertyManager.GetProperty("#Play.Current.Title"));
 
-                        if (!_lyricText.Equals(string.Empty))
+                        if (!_LyricText.Equals(string.Empty))
                         {
                             ShowLRCtoEdit();
                         }
                         else if (
                             DatabaseUtil.IsSongInLyricsDatabase(LyricsDb, _artist, _title).Equals(
-                                DatabaseUtil.LyricFound))
+                                DatabaseUtil.LYRIC_FOUND))
                         {
-                            var item = LyricsDb[DatabaseUtil.CorrectKeyFormat(_artist, _title)];
-                            _lyricText = item.Lyrics;
+                            LyricsItem item = LyricsDb[DatabaseUtil.CorrectKeyFormat(_artist, _title)];
+                            _LyricText = item.Lyrics;
                             ShowLRCtoEdit();
                         }
                         else
@@ -387,8 +411,8 @@ namespace MyLyrics
                             if (!string.IsNullOrEmpty(_artist) && !string.IsNullOrEmpty(_title))
                             {
                                 StopThread();
-                                _searchType = (int) SearchTypes.BothLRCsAndLyrics;
-                                ResetGUI((int) MyLyricsSettings.Screen.LRC);
+                                _SearchType = (int) SEARCH_TYPES.BOTH_LRCS_AND_LYRICS;
+                                resetGUI((int) MyLyricsSettings.Screen.LRC);
                                 _newTrack = true;
                                 //FindLyric();
                             }
@@ -398,24 +422,25 @@ namespace MyLyrics
                                 //_ImagePathContainer.Clear();
                                 //GUIelement_ImgCoverArt.Dispose();
 
-                                ResetLrcFields();
-                                ResetGUI(_selectedScreen);
+                                resetLrcFields();
+                                resetGUI(_selectedScreen);
 
-                                _statusText = "Not enough data for lyric search";
-                                GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
+                                _StatusText = "Not enough data for lyric search";
+                                GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, _StatusText);
                             }
                             else
                             {
                                 _artist = "";
                                 _title = "";
-                                _lyricText = "";
-                                _imagePathContainer.Clear();
-                                GuIelementImgCoverArt.Dispose();
+                                _TrackText = "";
+                                _LyricText = "";
+                                _ImagePathContainer.Clear();
+                                GUIelement_ImgCoverArt.Dispose();
 
-                                ResetGUI(_selectedScreen);
+                                resetGUI(_selectedScreen);
 
-                                _statusText = "No music file is playing";
-                                GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
+                                _StatusText = "No music file is playing";
+                                GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, _StatusText);
                             }
                         }
                     }
@@ -426,11 +451,11 @@ namespace MyLyrics
             {
                 if (string.IsNullOrEmpty(GUIPropertyManager.GetProperty("#Play.Current.Lyrics")))
                 {
-                    GUIPropertyManager.SetProperty("#Play.Current.Lyrics", _lyricText);
+                    GUIPropertyManager.SetProperty("#Play.Current.Lyrics", _LyricText);
                 }
 
                 if (_selectedScreen == (int) MyLyricsSettings.Screen.LRC
-                    || _selectedScreen == (int) MyLyricsSettings.Screen.LRCPick)
+                    || _selectedScreen == (int) MyLyricsSettings.Screen.LRC_PICK)
                 {
                     CalculateNextInterval();
                 }
@@ -443,11 +468,11 @@ namespace MyLyrics
 
         private bool CheckReallyEditLRCBeforeEdit()
         {
-            var lrc = new SimpleLRC(_artist, _title, _lyricText);
+            SimpleLRC lrc = new SimpleLRC(_artist, _title, _LyricText);
 
             if (lrc.IsValid)
             {
-                var dlgYesNo = (GUIDialogYesNo) GUIWindowManager.GetWindow((int) Window.WINDOW_DIALOG_YES_NO);
+                GUIDialogYesNo dlgYesNo = (GUIDialogYesNo) GUIWindowManager.GetWindow((int) Window.WINDOW_DIALOG_YES_NO);
                 if (dlgYesNo != null)
                 {
                     dlgYesNo.Reset();
@@ -461,10 +486,13 @@ namespace MyLyrics
 
                     if (dlgYesNo.IsConfirmed)
                     {
-                        _lyricText = lrc.LyricAsPlainLyric;
+                        _LyricText = lrc.LyricAsPlainLyric;
                         return true;
                     }
-                    return false;
+                    else
+                    {
+                        return false;
+                    }
                 }
                 //_alreadyValidLRC = true;
                 //_lines = new string[1] { "This song already has a valid LRC lyric" };
@@ -476,30 +504,30 @@ namespace MyLyrics
 
         private void ShowLRCtoEdit()
         {
-            GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, "");
+            GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, "");
 
-            if (!string.IsNullOrEmpty(_lyricText))
+            if (!string.IsNullOrEmpty(_LyricText))
             {
-                _lyricText = _lyricText.Trim();
+                _LyricText = _LyricText.Trim();
 
                 //else
                 {
-                    ResetLrcFields();
+                    resetLrcFields();
 
-                    _lines = _lyricText.Split(new[] {"\r\n", "\n"}, StringSplitOptions.None);
+                    _lines = _LyricText.Split(new string[2] {"\r\n", "\n"}, StringSplitOptions.None);
 
                     try
                     {
-                        for (var i = TagRoundFinished * TagInRound;
-                             i < (TagRoundFinished + 1) * TagInRound;
+                        for (int i = _tagRoundFinished * _TAG_IN_ROUND;
+                             i < (_tagRoundFinished + 1) * _TAG_IN_ROUND;
                              i++)
                         {
-                            GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlEditTime + i);
+                            GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + i);
                             //GUIControl.ShowControl(GetID, (int)GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i);
-                            GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlEditLine + i);
-                            GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditLine + i, _lines[i]);
-                            GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditLineDone + i, _lines[i]);
-                            GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditTime + i, "[xx:xx.xx]");
+                            GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i);
+                            GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i, _lines[i]);
+                            GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i, _lines[i]);
+                            GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + i, "[xx:xx.xx]");
                         }
                     }
                     catch
@@ -509,44 +537,44 @@ namespace MyLyrics
             }
             else
             {
-                _statusText = "No valid lyric found";
-                GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
+                _StatusText = "No valid lyric found";
+                GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, _StatusText);
             }
 
-            if (_currentTrackTag == null)
+            if (_CurrentTrackTag == null)
             {
-                ResetGUI(_selectedScreen);
+                resetGUI(_selectedScreen);
 
-                _statusText = "No music file is playing";
-                GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
+                _StatusText = "No music file is playing";
+                GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, _StatusText);
+                return;
             }
         }
 
-        private void LoadSkinSettings(string skinXMLFile)
+        private void loadSkinSettings(string skinXMLFile)
         {
             try
             {
-                var doc = new XmlDocument();
+                XmlDocument doc = new XmlDocument();
                 doc.Load(skinXMLFile);
                 if (doc.DocumentElement != null)
                 {
-                    _defines = LoadDefines(doc);
+                    defines = LoadDefines(doc);
                 }
             }
             catch
             {
-                ;
             }
         }
 
         private IDictionary LoadDefines(XmlDocument document)
         {
-            var table = new Hashtable();
+            Hashtable table = new Hashtable();
             try
             {
                 foreach (XmlNode node in document.SelectNodes("/window/define"))
                 {
-                    var tokens = node.InnerText.Split(':');
+                    string[] tokens = node.InnerText.Split(':');
                     if (tokens.Length < 2)
                     {
                         continue;
@@ -556,16 +584,15 @@ namespace MyLyrics
             }
             catch
             {
-                ;
             }
             return table;
         }
 
-        private bool EnableMouseControl()
+        private bool enableMouseControl()
         {
-            var enableMouseControl = String.Empty;
-            if (_defines != null && _defines.Contains("#MyLyrics.EnableMouseControl"))
-                enableMouseControl = (string) _defines["#MyLyrics.EnableMouseControl"];
+            string enableMouseControl = String.Empty;
+            if (defines != null && defines.Contains("#MyLyrics.EnableMouseControl"))
+                enableMouseControl = (string) defines["#MyLyrics.EnableMouseControl"];
             try
             {
                 if (enableMouseControl.ToUpper() == "TRUE" || enableMouseControl.ToUpper() == "YES")
@@ -577,11 +604,11 @@ namespace MyLyrics
             return false;
         }
 
-        private bool UseEditControlsOnLRCPick()
+        private bool useEditControlsOnLRCPick()
         {
-            var useEditControlsOnLRCPick = String.Empty;
-            if (_defines != null && _defines.Contains("#MyLyrics.UseEditControlsOnLRCPick"))
-                useEditControlsOnLRCPick = (string) _defines["#MyLyrics.UseEditControlsOnLRCPick"];
+            string useEditControlsOnLRCPick = String.Empty;
+            if (defines != null && defines.Contains("#MyLyrics.UseEditControlsOnLRCPick"))
+                useEditControlsOnLRCPick = (string) defines["#MyLyrics.UseEditControlsOnLRCPick"];
             try
             {
                 if (useEditControlsOnLRCPick.ToUpper() == "TRUE" || useEditControlsOnLRCPick.ToUpper() == "YES")
@@ -593,15 +620,15 @@ namespace MyLyrics
             return false;
         }
 
-        private bool IsFocusedBlacklisted()
+        private bool isFocusedBlacklisted()
         {
-            var focusID = GetFocusControlId();
-            var blacklistedControlIDs = String.Empty;
-            if (_defines != null && _defines.Contains("#MyLyrics.BlacklistedControlIDs"))
+            int focusID = GetFocusControlId();
+            string blacklistedControlIDs = String.Empty;
+            if (defines != null && defines.Contains("#MyLyrics.BlacklistedControlIDs"))
             {
-				blacklistedControlIDs = (string) _defines["#MyLyrics.BlacklistedControlIDs"];
+				blacklistedControlIDs = (string) defines["#MyLyrics.BlacklistedControlIDs"];
             }
-            foreach (var cID in blacklistedControlIDs.Split(new[] {','}))
+            foreach (string cID in blacklistedControlIDs.Split(new char[] {','}))
             {
                 try
                 {
@@ -610,7 +637,6 @@ namespace MyLyrics
                 }
                 catch
                 {
-                    ;
                 }
             }
             return false;
@@ -619,21 +645,21 @@ namespace MyLyrics
         private void LoadSettings()
         {
             _newTrack = true;
-            _searchingState = (int) SearchState.NotSearching;
-            _searchType = (int) SearchTypes.BothLRCsAndLyrics;
+            _SearchingState = (int) SEARCH_STATE.NOT_SEARCHING;
+            _SearchType = (int) SEARCH_TYPES.BOTH_LRCS_AND_LYRICS;
 
-            _lyricsToWriteToTag = new List<string[]>();
+            _LyricsToWriteToTag = new List<string[]>();
 
-            ResetGUI(_selectedScreen);
+            resetGUI(_selectedScreen);
 
             // Get MediaPortal internal configuration
             using (var xmlreader = SettingManager.MediaPortalSettings)
             {
-                xmlreader.GetValueAsBool("musicfiles", "showid3", true);
+                _UseID3 = xmlreader.GetValueAsBool("musicfiles", "showid3", true);
 
-                xmlreader.GetValueAsString("skin", "name", "Blue3");
+                _skin = xmlreader.GetValueAsString("skin", "name", "Blue3");
 
-                xmlreader.GetValueAsInt("audioplayer", "crossfade", 2000);
+                _crossfade = xmlreader.GetValueAsInt("audioplayer", "crossfade", 2000);
             }
 
             Setup.GetInstance().ActiveSites.Clear();
@@ -642,46 +668,46 @@ namespace MyLyrics
                 Setup.GetInstance().ActiveSites.Add(site);
             }
 
-            _automaticWriteToMusicTag = SettingManager.GetParamAsBool(SettingManager.AutomaticWriteToMusicTag, false);
-            _automaticReadFromMusicTag = SettingManager.GetParamAsBool(SettingManager.AutomaticReadFromMusicTag, false);
+            _AutomaticWriteToMusicTag = SettingManager.GetParamAsBool(SettingManager.AutomaticWriteToMusicTag, false);
+            _AutomaticReadFromMusicTag = SettingManager.GetParamAsBool(SettingManager.AutomaticReadFromMusicTag, false);
 
-            UseAutoScrollAsDefault = SettingManager.GetParamAsBool(SettingManager.UseAutoscroll, true);
-            UseAutoOnLyricLength = SettingManager.GetParamAsBool(SettingManager.UseAutoOnLyricLength, false);
-            LrcTaggingOffset = SettingManager.GetParamAsString(SettingManager.LrcTaggingOffset, SettingManager.DefaultLrcTaggingOffset);
+            _useAutoScrollAsDefault = SettingManager.GetParamAsBool(SettingManager.UseAutoscroll, true);
+            _useAutoOnLyricLength = SettingManager.GetParamAsBool(SettingManager.UseAutoOnLyricLength, false);
+            _LrcTaggingOffset = SettingManager.GetParamAsString(SettingManager.LrcTaggingOffset, SettingManager.DefaultLrcTaggingOffset);
 
             var strButtonText = SettingManager.GetParamAsString(SettingManager.PluginsName, SettingManager.DefaultPluginName);
             GUIPropertyManager.SetProperty("#currentmodule", strButtonText);
 
-            LrcTaggingName = SettingManager.GetParamAsString(SettingManager.LrcTaggingName, "");
+            _LrcTaggingName = SettingManager.GetParamAsString(SettingManager.LrcTaggingName, "");
 
-            UploadLrcToLrcFinder = SettingManager.GetParamAsBool(SettingManager.UploadLrcToLrcFinder, false);
-            ConfirmedNoUploadLrcToLrcFinder = SettingManager.GetParamAsBool(SettingManager.ConfirmedNoUploadLrcToLrcFinder, false);
-            AlwaysAskUploadLrcToLrcFinder = SettingManager.GetParamAsBool(SettingManager.AlwaysAskUploadLrcToLrcFinder, false);
+            _uploadLrcToLrcFinder = SettingManager.GetParamAsBool(SettingManager.UploadLrcToLrcFinder, false);
+            _confirmedNoUploadLrcToLrcFinder = SettingManager.GetParamAsBool(SettingManager.ConfirmedNoUploadLrcToLrcFinder, false);
+            _alwaysAskUploadLrcToLrcFinder = SettingManager.GetParamAsBool(SettingManager.AlwaysAskUploadLrcToLrcFinder, false);
 
             var translationString = SettingManager.GetParamAsString(SettingManager.TranslationLanguage, SettingManager.DefaultTranslationLanguage);
 
-            var strings = translationString.Split(new[] {"("}, StringSplitOptions.None);
+            string[] strings = translationString.Split(new string[1] {"("}, StringSplitOptions.None);
             _translationLanguage = strings[0].Trim();
             _translationLanguageCode = strings[1].Replace(")", string.Empty);
 
             _guidString = SettingManager.GetParamAsString(SettingManager.Guid, "");
 
-            _find = SettingManager.GetParamAsString(SettingManager.Find, "");
-            _replace = SettingManager.GetParamAsString(SettingManager.Replace, "");
+            _Find = SettingManager.GetParamAsString(SettingManager.Find, "");
+            _Replace = SettingManager.GetParamAsString(SettingManager.Replace, "");
 
             if (!_settingsRead) // only first time
             {
-                if (UseAutoScrollAsDefault)
+                if (_useAutoScrollAsDefault)
                 {
-                    ControlLyricSelected = (int) GUILyricsControls.ControlLyricScroll;
+                    CONTROL_LYRIC_SELECTED = (int) GUI_Lyrics_Controls.CONTROL_Lyric_Scroll;
 
-                    GUIControl.HideControl(GetID, (int) GUILyricsControls.ControlLyric);
+                    GUIControl.HideControl(GetID, (int) GUI_Lyrics_Controls.CONTROL_Lyric);
                 }
                 else
                 {
-                    ControlLyricSelected = (int) GUILyricsControls.ControlLyric;
+                    CONTROL_LYRIC_SELECTED = (int) GUI_Lyrics_Controls.CONTROL_Lyric;
 
-                    GUIControl.HideControl(GetID, (int) GUILyricsControls.ControlLyricScroll);
+                    GUIControl.HideControl(GetID, (int) GUI_Lyrics_Controls.CONTROL_Lyric_Scroll);
                 }
             }
 
@@ -707,9 +733,9 @@ namespace MyLyrics
             // Deserialize lyrics and marked database, and save references in LyricsDB
             try
             {
-                var path = Config.GetFile(Config.Dir.Database, MLyricsDbName);
-                var fs = new FileStream(path, FileMode.Open);
-                var bf = new BinaryFormatter();
+                string path = Config.GetFile(Config.Dir.Database, MLyricsDbName);
+                FileStream fs = new FileStream(path, FileMode.Open);
+                BinaryFormatter bf = new BinaryFormatter();
                 LyricsDb = (LyricsDatabase) bf.Deserialize(fs);
                 fs.Close();
 
@@ -720,7 +746,7 @@ namespace MyLyrics
             }
             catch
             {
-                var dlg = (GUIDialogOK) GUIWindowManager.GetWindow((int) Window.WINDOW_DIALOG_OK);
+                GUIDialogOK dlg = (GUIDialogOK) GUIWindowManager.GetWindow((int) Window.WINDOW_DIALOG_OK);
                 dlg.SetHeading("No lyric database found");
                 dlg.SetLine(1, "Please run the MyLyrics configuration");
                 dlg.SetLine(2, "before running the plugin.");
@@ -740,54 +766,52 @@ namespace MyLyrics
 
             base.OnPageLoad();
 
-            if (_imageChangeTimer == null)
+            if (_ImageChangeTimer == null)
             {
-                _imageChangeTimer = new Timer();
-                _imageChangeTimer.Interval = 15*1000;
-                _imageChangeTimer.Elapsed += OnImageTimerTickEvent;
-                _imageChangeTimer.Start();
+                _ImageChangeTimer = new Timer();
+                _ImageChangeTimer.Interval = 15*1000;
+                _ImageChangeTimer.Elapsed += OnImageTimerTickEvent;
+                _ImageChangeTimer.Start();
             }
 
-            if (_lrcPickTimer == null)
+            if (_LRCPickTimer == null)
             {
-                _lrcPickTimer = new Timer();
-                _lrcPickTimer.Interval = 3*1000;
-                _lrcPickTimer.Elapsed += OnLRCPickTimerTickEvent;
-                _lrcPickTimer.Stop();
+                _LRCPickTimer = new Timer();
+                _LRCPickTimer.Interval = 3*1000;
+                _LRCPickTimer.Elapsed += OnLRCPickTimerTickEvent;
+                _LRCPickTimer.Stop();
             }
             
-            PluginLogger.Info("MyLyrics opens");
+            logger.Info("MyLyrics opens");
         }
 
-        protected override void OnPageDestroy(int newWindowId)
+        protected override void OnPageDestroy(int new_windowId)
         {
             StopThread();
-            if (_worker.IsBusy)
-            {
-                _worker.CancelAsync();
-            }
-            ResetAll();
-            ResetGUI((int) MyLyricsSettings.Screen.LYRICS);
+            if (worker.IsBusy)
+                worker.CancelAsync();
+            resetAll();
+            resetGUI((int) MyLyricsSettings.Screen.LYRICS);
 
             GUIGraphicsContext.ScrollSpeedVertical = _startingScrollSpeedVertical;
 
-            if (_writeTagTimer != null)
+            if (_WriteTagTimer != null)
             {
-                _writeTagTimer.Stop();
-                _writeTagTimer.Close();
-                _writeTagTimer.Dispose();
-                _writeTagTimer = null;
+                _WriteTagTimer.Stop();
+                _WriteTagTimer.Close();
+                _WriteTagTimer.Dispose();
+                _WriteTagTimer = null;
             }
 
-            if (_automaticWriteToMusicTag)
+            if (_AutomaticWriteToMusicTag)
             {
-                foreach (var pair in _lyricsToWriteToTag)
+                foreach (string[] pair in _LyricsToWriteToTag)
                 {
                     TagReaderUtil.WriteLyrics(pair[0], pair[1]);
                 }
             }
             
-            PluginLogger.Info("MyLyrics closes");
+            logger.Info("MyLyrics closes");
 
             //deregister the handler!
             GUIPropertyManager.OnPropertyChanged -= trackChangeHandler;
@@ -801,16 +825,16 @@ namespace MyLyrics
                     message.Message == GUIMessage.MessageType.GUI_MSG_LABEL_RESET
                 ) &&
                 message.TargetWindowId == GetID &&
-                message.TargetControlId == (int) GUILRCControls.ControlLrcPickStatus)
+                message.TargetControlId == (int) GUI_LRC_Controls.CONTROL_LRCPICK_STATUS)
             {
-                _lrcPickTimer.Stop();
+                _LRCPickTimer.Stop();
             }
             return base.OnMessage(message);
         }
 
         public override void OnAction(MediaPortal.GUI.Library.Action action)
         {
-            if (!EnableMouseControl())
+            if (!enableMouseControl())
             {
                 if (action.wID == MediaPortal.GUI.Library.Action.ActionType.ACTION_MOUSE_MOVE)
                 {
@@ -832,7 +856,7 @@ namespace MyLyrics
                 case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOVE_LEFT:
                 case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOVE_RIGHT:
                     {
-                        if (_selectedScreen == (int) MyLyricsSettings.Screen.LRCPick)
+                        if (_selectedScreen == (int) MyLyricsSettings.Screen.LRC_PICK)
                         {
                             if (action.wID == MediaPortal.GUI.Library.Action.ActionType.ACTION_MOVE_LEFT)
                             {
@@ -845,32 +869,32 @@ namespace MyLyrics
 
                             if (_selectedinLRCPicker < 0)
                             {
-                                _selectedinLRCPicker = _lrcTable.Rows.Count - 1;
+                                _selectedinLRCPicker = _LrcTable.Rows.Count - 1;
                             }
-                            if (_selectedinLRCPicker > _lrcTable.Rows.Count - 1)
+                            if (_selectedinLRCPicker > _LrcTable.Rows.Count - 1)
                             {
                                 _selectedinLRCPicker = 0;
                             }
 
 
-                            var status = string.Format("LRC {0} of {1} shown", _selectedinLRCPicker + 1, _lrcTable.Rows.Count);
-                            GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlLrcPickStatus, status);
+                            string status = string.Format("LRC {0} of {1} shown", _selectedinLRCPicker + 1, _LrcTable.Rows.Count);
+                            GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_LRCPICK_STATUS, status);
 
-                            _lyricText = _lrcTable.Rows[_selectedinLRCPicker]["Lyrics"] as string;
-                            _simpleLrc = new SimpleLRC(null, null, _lyricText);
-                            StartShowingLrc(_lyricText, true);
+                            _LyricText = _LrcTable.Rows[_selectedinLRCPicker]["Lyrics"] as string;
+                            _SimpleLrc = new SimpleLRC(null, null, _LyricText);
+                            StartShowingLrc(_LyricText, true);
                         }
                         break;
                     }
                 case MediaPortal.GUI.Library.Action.ActionType.ACTION_SELECT_ITEM:
                     {
-                        if (!IsFocusedBlacklisted())
+                        if (!isFocusedBlacklisted())
                         {
-                            if (_selectedScreen == (int) MyLyricsSettings.Screen.LRCPick && !action.m_key.KeyChar.Equals(42))
+                            if (_selectedScreen == (int) MyLyricsSettings.Screen.LRC_PICK && !action.m_key.KeyChar.Equals(42))
                             {
                                 ShowLrcPick();
                             }
-                            if (_selectedScreen == (int) MyLyricsSettings.Screen.LRCEditor)
+                            if (_selectedScreen == (int) MyLyricsSettings.Screen.LRC_EDITOR)
                             {
                                 TagLine();
                             }
@@ -883,11 +907,11 @@ namespace MyLyrics
                                                                     action.m_key.KeyChar.Equals(41))
                             // 'Enter' or '#' or ')'
                         {
-                            if (_selectedScreen == (int) MyLyricsSettings.Screen.LRCPick && !action.m_key.KeyChar.Equals(35))
+                            if (_selectedScreen == (int) MyLyricsSettings.Screen.LRC_PICK && !action.m_key.KeyChar.Equals(35))
                             {
                                 ShowLrcPick();
                             }
-                            if (_selectedScreen == (int) MyLyricsSettings.Screen.LRCEditor)
+                            if (_selectedScreen == (int) MyLyricsSettings.Screen.LRC_EDITOR)
                             {
                                 TagLine();
                             }
@@ -901,11 +925,11 @@ namespace MyLyrics
                             }
 
                             _lyricsFound = false;
-                            if (_selectedScreen != (int) MyLyricsSettings.Screen.LRCEditor)
+                            if (_selectedScreen != (int) MyLyricsSettings.Screen.LRC_EDITOR)
                             {
                                 if (CheckReallyEditLRCBeforeEdit())
                                 {
-                                    ResetGUI((int) MyLyricsSettings.Screen.LRCEditor);
+                                    resetGUI((int) MyLyricsSettings.Screen.LRC_EDITOR);
                                     ShowLRCtoEdit();
                                     Process();
                                 }
@@ -913,14 +937,14 @@ namespace MyLyrics
                             else
                             {
                                 // parameter could be anything but LRC_EDITOR. Will find correct type when running findLyric().
-                                if (_searchType == (int) SearchTypes.BothLRCsAndLyrics ||
-                                    _searchType == (int) SearchTypes.OnlyLRCs)
+                                if (_SearchType == (int) SEARCH_TYPES.BOTH_LRCS_AND_LYRICS ||
+                                    _SearchType == (int) SEARCH_TYPES.ONLY_LRCS)
                                 {
-                                    ResetGUI((int) MyLyricsSettings.Screen.LRC);
+                                    resetGUI((int) MyLyricsSettings.Screen.LRC);
                                 }
                                 else
                                 {
-                                    ResetGUI((int) MyLyricsSettings.Screen.LYRICS);
+                                    resetGUI((int) MyLyricsSettings.Screen.LYRICS);
                                 }
                                 //resetGUI((int) MyLyricsSettings.Screen.LYRICS);
                                 _newTrack = true;
@@ -957,51 +981,53 @@ namespace MyLyrics
                         else if (action.m_key.KeyChar.Equals(102)) // 'F'
                         {
                             var lyricText = String.Empty;
+                            var hasValidLRC = false;
                             if (LyricsDb.ContainsKey(DatabaseUtil.CorrectKeyFormat(_artist, _title)))
                             {
                                 lyricText = LyricsDb[DatabaseUtil.CorrectKeyFormat(_artist, _title)].Lyrics;
                             }
                             if (lyricText != null && (new SimpleLRC(_artist, _title, lyricText)).IsValid)
                             {
+                                hasValidLRC = true;
                             }
 
-                            var shouldNewTrack = true;
-                            if (_selectedScreen == (int) MyLyricsSettings.Screen.LRCEditor ||
-                                _selectedScreen == (int) MyLyricsSettings.Screen.LRCPick || _isInTranslation)
+                            bool shouldNewTrack = true;
+                            if (_selectedScreen == (int) MyLyricsSettings.Screen.LRC_EDITOR ||
+                                _selectedScreen == (int) MyLyricsSettings.Screen.LRC_PICK || _isInTranslation)
                             {
                                 //shouldNewTrack = true;
                             }
                             else
                             {
-                                if (_searchType == (int) SearchTypes.BothLRCsAndLyrics)
+                                if (_SearchType == (int) SEARCH_TYPES.BOTH_LRCS_AND_LYRICS)
                                 {
                                     if (_selectedScreen == (int) MyLyricsSettings.Screen.LRC)
                                     {
-                                        _searchType = (int) SearchTypes.OnlyLYRICS;
+                                        _SearchType = (int) SEARCH_TYPES.ONLY_LYRICS;
                                     }
                                     else
                                     {
-                                        _searchType = (int) SearchTypes.OnlyLRCs;
+                                        _SearchType = (int) SEARCH_TYPES.ONLY_LRCS;
                                     }
                                 }
-                                else if (_searchType == (int) SearchTypes.OnlyLRCs)
+                                else if (_SearchType == (int) SEARCH_TYPES.ONLY_LRCS)
                                 {
-                                    _searchType = (int) SearchTypes.OnlyLYRICS;
+                                    _SearchType = (int) SEARCH_TYPES.ONLY_LYRICS;
                                 }
                                 else
                                 {
-                                    _searchType = (int) SearchTypes.OnlyLRCs;
+                                    _SearchType = (int) SEARCH_TYPES.ONLY_LRCS;
                                 }
 
                                 //if (hasValidLRC && _SearchType == (int)SEARCH_TYPES.ONLY_LYRICS)
                                 //    _SearchType = (int)SEARCH_TYPES.ONLY_LRCS;
 
                                 var lrcActiveSites = LyricsSiteFactory.LrcLyricsSiteNames().Where(lrcSite => Setup.GetInstance().ActiveSites.Contains(lrcSite)).ToList();
-                                if (_searchType != (int)SearchTypes.OnlyLYRICS && lrcActiveSites.Count == 0)
+                                if (_SearchType != (int)SEARCH_TYPES.ONLY_LYRICS && lrcActiveSites.Count == 0)
                                 {
-                                    _searchType = (int) SearchTypes.OnlyLYRICS;
+                                    _SearchType = (int) SEARCH_TYPES.ONLY_LYRICS;
 
-                                    var dlg2 =
+                                    GUIDialogOK dlg2 =
                                         (GUIDialogOK) GUIWindowManager.GetWindow((int) Window.WINDOW_DIALOG_OK);
                                     dlg2.SetHeading("LRC screen disabled");
                                     dlg2.SetLine(1, "You haven't enabled LRCFinder");
@@ -1017,14 +1043,14 @@ namespace MyLyrics
                                 shouldNewTrack = true;
                             }
 
-                            if (_searchType == (int) SearchTypes.BothLRCsAndLyrics ||
-                                _searchType == (int) SearchTypes.OnlyLRCs)
+                            if (_SearchType == (int) SEARCH_TYPES.BOTH_LRCS_AND_LYRICS ||
+                                _SearchType == (int) SEARCH_TYPES.ONLY_LRCS)
                             {
-                                ResetGUI((int) MyLyricsSettings.Screen.LRC);
+                                resetGUI((int) MyLyricsSettings.Screen.LRC);
                             }
                             else
                             {
-                                ResetGUI((int) MyLyricsSettings.Screen.LYRICS);
+                                resetGUI((int) MyLyricsSettings.Screen.LYRICS);
                             }
 
                             _newTrack = shouldNewTrack;
@@ -1035,34 +1061,34 @@ namespace MyLyrics
                         }
                         else if (49 <= action.m_key.KeyChar && action.m_key.KeyChar <= 57) // '1'-'9'
                         {
-                            if (_selectedScreen == (int) MyLyricsSettings.Screen.LRCPick)
+                            if (_selectedScreen == (int) MyLyricsSettings.Screen.LRC_PICK)
                             {
-                                var index = action.m_key.KeyChar - 49;
-                                var noOfRows = index + 1;
+                                int index = action.m_key.KeyChar - 49;
+                                int noOfRows = index + 1;
 
-                                if (noOfRows <= _lrcTable.Rows.Count)
+                                if (noOfRows <= _LrcTable.Rows.Count)
                                 {
-                                    var status = string.Format("LRC {0} of {1} shown", noOfRows, _lrcTable.Rows.Count);
-                                    GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlLrcPickStatus,
+                                    string status = string.Format("LRC {0} of {1} shown", noOfRows, _LrcTable.Rows.Count);
+                                    GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_LRCPICK_STATUS,
                                                                status);
 
-                                    _lyricText = _lrcTable.Rows[index]["Lyrics"] as string;
-                                    _simpleLrc = new SimpleLRC(null, null, _lyricText);
-                                    StartShowingLrc(_lyricText, true);
+                                    _LyricText = _LrcTable.Rows[index]["Lyrics"] as string;
+                                    _SimpleLrc = new SimpleLRC(null, null, _LyricText);
+                                    StartShowingLrc(_LyricText, true);
                                 }
                             }
                         }
                         else if (action.m_key.KeyChar.Equals(8) || action.m_key.KeyChar.Equals(42) || action.m_key.KeyChar.Equals(40)) // 'Backslash' or '*'
                         {
-                            if (_selectedScreen == (int) MyLyricsSettings.Screen.LRCEditor)
+                            if (_selectedScreen == (int) MyLyricsSettings.Screen.LRC_EDITOR)
                             {
                                 RemoveLatestTagLine();
                             }
                         }
                         else if (action.m_key.KeyChar.Equals(98)) // 'B' (stop playing media)
                         {
-                            ResetLrcFields();
-                            ResetGUI(_selectedScreen);
+                            resetLrcFields();
+                            resetGUI(_selectedScreen);
                         }
                         break;
                     }
@@ -1089,60 +1115,62 @@ namespace MyLyrics
         {
             if (String.IsNullOrEmpty(_artist)) return;
 
-            if (_selectedScreen != (int) MyLyricsSettings.Screen.LRCPick)
+            if (_selectedScreen != (int) MyLyricsSettings.Screen.LRC_PICK)
             {
                 var lrcFinder = new LrcFinder(_artist, _title, null, 0);
-                _lrcTable = lrcFinder.FindLRCs();
+                _LrcTable = lrcFinder.FindLRCs();
 
-                if (_lrcTable != null && _lrcTable.Rows.Count > 0)
+                if (_LrcTable != null && _LrcTable.Rows.Count > 0)
                 {
                     _selectedinLRCPicker = 0;
-                    if (_simpleLrc != null)
+                    if (_SimpleLrc != null)
                     {
-                        for (var i = 0; i < _lrcTable.Rows.Count; i++)
+                        for (int i = 0; i < _LrcTable.Rows.Count; i++)
                         {
-                            var simpleLrcTemp = new SimpleLRC(null, null, _lrcTable.Rows[i]["Lyrics"] as string);
-                            if (_simpleLrc.LyricAsLRC == simpleLrcTemp.LyricAsLRC)
+                            SimpleLRC _SimpleLrcTemp = new SimpleLRC(null, null, _LrcTable.Rows[i]["Lyrics"] as string);
+                            if (_SimpleLrc.LyricAsLRC == _SimpleLrcTemp.LyricAsLRC)
                             {
                                 _selectedinLRCPicker = i;
                                 break;
                             }
                         }
                     }
-                    _lyricText = _lrcTable.Rows[_selectedinLRCPicker]["Lyrics"] as string;
-                    _simpleLrc = new SimpleLRC(null, null, _lyricText);
-                    StartShowingLrc(_lyricText, true);
+                    _LyricText = _LrcTable.Rows[_selectedinLRCPicker]["Lyrics"] as string;
+                    _SimpleLrc = new SimpleLRC(null, null, _LyricText);
+                    StartShowingLrc(_LyricText, true);
 
-                    string status;
+                    string status = null;
 
-                    if (_lrcTable.Rows.Count == 1)
+                    if (_LrcTable.Rows.Count == 1)
                     {
                         status = "One LRC file found";
                     }
                     else
                     {
-                        status = string.Format("LRC {0} of {1} shown", _selectedinLRCPicker + 1, _lrcTable.Rows.Count);
+                        status = string.Format("LRC {0} of {1} shown", _selectedinLRCPicker + 1, _LrcTable.Rows.Count);
                     }
 
-                    GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlLrcPickStatus, status);
+                    GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_LRCPICK_STATUS, status);
                 }
-                else if (_lrcTable == null)
+                else if (_LrcTable == null)
                 {
                     //resetGUI((int) MyLyricsSettings.Screen.LRC_PICK);
 
-                    const string status = "LrcFinder could not be reached";
-                    GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlLrcPickStatus, status);
-                    _lrcPickTimer.Stop();
-                    _lrcPickTimer.Start();
+                    string status = "LrcFinder could not be reached";
+                    GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_LRCPICK_STATUS, status);
+                    _lastLRCPickLabel = status;
+                    _LRCPickTimer.Stop();
+                    _LRCPickTimer.Start();
                 }
                 else
                 {
                     //resetGUI((int)MyLyricsSettings.Screen.LRC_PICK);
 
-                    const string status = "No LRC found";
-                    GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlLrcPickStatus, status);
-                    _lrcPickTimer.Stop();
-                    _lrcPickTimer.Start();
+                    string status = "No LRC found";
+                    GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_LRCPICK_STATUS, status);
+                    _lastLRCPickLabel = status;
+                    _LRCPickTimer.Stop();
+                    _LRCPickTimer.Start();
 
                     //string lyricInfo = "Press the 'P' key to return";
                     //GUIControl.SetControlLabel(GetID, CONTROL_LYRIC_SELECTED, lyricInfo);
@@ -1150,24 +1178,24 @@ namespace MyLyrics
             }
             else
             {
-                SaveLyricToDatabase(_artist, _title, _lyricText, "MyLyrics LRC Pick", true);
+                SaveLyricToDatabase(_artist, _title, _LyricText, "MyLyrics LRC Pick", true);
 
-                if (_currentTrackTag != null)
+                if (_CurrentTrackTag != null)
                 {
-                    if (_worker.IsBusy)
+                    if (worker.IsBusy)
                     {
-                        _worker.CancelAsync();
+                        worker.CancelAsync();
                     }
-                    var data = new SaveLyricToTagListsData(_lyricText, _artist, _title,
-                                                                               _currentTrackTag.FileName);
+                    SaveLyricToTagListsData data = new SaveLyricToTagListsData(_LyricText, _artist, _title,
+                                                                               _CurrentTrackTag.FileName);
                     //worker.RunWorkerAsync(data);
                     //SaveLyricToTagLists(_CurrentTrackTag.FileName, _LyricText);
                     SaveLyricToTagLists(this, new DoWorkEventArgs(data));
                 }
 
-                _lrcTable = null;
+                _LrcTable = null;
                 _newTrack = true;
-                _searchingState = (int) SearchState.NotSearching;
+                _SearchingState = (int) SEARCH_STATE.NOT_SEARCHING;
 
                 Process();
             }
@@ -1176,7 +1204,7 @@ namespace MyLyrics
 
         protected override void OnShowContextMenu()
         {
-            var dlg = (GUIDialogMenu) GUIWindowManager.GetWindow((int) Window.WINDOW_DIALOG_MENU);
+            GUIDialogMenu dlg = (GUIDialogMenu) GUIWindowManager.GetWindow((int) Window.WINDOW_DIALOG_MENU);
             if (dlg == null)
             {
                 return;
@@ -1189,10 +1217,10 @@ namespace MyLyrics
             dlg.Add("Find lyric");
             dlg.Add("Make LRC");
 
-            var translateLabelString = "Translate to " + _translationLanguage.ToLower();
+            string translateLabelString = "Translate to " + _translationLanguage.ToLower();
             dlg.Add(translateLabelString);
 
-            if (_selectedScreen == (int) MyLyricsSettings.Screen.LRCPick)
+            if (_selectedScreen == (int) MyLyricsSettings.Screen.LRC_PICK)
             {
                 dlg.Add("Use picked LRC");
             }
@@ -1201,7 +1229,7 @@ namespace MyLyrics
                 dlg.Add("Pick LRC");
             }
 
-            if (ControlLyricSelected == (int) GUILyricsControls.ControlLyric)
+            if (CONTROL_LYRIC_SELECTED == (int) GUI_Lyrics_Controls.CONTROL_Lyric)
             {
                 dlg.Add("Show scrolling lyric");
             }
@@ -1214,13 +1242,13 @@ namespace MyLyrics
             dlg.DoModal(GetID);
             if (dlg.SelectedLabel == -1)
             {
-                if (ControlLyricSelected == (int) GUILyricsControls.ControlLyric)
+                if (CONTROL_LYRIC_SELECTED == (int) GUI_Lyrics_Controls.CONTROL_Lyric)
                 {
-                    GUIControl.FocusControl(GetID, ControlLyricSelected);
+                    GUIControl.FocusControl(GetID, CONTROL_LYRIC_SELECTED);
                 }
-                else if (_selectedScreen == (int) MyLyricsSettings.Screen.LRCPick)
+                else if (_selectedScreen == (int) MyLyricsSettings.Screen.LRC_PICK)
                 {
-                    GUIControl.FocusControl(GetID, (int) GUILRCControls.ControlTagPickButton);
+                    GUIControl.FocusControl(GetID, (int) GUI_LRC_Controls.CONTROL_TAGPICKBUTTON);
                 }
                 else
                 {
@@ -1233,16 +1261,16 @@ namespace MyLyrics
                     var lrcActiveSites = LyricsSiteFactory.LrcLyricsSiteNames().Where(lrcSite => Setup.GetInstance().ActiveSites.Contains(lrcSite)).ToList();
                     if (lrcActiveSites.Count > 0)
                     {
-                        _searchType = (int) SearchTypes.OnlyLRCs;
+                        _SearchType = (int) SEARCH_TYPES.ONLY_LRCS;
 
                         //_selectedScreen = (int) MyLyricsSettings.Screen.LRC;
-                        ResetGUI((int) MyLyricsSettings.Screen.LRC);
+                        resetGUI((int) MyLyricsSettings.Screen.LRC);
 
                         _newTrack = true;
                     }
                     else
                     {
-                        var dlg2 = (GUIDialogOK) GUIWindowManager.GetWindow((int) Window.WINDOW_DIALOG_OK);
+                        GUIDialogOK dlg2 = (GUIDialogOK) GUIWindowManager.GetWindow((int) Window.WINDOW_DIALOG_OK);
                         dlg2.SetHeading("LRC screen disabled");
                         dlg2.SetLine(1, "You haven't enabled LRCFinder");
                         dlg2.SetLine(2, "in configuration.");
@@ -1252,10 +1280,10 @@ namespace MyLyrics
                     break;
 
                 case "Find lyric":
-                    _searchType = (int) SearchTypes.OnlyLYRICS;
+                    _SearchType = (int) SEARCH_TYPES.ONLY_LYRICS;
 
                     //_selectedScreen = (int) MyLyricsSettings.Screen.LYRICS;
-                    ResetGUI((int) MyLyricsSettings.Screen.LYRICS);
+                    resetGUI((int) MyLyricsSettings.Screen.LYRICS);
 
                     _newTrack = true;
                     break;
@@ -1264,7 +1292,7 @@ namespace MyLyrics
                     // Don't use a stream to create a LRC
                     if (g_Player.IsRadio)
                     {
-                        var dlg2 = (GUIDialogOK) GUIWindowManager.GetWindow((int) Window.WINDOW_DIALOG_OK);
+                        GUIDialogOK dlg2 = (GUIDialogOK) GUIWindowManager.GetWindow((int) Window.WINDOW_DIALOG_OK);
                         dlg2.SetHeading("LRC editor error");
                         dlg2.SetLine(1, "You cannot tag a streaming");
                         dlg2.SetLine(2, "media due to inproper timestamps.");
@@ -1279,11 +1307,11 @@ namespace MyLyrics
                     //CONTROL_LYRIC_SELECTED = (int) GUI_Lyrics_Controls.CONTROL_Lyric;
 
                     //_lyricsFound = false;
-                    if (_selectedScreen != (int) MyLyricsSettings.Screen.LRCEditor)
+                    if (_selectedScreen != (int) MyLyricsSettings.Screen.LRC_EDITOR)
                     {
                         if (CheckReallyEditLRCBeforeEdit())
                         {
-                            ResetGUI((int) MyLyricsSettings.Screen.LRCEditor);
+                            resetGUI((int) MyLyricsSettings.Screen.LRC_EDITOR);
                             ShowLRCtoEdit();
                             Process();
                         }
@@ -1299,24 +1327,24 @@ namespace MyLyrics
                 case "Show scrolling lyric":
                 case "Show static lyric":
 
-                    _searchType = (int) SearchTypes.OnlyLYRICS;
+                    _SearchType = (int) SEARCH_TYPES.ONLY_LYRICS;
 
                     //_selectedScreen = (int)MyLyricsSettings.Screen.LYRICS;
-                    ResetGUI((int) MyLyricsSettings.Screen.LYRICS);
+                    resetGUI((int) MyLyricsSettings.Screen.LYRICS);
 
                     _newTrack = true;
 
-                    if (ControlLyricSelected == (int) GUILyricsControls.ControlLyric)
+                    if (CONTROL_LYRIC_SELECTED == (int) GUI_Lyrics_Controls.CONTROL_Lyric)
                     {
-                        ControlLyricSelected = (int) GUILyricsControls.ControlLyricScroll;
-                        GUIControl.ShowControl(GetID, (int) GUILyricsControls.ControlLyricScroll);
-                        GUIControl.HideControl(GetID, (int) GUILyricsControls.ControlLyric);
+                        CONTROL_LYRIC_SELECTED = (int) GUI_Lyrics_Controls.CONTROL_Lyric_Scroll;
+                        GUIControl.ShowControl(GetID, (int) GUI_Lyrics_Controls.CONTROL_Lyric_Scroll);
+                        GUIControl.HideControl(GetID, (int) GUI_Lyrics_Controls.CONTROL_Lyric);
                     }
                     else
                     {
-                        ControlLyricSelected = (int) GUILyricsControls.ControlLyric;
-                        GUIControl.HideControl(GetID, (int) GUILyricsControls.ControlLyricScroll);
-                        GUIControl.ShowControl(GetID, (int) GUILyricsControls.ControlLyric);
+                        CONTROL_LYRIC_SELECTED = (int) GUI_Lyrics_Controls.CONTROL_Lyric;
+                        GUIControl.HideControl(GetID, (int) GUI_Lyrics_Controls.CONTROL_Lyric_Scroll);
+                        GUIControl.ShowControl(GetID, (int) GUI_Lyrics_Controls.CONTROL_Lyric);
                     }
 
                     break;
@@ -1326,22 +1354,22 @@ namespace MyLyrics
             {
                 TranslateProvider.TranslateProvider translate = null;
 
-                string lyricToTranslate;
+                string lyricToTranslate = string.Empty;
 
-                var lrc = new SimpleLRC(_artist, _title, _lyricText);
+                SimpleLRC lrc = new SimpleLRC(_artist, _title, _LyricText);
                 if (lrc.IsValid)
                 {
                     lyricToTranslate = lrc.LyricAsPlainLyric;
                 }
                 else
                 {
-                    lyricToTranslate = _lyricText;
+                    lyricToTranslate = _LyricText;
                 }
 
                 if (String.IsNullOrEmpty(lyricToTranslate)) return;
 
-                _statusText = string.Empty;
-                GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
+                _StatusText = string.Empty;
+                GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, _StatusText);
 
                 try
                 {
@@ -1349,7 +1377,7 @@ namespace MyLyrics
                 }
                 catch (FileNotFoundException)
                 {
-                    var dlg3 = (GUIDialogOK) GUIWindowManager.GetWindow((int) Window.WINDOW_DIALOG_OK);
+                    GUIDialogOK dlg3 = (GUIDialogOK) GUIWindowManager.GetWindow((int) Window.WINDOW_DIALOG_OK);
                     dlg3.SetHeading("File not found");
                     dlg3.SetLine(1, "The TranslateProvider.dll assembly");
                     dlg3.SetLine(2, "could not be located!");
@@ -1357,20 +1385,21 @@ namespace MyLyrics
                     dlg3.DoModal(GUIWindowManager.ActiveWindow);
                 }
 
+                string detectedLanguage;
+                bool reliable;
+                double confidence;
+
                 lyricToTranslate = lyricToTranslate.Replace("\n", "\n ");
 
-                string translation;
+                string translation = string.Empty;
                 try
                 {
-                    string detectedLanguage;
-                    bool reliable;
-                    double confidence;
                     translation = translate.Translate(lyricToTranslate, _translationLanguageCode,
                                                       out detectedLanguage, out reliable, out confidence, "\n");
                 }
                 catch
                 {
-                    var dlg3 = (GUIDialogOK) GUIWindowManager.GetWindow((int) Window.WINDOW_DIALOG_OK);
+                    GUIDialogOK dlg3 = (GUIDialogOK) GUIWindowManager.GetWindow((int) Window.WINDOW_DIALOG_OK);
                     dlg3.SetHeading("Error");
                     dlg3.SetLine(1, "Error occured while trying to translate!");
                     dlg3.SetLine(2, String.Empty);
@@ -1383,13 +1412,13 @@ namespace MyLyrics
 
                 translation = MediaPortalUtil.MakePlainLyricPerfectToShow(translation);
 
-                ResetGUI((int) MyLyricsSettings.Screen.LYRICS);
+                resetGUI((int) MyLyricsSettings.Screen.LYRICS);
                 _isInTranslation = true;
-                GUIControl.SetControlLabel(GetID, ControlLyricSelected, translation);
-                GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlTitle,
+                GUIControl.SetControlLabel(GetID, CONTROL_LYRIC_SELECTED, translation);
+                GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_TITLE,
                                            string.Format("{0} translation", _translationLanguage));
 
-                GUIControl.FocusControl(GetID, ControlLyricSelected);
+                GUIControl.FocusControl(GetID, CONTROL_LYRIC_SELECTED);
             }
         }
 
@@ -1407,51 +1436,53 @@ namespace MyLyrics
             {
                 if (value.Length != 0) // additional check        
                 {
-                    ResetLrcFields();
-                    ResetGUI(_selectedScreen);
+                    resetLrcFields();
+                    resetGUI(_selectedScreen);
                     StopThread();
-                    ResetAll();
+                    resetAll();
                     _newTrack = true;
-                    _searchType = (int) SearchTypes.BothLRCsAndLyrics;
-                    _searchingState = (int) SearchState.NotSearching;
+                    _SearchType = (int) SEARCH_TYPES.BOTH_LRCS_AND_LYRICS;
+                    _SearchingState = (int) SEARCH_STATE.NOT_SEARCHING;
                     Process();
                 }
                 else
                 {
                     _artist = "";
                     _title = "";
-                    _lyricText = "";
-                    _imagePathContainer.Clear();
-                    GuIelementImgCoverArt.Dispose();
+                    _TrackText = "";
+                    _LyricText = "";
+                    _ImagePathContainer.Clear();
+                    GUIelement_ImgCoverArt.Dispose();
 
-                    ResetGUI(_selectedScreen);
+                    resetGUI(_selectedScreen);
 
-                    _statusText = "No music file is playing";
-                    GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
+                    _StatusText = "No music file is playing";
+                    GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, _StatusText);
                 }
             }
             else if (g_Player.IsRadio)
             {
-                var newArtist = LyricUtil.CapatalizeString(GUIPropertyManager.GetProperty("#Play.Current.Artist"));
-                var newTitle = LyricUtil.CapatalizeString(GUIPropertyManager.GetProperty("#Play.Current.Title"));
+                string newArtist = LyricUtil.CapatalizeString(GUIPropertyManager.GetProperty("#Play.Current.Artist"));
+                string newTitle = LyricUtil.CapatalizeString(GUIPropertyManager.GetProperty("#Play.Current.Title"));
 
                 if (string.IsNullOrEmpty(GUIPropertyManager.GetProperty("#Play.Current.Artist"))
                     || string.IsNullOrEmpty(GUIPropertyManager.GetProperty("#Play.Current.Title")))
                 {
-                    _statusText = "Stream info not complete";
-                    GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
+                    _StatusText = "Stream info not complete";
+                    GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, _StatusText);
                 }
-                else if (!g_Player.CurrentFile.Equals(_lastStreamFile) || !newArtist.Equals(_artist) || !newTitle.Equals(_title))
+                else if (!g_Player.CurrentFile.Equals(_LastStreamFile) || !newArtist.Equals(_artist) || !newTitle.Equals(_title))
                 {
-                    ResetGUI(_selectedScreen);
+                    resetGUI(_selectedScreen);
                     StopThread();
-                    ResetAll();
+                    resetAll();
 
-                    _searchType = (int) SearchTypes.BothLRCsAndLyrics;
-                    _searchingState = (int) SearchState.NotSearching;
+                    _SearchType = (int) SEARCH_TYPES.BOTH_LRCS_AND_LYRICS;
+                    _SearchingState = (int) SEARCH_STATE.NOT_SEARCHING;
 
-                    _lastStreamFile = g_Player.CurrentFile;
+                    _LastStreamFile = g_Player.CurrentFile;
 
+                    _LastFileName = g_Player.CurrentFile;
                     _artist = newArtist;
                     _title = newTitle;
 
@@ -1468,16 +1499,16 @@ namespace MyLyrics
         {
             if (tag2.Equals("#currentplaytime"))
             {
-                if (_stopwatch != null && _stopwatch.IsRunning)
+                if (_Stopwatch != null && _Stopwatch.IsRunning)
                 {
-                    _stopwatch.Stop();
+                    _Stopwatch.Stop();
                 }
-                _stopwatch = new Stopwatch();
-                _stopwatch.Start();
+                _Stopwatch = new Stopwatch();
+                _Stopwatch.Start();
 
-                var timeStrings = value.Split(':');
-                Min = int.Parse(timeStrings[0]);
-                Sec = int.Parse(timeStrings[1]);
+                string[] timeStrings = value.Split(':');
+                _min = int.Parse(timeStrings[0]);
+                _sec = int.Parse(timeStrings[1]);
             }
         }
 
@@ -1486,16 +1517,18 @@ namespace MyLyrics
         /// </summary>
         private bool FindLrc()
         {
-            _eventStopThread.Reset();
+            _EventStopThread.Reset();
 
-            GUIControl.ClearControl(GetID, ControlLyricSelected);
-            GUIControl.SetControlLabel(GetID, ControlLyricSelected, "");
+            GUIControl.ClearControl(GetID, CONTROL_LYRIC_SELECTED);
+            GUIControl.SetControlLabel(GetID, CONTROL_LYRIC_SELECTED, "");
 
-            ResetGUI((int) MyLyricsSettings.Screen.LRC);
+            resetGUI((int) MyLyricsSettings.Screen.LRC);
 
-            if ((_currentTrackTag != null && _currentTrackTag.Artist != "") || g_Player.IsRadio)
+            if ((_CurrentTrackTag != null && _CurrentTrackTag.Artist != "") || g_Player.IsRadio)
             {
-                PluginLogger.Info("FindLrc({0}, {1})", _artist, _title);
+                _TrackText = _artist + " - " + _title;
+                
+                logger.Info("FindLrc({0}, {1})", _artist, _title);
 
                 /* The prioritized search order is:
                    1) LRC in music tag
@@ -1507,24 +1540,24 @@ namespace MyLyrics
                  */
 
                 // (1 of 2) Search LRCS
-                if (_searchType != (int) SearchTypes.OnlyLYRICS)
+                if (_SearchType != (int) SEARCH_TYPES.ONLY_LYRICS)
                 {
-                    _statusText = "Searching for a matching LRC...";
-                    GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
+                    _StatusText = "Searching for a matching LRC...";
+                    GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, _StatusText);
 
                     #region 1) LRC in music tag
 
                     if (g_Player.IsRadio == false
-                        && _currentTrackTag != null && ((_currentTrackTag.Lyrics.Length != 0
+                        && _CurrentTrackTag != null && ((_CurrentTrackTag.Lyrics.Length != 0
                                                          &&
-                                                         (_simpleLrc =
-                                                          new SimpleLRC(_artist, _title, _currentTrackTag.Lyrics)).
+                                                         (_SimpleLrc =
+                                                          new SimpleLRC(_artist, _title, _CurrentTrackTag.Lyrics)).
                                                              IsValid)))
                     {
-                        if (_simpleLrc.IsValid)
+                        if (_SimpleLrc.IsValid)
                         {
-                            StartShowingLrc(_currentTrackTag.Lyrics, false);
-                            SaveLyricToDatabase(_artist, _title, _currentTrackTag.Lyrics, "music tag", true);
+                            StartShowingLrc(_CurrentTrackTag.Lyrics, false);
+                            SaveLyricToDatabase(_artist, _title, _CurrentTrackTag.Lyrics, "music tag", true);
                             return true;
                         }
                     }
@@ -1540,9 +1573,9 @@ namespace MyLyrics
                         lyricText = LyricsDb[DatabaseUtil.CorrectKeyFormat(_artist, _title)].Lyrics;
                     }
 
-                    if (lyricText != null && (_simpleLrc = new SimpleLRC(_artist, _title, lyricText)).IsValid)
+                    if (lyricText != null && (_SimpleLrc = new SimpleLRC(_artist, _title, lyricText)).IsValid)
                     {
-                        if (_simpleLrc.IsValid)
+                        if (_SimpleLrc.IsValid)
                         {
                             StartShowingLrc(lyricText, false);
                             return true;
@@ -1558,24 +1591,24 @@ namespace MyLyrics
                     {
                         _lyricsFound = false;
 
-                        _lyricsController = new LyricsController(this, _eventStopThread, lrcActiveSites.ToArray(), false, false, _find, _replace);
+                        _lc = new LyricsController(this, _EventStopThread, lrcActiveSites.ToArray(), false, false, _Find, _Replace);
 
                         // create worker thread instance
-                        ThreadStart job = delegate { _lyricsController.Run(); };
+                        ThreadStart job = delegate { _lc.Run(); };
 
-                        _lyricControllerThread = new Thread(job);
-                        _lyricControllerThread.Name = "LRC search";
-                        _lyricControllerThread.Start();
+                        _LyricControllerThread = new Thread(job);
+                        _LyricControllerThread.Name = "LRC search";
+                        _LyricControllerThread.Start();
 
-                        _lyricsController.AddNewLyricSearch(_artist, _title, MediaPortalUtil.GetStrippedPrefixArtist(_artist, _strippedPrefixStrings));
+                        _lc.AddNewLyricSearch(_artist, _title, MediaPortalUtil.GetStrippedPrefixArtist(_artist, _strippedPrefixStrings));
 
-                        _lyriccontrollerIsWorking = true;
+                        _LyriccontrollerIsWorking = true;
                     }
                     else
                     {
-                        _searchType = (int) SearchTypes.OnlyLYRICS;
-                        _statusText = "No matching LRC found";
-                        GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
+                        _SearchType = (int) SEARCH_TYPES.ONLY_LYRICS;
+                        _StatusText = "No matching LRC found";
+                        GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, _StatusText);
                     }
 
                     #endregion
@@ -1589,31 +1622,31 @@ namespace MyLyrics
 
         private bool FindLyric()
         {
-            _eventStopThread.Reset();
+            _EventStopThread.Reset();
 
-            if ((_currentTrackTag != null && _currentTrackTag.Artist != "") || g_Player.IsRadio)
+            if ((_CurrentTrackTag != null && _CurrentTrackTag.Artist != "") || g_Player.IsRadio)
             {
-                PluginLogger.Info("FindLyric({0}, {1})", _artist, _title);
+                logger.Info("FindLyric({0}, {1})", _artist, _title);
 
-                var lyricText = string.Empty;
+                string lyricText = string.Empty;
 
                 if (LyricsDb.ContainsKey(DatabaseUtil.CorrectKeyFormat(_artist, _title)))
                 {
                     lyricText = LyricsDb[DatabaseUtil.CorrectKeyFormat(_artist, _title)].Lyrics;
                 }
 
-                if (_searchType != (int) SearchTypes.OnlyLRCs)
+                if (_SearchType != (int) SEARCH_TYPES.ONLY_LRCS)
                 {
                     #region 4) Lyric in music tag
 
-                    if (_automaticReadFromMusicTag && g_Player.IsRadio == false
-                        && _currentTrackTag != null && _currentTrackTag.Lyrics.Length != 0
-                        && !(new SimpleLRC(_artist, _title, _currentTrackTag.Lyrics).IsValid))
+                    if (_AutomaticReadFromMusicTag && g_Player.IsRadio == false
+                        && _CurrentTrackTag != null && _CurrentTrackTag.Lyrics.Length != 0
+                        && !(new SimpleLRC(_artist, _title, _CurrentTrackTag.Lyrics).IsValid))
                     {
-                        var lyric = LyricUtil.FixLyrics(_currentTrackTag.Lyrics);
-                        _currentTrackTag.Lyrics = lyric;
+                        var lyric = LyricUtil.FixLyrics(_CurrentTrackTag.Lyrics);
+                        _CurrentTrackTag.Lyrics = lyric;
                         ShowLyricOnScreen(lyric, "music tag");
-                        SaveLyricToDatabase(_currentTrackTag.Artist, _currentTrackTag.Title, lyric, "music tag", false);
+                        SaveLyricToDatabase(_CurrentTrackTag.Artist, _CurrentTrackTag.Title, lyric, "music tag", false);
                         return true;
                     }
 
@@ -1631,95 +1664,106 @@ namespace MyLyrics
 
                         #region 6) Search the Internet for a lyric
 
-                    if (_nonLrcSitesToSearch.Count > 0)
+                    else if (_nonLrcSitesToSearch.Count > 0)
                     {
-                        _statusText = "Searching for a matching lyric...";
-                        GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
+                        _StatusText = "Searching for a matching lyric...";
+                        GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, _StatusText);
 
-                        ResetGUI((int) MyLyricsSettings.Screen.LYRICS);
+                        resetGUI((int) MyLyricsSettings.Screen.LYRICS);
 
                         _lyricsFound = false;
 
-                        _lyricsController = new LyricsController(this, _eventStopThread, _nonLrcSitesToSearch.ToArray(), false, false,
-                            _find, _replace);
+                        _lc = new LyricsController(this, _EventStopThread, _nonLrcSitesToSearch.ToArray(), false, false,
+                                                   _Find, _Replace);
                         // create worker thread instance
-                        ThreadStart job = delegate { _lyricsController.Run(); };
+                        ThreadStart job = delegate { _lc.Run(); };
 
-                        _lyricControllerThread = new Thread(job);
-                        _lyricControllerThread.Name = "lyricSearch Thread"; // looks nice in Output window
-                        _lyricControllerThread.Start();
+                        _LyricControllerThread = new Thread(job);
+                        _LyricControllerThread.Name = "lyricSearch Thread"; // looks nice in Output window
+                        _LyricControllerThread.Start();
 
-                        _lyricsController.AddNewLyricSearch(_artist, _title,
-                            MediaPortalUtil.GetStrippedPrefixArtist(_artist, _strippedPrefixStrings));
+                        _lc.AddNewLyricSearch(_artist, _title,
+                                              MediaPortalUtil.GetStrippedPrefixArtist(_artist, _strippedPrefixStrings));
 
-                        _lyriccontrollerIsWorking = true;
+                        _LyriccontrollerIsWorking = true;
 
                         return false;
                     }
-                    return false;
+                    else
+                    {
+                        return false;
+                    }
 
                     #endregion
                 }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                _TrackText = "";
+                _ImagePathContainer.Clear();
+                GUIelement_ImgCoverArt.Dispose();
+
+                resetGUI(_selectedScreen);
+                resetLrcFields();
+
+                _StatusText = "No music file is playing";
+                GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, _StatusText);
                 return false;
             }
-            _imagePathContainer.Clear();
-            GuIelementImgCoverArt.Dispose();
-
-            ResetGUI(_selectedScreen);
-            ResetLrcFields();
-
-            _statusText = "No music file is playing";
-            GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
-            return false;
         }
 
         private void StartShowingLrc(string lyricText, bool showLrcPickScreen)
         {
             _lyricsFound = true;
+            _ValidLrcLyric = true;
 
-            _lrcTimeCollection = _simpleLrc.SimpleLRCTimeAndLineCollectionWithOffset;
-            _lines = _lrcTimeCollection.Copy();
+            _LrcTimeCollection = _SimpleLrc.SimpleLRCTimeAndLineCollectionWithOffset;
+            _lines = _LrcTimeCollection.Copy();
             
-            PluginLogger.Info("LRC found: {0} - {1}.", _artist, _title);
+            logger.Info("LRC found: {0} - {1}.", _artist, _title);
 
             if (showLrcPickScreen)
             {
-                ResetGUI((int) MyLyricsSettings.Screen.LRCPick);
+                resetGUI((int) MyLyricsSettings.Screen.LRC_PICK);
             }
             else
             {
-                ResetGUI((int) MyLyricsSettings.Screen.LRC);
+                resetGUI((int) MyLyricsSettings.Screen.LRC);
             }
 
-            _searchType = (int) SearchTypes.OnlyLRCs;
-            _statusText = "";
-            GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
+            _SearchType = (int) SEARCH_TYPES.ONLY_LRCS;
+            _StatusText = "";
+            GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, _StatusText);
 
-            _lyricText = lyricText;
+            _LyricText = lyricText;
 
             try
             {
-                for (var i = TagRoundFinished*TagInRound; i < (TagRoundFinished + 1)*TagInRound; i++)
+                for (int i = _tagRoundFinished*_TAG_IN_ROUND; i < (_tagRoundFinished + 1)*_TAG_IN_ROUND; i++)
                 {
-                    if (UseEditControlsOnLRCPick() && _selectedScreen == (int) MyLyricsSettings.Screen.LRCPick)
+                    if (useEditControlsOnLRCPick() && _selectedScreen == (int) MyLyricsSettings.Screen.LRC_PICK)
                     {
-                        ShowLrcLine((int) GUILRCControls.ControlEditLine + i, _lines[i]);
-                        ShowLrcLine((int) GUILRCControls.ControlEditLineDone + i, _lines[i]);
+                        ShowLrcLine((int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i, _lines[i]);
+                        ShowLrcLine((int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i, _lines[i]);
                     }
                     else
                     {
-                        ShowLrcLine((int) GUILRCControls.ControlViewLine + i, _lines[i]);
-                        ShowLrcLine((int) GUILRCControls.ControlViewLineDone + i, _lines[i]);
+                        ShowLrcLine((int) GUI_LRC_Controls.CONTROL_VIEW_LINE + i, _lines[i]);
+                        ShowLrcLine((int) GUI_LRC_Controls.CONTROL_VIEW_LINE_DONE + i, _lines[i]);
                     }
                 }
 
-                if (_selectedScreen == (int) MyLyricsSettings.Screen.LRCPick)
+                if (_selectedScreen == (int) MyLyricsSettings.Screen.LRC_PICK)
                 {
-                    for (var i = TagRoundFinished*TagInRound; i < (TagRoundFinished + 1)*TagInRound; i++)
+                    for (int i = _tagRoundFinished*_TAG_IN_ROUND; i < (_tagRoundFinished + 1)*_TAG_IN_ROUND; i++)
                     {
-                        var currentLine = _lrcTimeCollection[i];
-                        GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlEditTime + i);
-                        GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditTime + i,
+                        SimpleLRCTimeAndLine currentLine = _LrcTimeCollection[i];
+                        GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + i);
+                        GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + i,
                                                    currentLine.TimeString);
                     }
                 }
@@ -1731,115 +1775,118 @@ namespace MyLyrics
 
         private void TagLine()
         {
-            if (_alreadyValidLRC == false && _selectedScreen == (int) MyLyricsSettings.Screen.LRCEditor)
+            if (_alreadyValidLRC == false && _selectedScreen == (int) MyLyricsSettings.Screen.LRC_EDITOR)
             {
-                if (_stopwatch == null)
+                if (_Stopwatch == null)
                     return;
 
-                if (LRCLinesTotal < _lines.Length)
+                if (_LRCLinesTotal < _lines.Length)
                 {
-                    var time = "[" + Min + ":" + (Sec.ToString(CultureInfo.InvariantCulture).Length == 2 ? Sec.ToString(CultureInfo.InvariantCulture) : "0" + Sec) +
+                    string time = "[" + _min + ":" + (_sec.ToString().Length == 2 ? _sec.ToString() : "0" + _sec) +
                                   "." +
-                                  (_stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture).Length >= 2
-                                       ? _stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture).Substring(0, 2)
-                                       : _stopwatch.ElapsedMilliseconds + "0") + "]";
-                    _lines[LRCLinesTotal] = time + _lines[LRCLinesTotal];
-                    GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditTime + NextLRCLineIndex,
+                                  (_Stopwatch.ElapsedMilliseconds.ToString().Length >= 2
+                                       ? _Stopwatch.ElapsedMilliseconds.ToString().Substring(0, 2)
+                                       : _Stopwatch.ElapsedMilliseconds + "0") + "]";
+                    _lines[_LRCLinesTotal] = time + _lines[_LRCLinesTotal];
+                    GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + nextLRCLineIndex,
                                                time);
-                    GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditLine + NextLRCLineIndex);
-                    GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlEditLineDone + NextLRCLineIndex);
+                    GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + nextLRCLineIndex);
+                    GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + nextLRCLineIndex);
                 }
 
-                if (++LRCLinesTotal < _lines.Length)
+                if (++_LRCLinesTotal < _lines.Length)
                 {
                     // If a new round has to start
-                    if (++NextLRCLineIndex == TagInRound)
+                    if (++nextLRCLineIndex == _TAG_IN_ROUND)
                     {
-                        NextLRCLineIndex = 0;
-                        ++TagRoundFinished;
+                        nextLRCLineIndex = 0;
+                        ++_tagRoundFinished;
 
 
-                        for (var i = 0; i < TagInRound; i++)
+                        for (int i = 0; i < _TAG_IN_ROUND; i++)
                         {
-                            GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditTime + i, "");
-                            GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditLine + i, "");
-                            GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditLineDone + i, "");
+                            GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + i, "");
+                            GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i, "");
+                            GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i, "");
                         }
 
                         try
                         {
-                            for (var i = 0; i < TagInRound && LRCLinesTotal + i < _lines.Length; i++)
+                            for (int i = 0; i < _TAG_IN_ROUND && _LRCLinesTotal + i < _lines.Length; i++)
                             {
-                                GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditLine + i,
-                                                           _lines[TagRoundFinished*TagInRound + i]);
-                                GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditLineDone + i,
-                                                           _lines[TagRoundFinished*TagInRound + i]);
-                                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlEditLine + i);
-                                GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditLineDone + i);
-                                GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditTime + i,
+                                GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i,
+                                                           _lines[_tagRoundFinished*_TAG_IN_ROUND + i]);
+                                GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i,
+                                                           _lines[_tagRoundFinished*_TAG_IN_ROUND + i]);
+                                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i);
+                                GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i);
+                                GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + i,
                                                            "[xx:xx.xx]");
                             }
                         }
                         catch
                         {
+                            ;
                         }
                     }
                 }
                 else
                 {
-                    var lyric = new StringBuilder();
+                    StringBuilder lyric = new StringBuilder();
 
-                    var artist = LyricUtil.CapatalizeString(_artist);
-                    var title = LyricUtil.CapatalizeString(_title);
+                    string artist = LyricUtil.CapatalizeString(_artist);
+                    string title = LyricUtil.CapatalizeString(_title);
 
                     lyric.AppendLine(string.Format("[ar:{0}]", artist));
                     lyric.AppendLine(string.Format("[ti:{0}]", title));
-                    if (!string.IsNullOrEmpty(LrcTaggingName))
+                    if (!string.IsNullOrEmpty(_LrcTaggingName))
                     {
-                        lyric.AppendLine(string.Format("[by:{0}]", LrcTaggingName));
+                        lyric.AppendLine(string.Format("[by:{0}]", _LrcTaggingName));
                     }
-                    if (!string.IsNullOrEmpty(LrcTaggingOffset))
+                    if (!string.IsNullOrEmpty(_LrcTaggingOffset))
                     {
-                        lyric.AppendLine(string.Format("[offset:{0}]", LrcTaggingOffset));
+                        lyric.AppendLine(string.Format("[offset:{0}]", _LrcTaggingOffset));
                     }
                     lyric.AppendLine("[ap:MediaPortal]");
 
-                    for (var i = 0; i < _lines.Length; i++)
+                    for (int i = 0; i < _lines.Length; i++)
                     {
                         lyric.AppendLine(_lines[i] + "");
                     }
 
                     lyric.Replace("\r", "");
 
-                    var lyricAsString = lyric.ToString();
+                    string lyricAsString = lyric.ToString();
 
                     //lyricAsString = lyricAsString.Substring(0, lastLineShift);
-                    _lyricText = lyricAsString;
+                    _LyricText = lyricAsString;
 
-                    SaveLyricToDatabase(artist, title, _lyricText, "MyLyrics LRC Editor", true);
+                    SaveLyricToDatabase(artist, title, _LyricText, "MyLyrics LRC Editor", true);
 
-                    if (_currentTrackTag != null)
+                    _ValidLrcLyric = true;
+
+                    if (_CurrentTrackTag != null)
                     {
-                        if (_worker.IsBusy)
-                            _worker.CancelAsync();
-                        var data = new SaveLyricToTagListsData(_lyricText, artist, title,
-                                                                                   _currentTrackTag.FileName);
+                        if (worker.IsBusy)
+                            worker.CancelAsync();
+                        SaveLyricToTagListsData data = new SaveLyricToTagListsData(_LyricText, artist, title,
+                                                                                   _CurrentTrackTag.FileName);
                         //worker.RunWorkerAsync(data);
                         //SaveLyricToTagLists(_CurrentTrackTag.FileName, _LyricText);
                         SaveLyricToTagLists(this, new DoWorkEventArgs(data));
                     }
 
                     _selectedScreen = (int) MyLyricsSettings.Screen.LRC;
-                    ShowLyricOnScreen(_lyricText, "MediaPortal");
+                    ShowLyricOnScreen(_LyricText, "MediaPortal");
 
                     // Upload LRC to LrcFinder if user has accepted in configuration
-                    if (UploadLrcToLrcFinder && !AlwaysAskUploadLrcToLrcFinder)
+                    if (_uploadLrcToLrcFinder && !_alwaysAskUploadLrcToLrcFinder)
                     {
-                        UploadLrcFile(_lyricText);
+                        UploadLrcFile(_LyricText);
                     }
-                    else if (AlwaysAskUploadLrcToLrcFinder || !ConfirmedNoUploadLrcToLrcFinder)
+                    else if (_alwaysAskUploadLrcToLrcFinder || !_confirmedNoUploadLrcToLrcFinder)
                     {
-                        var dlgYesNo =
+                        GUIDialogYesNo dlgYesNo =
                             (GUIDialogYesNo) GUIWindowManager.GetWindow((int) Window.WINDOW_DIALOG_YES_NO);
                         if (dlgYesNo != null)
                         {
@@ -1854,15 +1901,15 @@ namespace MyLyrics
 
                             if (dlgYesNo.IsConfirmed)
                             {
-                                UploadLrcFile(_lyricText);
+                                UploadLrcFile(_LyricText);
 
-                                UploadLrcToLrcFinder = true;
+                                _uploadLrcToLrcFinder = true;
                                 
                                 SettingManager.SetParamAsBool(SettingManager.UploadLrcToLrcFinder, true);
                             }
                             else
                             {
-                                ConfirmedNoUploadLrcToLrcFinder = true;
+                                _confirmedNoUploadLrcToLrcFinder = true;
                                 
                                 SettingManager.SetParamAsBool(SettingManager.ConfirmedNoUploadLrcToLrcFinder, true);
                             }
@@ -1879,42 +1926,43 @@ namespace MyLyrics
 
             if (lrcUploaded)
             {
-                const string status = "Your LRC was successfully uploaded";
-                GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlLrcPickStatus, status);
+                var status = "Your LRC was successfully uploaded";
+                GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_LRCPICK_STATUS, status);
             }
             else
             {
-                const string status = "LrcFinder could not be reached";
-                GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlLrcPickStatus, status);
+                var status = "LrcFinder could not be reached";
+                GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_LRCPICK_STATUS, status);
             }
         }
 
         private void RemoveLatestTagLine()
         {
-            --LRCLinesTotal;
+            --_LRCLinesTotal;
 
-            if (LRCLinesTotal < 0)
+            if (_LRCLinesTotal < 0)
             {
-                LRCLinesTotal = 0;
+                _LRCLinesTotal = 0;
                 return;
             }
 
-            _lines[LRCLinesTotal] = _lines[LRCLinesTotal].Substring(9);
+            string lastTimeStampTemp = _lines[_LRCLinesTotal].Substring(0, 9);
+            _lines[_LRCLinesTotal] = _lines[_LRCLinesTotal].Substring(9);
 
-            if (--NextLRCLineIndex < 0)
+            if (--nextLRCLineIndex < 0)
             {
-                NextLRCLineIndex = TagInRound - 1;
-                --TagRoundFinished;
+                nextLRCLineIndex = _TAG_IN_ROUND - 1;
+                --_tagRoundFinished;
 
                 try
                 {
-                    for (var i = 0; i < TagInRound; i++)
+                    for (int i = 0; i < _TAG_IN_ROUND; i++)
                     {
-                        GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditTime + i, _lines[TagRoundFinished*TagInRound + i].Substring(0, 9));
-                        GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditLine + i, _lines[TagRoundFinished*TagInRound + i].Substring(9));
-                        GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditLineDone + i, _lines[TagRoundFinished*TagInRound + i].Substring(9));
-                        GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlEditLineDone + i);
-                        GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditLine + i);
+                        GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + i, _lines[_tagRoundFinished*_TAG_IN_ROUND + i].Substring(0, 9));
+                        GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i, _lines[_tagRoundFinished*_TAG_IN_ROUND + i].Substring(9));
+                        GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i, _lines[_tagRoundFinished*_TAG_IN_ROUND + i].Substring(9));
+                        GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i);
+                        GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i);
                     }
                 }
                 catch
@@ -1922,35 +1970,35 @@ namespace MyLyrics
                     ;
                 }
 
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlEditLine + NextLRCLineIndex);
-                GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditLineDone + NextLRCLineIndex);
-                GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditTime + NextLRCLineIndex, "[xx:xx.xx]");
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + nextLRCLineIndex);
+                GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + nextLRCLineIndex);
+                GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + nextLRCLineIndex, "[xx:xx.xx]");
 
-                GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditLine + NextLRCLineIndex, _lines[TagRoundFinished*TagInRound + NextLRCLineIndex]);
-                GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditLineDone + NextLRCLineIndex, _lines[TagRoundFinished*TagInRound + NextLRCLineIndex]);
+                GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + nextLRCLineIndex, _lines[_tagRoundFinished*_TAG_IN_ROUND + nextLRCLineIndex]);
+                GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + nextLRCLineIndex, _lines[_tagRoundFinished*_TAG_IN_ROUND + nextLRCLineIndex]);
             }
             else
             {
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlEditLine + NextLRCLineIndex);
-                GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditLineDone + NextLRCLineIndex);
-                GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditTime + NextLRCLineIndex, "[xx:xx.xx]");
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + nextLRCLineIndex);
+                GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + nextLRCLineIndex);
+                GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + nextLRCLineIndex, "[xx:xx.xx]");
             }
         }
 
 
         private void CalculateNextInterval()
         {
-            if (_lrcTimeCollection != null)
+            if (_LrcTimeCollection != null)
             {
-                var trackTime = (int) (g_Player.CurrentPosition*1000);
-                NextLRCLineIndex = _lrcTimeCollection.GetSimpleLRCTimeAndLineIndex(trackTime);
+                int trackTime = (int) (g_Player.CurrentPosition*1000);
+                nextLRCLineIndex = _LrcTimeCollection.GetSimpleLRCTimeAndLineIndex(trackTime);
 
-                var currentLine = _lrcTimeCollection[NextLRCLineIndex];
+                SimpleLRCTimeAndLine currentLine = _LrcTimeCollection[nextLRCLineIndex];
 
-                TagRoundFinished = NextLRCLineIndex/TagInRound;
-                var localIndex = (NextLRCLineIndex%TagInRound);
+                _tagRoundFinished = nextLRCLineIndex/_TAG_IN_ROUND;
+                int localIndex = (nextLRCLineIndex%_TAG_IN_ROUND);
 
-                if (NextLRCLineIndex == _lrcTimeCollection.Count - 1)
+                if (nextLRCLineIndex == _LrcTimeCollection.Count - 1)
                 {
                     if (currentLine.Time - trackTime < 500)
                     {
@@ -1960,9 +2008,9 @@ namespace MyLyrics
 
                 #region Show LRC lines in LRC mini labels
 
-                var currentLRCLineIndex = NextLRCLineIndex > 0 ? NextLRCLineIndex - 1 : 0;
+                int currentLRCLineIndex = nextLRCLineIndex > 0 ? nextLRCLineIndex - 1 : 0;
 
-                if (_lrcTimeCollection[NextLRCLineIndex].Time < trackTime)
+                if (_LrcTimeCollection[nextLRCLineIndex].Time < trackTime)
                 {
                     ++currentLRCLineIndex;
                 }
@@ -1971,93 +2019,93 @@ namespace MyLyrics
                 // 1. The two previous lines
                 if (currentLRCLineIndex >= 2)
                 {
-                    ShowLrcLine((int) GUILRCControls.ControlMiniViewLine + 0, _lines[currentLRCLineIndex - 2]);
+                    ShowLrcLine((int) GUI_LRC_Controls.CONTROL_MINI_VIEW_LINE + 0, _lines[currentLRCLineIndex - 2]);
                 }
                 if (currentLRCLineIndex >= 1)
                 {
-                    ShowLrcLine((int) GUILRCControls.ControlMiniViewLine + 1, _lines[currentLRCLineIndex - 1]);
+                    ShowLrcLine((int) GUI_LRC_Controls.CONTROL_MINI_VIEW_LINE + 1, _lines[currentLRCLineIndex - 1]);
                 }
 
                 // 2. The current line
-                ShowLrcLine((int) GUILRCControls.ControlMiniViewLine + 2, _lines[currentLRCLineIndex + 0]);
+                ShowLrcLine((int) GUI_LRC_Controls.CONTROL_MINI_VIEW_LINE + 2, _lines[currentLRCLineIndex + 0]);
 
                 // 3. The two future lines
                 // If last, then show empty lines for fourth and fifth label (showing the future LRC lines)
-                if (currentLRCLineIndex + 1 == _lrcTimeCollection.Count)
+                if (currentLRCLineIndex + 1 == _LrcTimeCollection.Count)
                 {
-                    ShowLrcLine((int) GUILRCControls.ControlMiniViewLine + 3, string.Empty);
-                    ShowLrcLine((int) GUILRCControls.ControlMiniViewLine + 4, string.Empty);
+                    ShowLrcLine((int) GUI_LRC_Controls.CONTROL_MINI_VIEW_LINE + 3, string.Empty);
+                    ShowLrcLine((int) GUI_LRC_Controls.CONTROL_MINI_VIEW_LINE + 4, string.Empty);
                 }
                     // If second last then clear the last label (only one future LRC lines left)
-                else if (currentLRCLineIndex + 2 == _lrcTimeCollection.Count)
+                else if (currentLRCLineIndex + 2 == _LrcTimeCollection.Count)
                 {
-                    ShowLrcLine((int) GUILRCControls.ControlMiniViewLine + 3, _lines[currentLRCLineIndex + 1]);
-                    ShowLrcLine((int) GUILRCControls.ControlMiniViewLine + 4, string.Empty);
+                    ShowLrcLine((int) GUI_LRC_Controls.CONTROL_MINI_VIEW_LINE + 3, _lines[currentLRCLineIndex + 1]);
+                    ShowLrcLine((int) GUI_LRC_Controls.CONTROL_MINI_VIEW_LINE + 4, string.Empty);
                 }
                 else
                 {
-                    ShowLrcLine((int) GUILRCControls.ControlMiniViewLine + 3, _lines[currentLRCLineIndex + 1]);
-                    ShowLrcLine((int) GUILRCControls.ControlMiniViewLine + 4, _lines[currentLRCLineIndex + 2]);
+                    ShowLrcLine((int) GUI_LRC_Controls.CONTROL_MINI_VIEW_LINE + 3, _lines[currentLRCLineIndex + 1]);
+                    ShowLrcLine((int) GUI_LRC_Controls.CONTROL_MINI_VIEW_LINE + 4, _lines[currentLRCLineIndex + 2]);
                 }
 
                 #endregion
 
-                if (TagRoundFinished > 0 && localIndex == 0)
+                if (_tagRoundFinished > 0 && localIndex == 0)
                 {
-                    for (var i = 0; i < TagInRound; i++)
+                    for (int i = 0; i < _TAG_IN_ROUND; i++)
                     {
-                        if (UseEditControlsOnLRCPick() && _selectedScreen == (int) MyLyricsSettings.Screen.LRCPick)
+                        if (useEditControlsOnLRCPick() && _selectedScreen == (int) MyLyricsSettings.Screen.LRC_PICK)
                         {
-                            GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlEditLineDone + i);
+                            GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i);
                         }
                         else
                         {
-                            GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlViewLineDone + i);
+                            GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE_DONE + i);
                         }
                     }
                 }
                 else
                 {
-                    for (var i = 0; i < TagInRound; i++)
+                    for (int i = 0; i < _TAG_IN_ROUND; i++)
                     {
-                        if (UseEditControlsOnLRCPick() && _selectedScreen == (int) MyLyricsSettings.Screen.LRCPick)
+                        if (useEditControlsOnLRCPick() && _selectedScreen == (int) MyLyricsSettings.Screen.LRC_PICK)
                         {
-                            GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditLine + i, "");
-                            GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditLineDone + i, "");
+                            GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i, "");
+                            GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i, "");
                         }
                         else
                         {
-                            GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlViewLine + i, "");
-                            GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlViewLineDone + i, "");
+                            GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE + i, "");
+                            GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE_DONE + i, "");
                         }
                     }
 
-                    if (_selectedScreen == (int) MyLyricsSettings.Screen.LRCPick)
+                    if (_selectedScreen == (int) MyLyricsSettings.Screen.LRC_PICK)
                     {
-                        for (var i = 0; i < TagInRound; i++)
+                        for (int i = 0; i < _TAG_IN_ROUND; i++)
                         {
-                            var currentLineTime = _lrcTimeCollection[TagRoundFinished*TagInRound + i];
-                            GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlEditTime + i);
-                            GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditTime + i, 
+                            SimpleLRCTimeAndLine currentLineTime = _LrcTimeCollection[_tagRoundFinished*_TAG_IN_ROUND + i];
+                            GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + i);
+                            GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + i, 
                                 (currentLineTime != null ? currentLineTime.TimeString : string.Empty));
                         }
                     }
 
                     try
                     {
-                        for (var i = 0; i < TagInRound; i++)
+                        for (int i = 0; i < _TAG_IN_ROUND; i++)
                         {
-                            if (UseEditControlsOnLRCPick() && _selectedScreen == (int) MyLyricsSettings.Screen.LRCPick)
+                            if (useEditControlsOnLRCPick() && _selectedScreen == (int) MyLyricsSettings.Screen.LRC_PICK)
                             {
-                                ShowLrcLine((int) GUILRCControls.ControlEditLine + i, _lines[TagRoundFinished*TagInRound + i]);
-                                GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditLineDone + i);
-                                ShowLrcLine((int) GUILRCControls.ControlEditLineDone + i, _lines[TagRoundFinished*TagInRound + i]);
+                                ShowLrcLine((int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i, _lines[_tagRoundFinished*_TAG_IN_ROUND + i]);
+                                GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i);
+                                ShowLrcLine((int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i, _lines[_tagRoundFinished*_TAG_IN_ROUND + i]);
                             }
                             else
                             {
-                                ShowLrcLine((int) GUILRCControls.ControlViewLine + i, _lines[TagRoundFinished*TagInRound + i]);
-                                GUIControl.HideControl(GetID, (int) GUILRCControls.ControlViewLineDone + i);
-                                ShowLrcLine((int) GUILRCControls.ControlViewLineDone + i, _lines[TagRoundFinished*TagInRound + i]);
+                                ShowLrcLine((int) GUI_LRC_Controls.CONTROL_VIEW_LINE + i, _lines[_tagRoundFinished*_TAG_IN_ROUND + i]);
+                                GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE_DONE + i);
+                                ShowLrcLine((int) GUI_LRC_Controls.CONTROL_VIEW_LINE_DONE + i, _lines[_tagRoundFinished*_TAG_IN_ROUND + i]);
                             }
                         }
                     }
@@ -2065,17 +2113,18 @@ namespace MyLyrics
                     {
                         ;
                     }
+                    ;
 
                     // Highlight the lines that have been passed in the current interval
-                    for (var i = 0; i < localIndex; i++)
+                    for (int i = 0; i < localIndex; i++)
                     {
-                        if (UseEditControlsOnLRCPick() && _selectedScreen == (int) MyLyricsSettings.Screen.LRCPick)
+                        if (useEditControlsOnLRCPick() && _selectedScreen == (int) MyLyricsSettings.Screen.LRC_PICK)
                         {
-                            GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlEditLineDone + i);
+                            GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i);
                         }
                         else
                         {
-                            GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlViewLineDone + i);
+                            GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE_DONE + i);
                         }
                     }
                 }
@@ -2092,49 +2141,49 @@ namespace MyLyrics
         private void ShowLyricOnScreen(string lyricText, string source)
         {
             _lyricsFound = true;
-            _lyricText = lyricText;
+            _LyricText = lyricText;
             
-            PluginLogger.Info("Lyric found: {0} - {1}. Place: {2}", _artist, _title, source);
+            logger.Info("Lyric found: {0} - {1}. Place: {2}", _artist, _title, source);
 
-            _searchType = (int) SearchTypes.OnlyLYRICS;
+            _SearchType = (int) SEARCH_TYPES.ONLY_LYRICS;
 
-            _statusText = "";
-            GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
+            _StatusText = "";
+            GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, _StatusText);
 
-            if (_selectedScreen == (int) MyLyricsSettings.Screen.LRCEditor)
+            if (_selectedScreen == (int) MyLyricsSettings.Screen.LRC_EDITOR)
             {
                 ShowLRCtoEdit();
             }
             else
             {
                 // If LRC that has been found, then show lyric in LRC-mode
-                _simpleLrc = new SimpleLRC(null, null, _lyricText);
+                _SimpleLrc = new SimpleLRC(null, null, _LyricText);
 
-                if (_simpleLrc.IsValid)
+                if (_SimpleLrc.IsValid)
                 {
-                    _searchType = (int) SearchTypes.OnlyLRCs;
-                    StartShowingLrc(_lyricText, false);
+                    _SearchType = (int) SEARCH_TYPES.ONLY_LRCS;
+                    StartShowingLrc(_LyricText, false);
                 }
                     // else show plain lyric
                 else
                 {
-                    _searchType = (int) SearchTypes.OnlyLYRICS;
+                    _SearchType = (int) SEARCH_TYPES.ONLY_LYRICS;
 
-                    _lyricText = MediaPortalUtil.MakePlainLyricPerfectToShow(_lyricText);
+                    _LyricText = MediaPortalUtil.MakePlainLyricPerfectToShow(_LyricText);
 
-                    ResetGUI((int) MyLyricsSettings.Screen.LYRICS);
-                    GUIControl.SetControlLabel(GetID, ControlLyricSelected, _lyricText);
-                    GUIControl.FocusControl(GetID, ControlLyricSelected);
+                    resetGUI((int) MyLyricsSettings.Screen.LYRICS);
+                    GUIControl.SetControlLabel(GetID, CONTROL_LYRIC_SELECTED, _LyricText);
+                    GUIControl.FocusControl(GetID, CONTROL_LYRIC_SELECTED);
                 }
             }
         }
 
         private void SaveLyricToDatabase(string artist, string title, string lyric, string site, bool lrc)
         {
-            var capArtist = LyricUtil.CapatalizeString(artist);
-            var capTitle = LyricUtil.CapatalizeString(title);
+            string capArtist = LyricUtil.CapatalizeString(artist);
+            string capTitle = LyricUtil.CapatalizeString(title);
 
-            if (DatabaseUtil.IsSongInLyricsDatabase(LyricsDb, capArtist, capTitle).Equals(DatabaseUtil.LyricNotFound))
+            if (DatabaseUtil.IsSongInLyricsDatabase(LyricsDb, capArtist, capTitle).Equals(DatabaseUtil.LYRIC_NOT_FOUND))
             {
                 LyricsDb.Add(DatabaseUtil.CorrectKeyFormat(capArtist, capTitle),
                              new LyricsItem(capArtist, capTitle, lyric, site));
@@ -2142,7 +2191,7 @@ namespace MyLyrics
             }
             else if (
                 !DatabaseUtil.IsSongInLyricsDatabaseAsLRC(LyricsDb, capArtist, capTitle).Equals(
-                    DatabaseUtil.LRCFound))
+                    DatabaseUtil.LRC_FOUND))
             {
                 LyricsDb[DatabaseUtil.CorrectKeyFormat(capArtist, capTitle)] = new LyricsItem(capArtist, capTitle,
                                                                                               lyric, site);
@@ -2157,7 +2206,7 @@ namespace MyLyrics
 
             if (
                 DatabaseUtil.IsSongInLyricsMarkedDatabase(LyricsMarkedDb, capArtist, capTitle).Equals(
-                    DatabaseUtil.LyricMarked))
+                    DatabaseUtil.LYRIC_MARKED))
             {
                 LyricsMarkedDb.Remove(DatabaseUtil.CorrectKeyFormat(capArtist, capTitle));
                 SaveDatabase(MLyricsMarkedDbName, LyricsMarkedDb);
@@ -2166,10 +2215,10 @@ namespace MyLyrics
 
         private void SaveDatabase(string dbName, LyricsDatabase lyricsDatabase)
         {
-            var path = Config.GetFile(Config.Dir.Database, dbName);
-            using (var fs = new FileStream(path, FileMode.Open))
+            string path = Config.GetFile(Config.Dir.Database, dbName);
+            using (FileStream fs = new FileStream(path, FileMode.Open))
             {
-                var bf = new BinaryFormatter();
+                BinaryFormatter bf = new BinaryFormatter();
                 lyricsDatabase.SetLastModified();
                 bf.Serialize(fs, lyricsDatabase);
                 fs.Close();
@@ -2180,60 +2229,60 @@ namespace MyLyrics
         // Called when user presses Stop button of form is closed.
         private void StopThread()
         {
-            if (_lyricControllerThread != null && _lyricControllerThread.IsAlive) // thread is active
+            if (_LyricControllerThread != null && _LyricControllerThread.IsAlive) // thread is active
             {
                 // set event "Stop"
-                _eventStopThread.Set();
+                _EventStopThread.Set();
 
-                while (_lyricControllerThread.IsAlive)
-                {
+                while (_LyricControllerThread.IsAlive)
                     Thread.Sleep(100);
-                }
 
-                _lyricControllerThread = null;
-                _lyricsController = null;
+                _LyricControllerThread = null;
+                _lc = null;
             }
 
-            _lyriccontrollerIsWorking = false;
+            _LyriccontrollerIsWorking = false;
         }
 
 
-        private void ResetAll()
+        private void resetAll()
         {
             _newTrack = false;
             _artist = "";
             _title = "";
-            _statusText = "";
-            _lyricText = "";
+            _TrackText = "";
+            _StatusText = "";
+            _LyricText = "";
             _lyricsFound = false;
-            _lyricControllerThread = null;
-            _lyricsController = null;
+            _LyricControllerThread = null;
+            _lc = null;
 
-            ResetLrcFields();
+            resetLrcFields();
         }
 
-        private void ResetLrcFields()
+        private void resetLrcFields()
         {
-            if (_stopwatch != null)
+            if (_Stopwatch != null)
             {
-                _stopwatch.Reset();
+                _Stopwatch.Reset();
             }
 
-            _simpleLrc = null;
-
-            _lrcTimeCollection = null;
-            
-            NextLRCLineIndex = 0;
-            LRCLinesTotal = 0;
-            TagRoundFinished = 0;
-            Min = 0;
-            Sec = 0;
-            Msec = 0;
+            _SimpleLrc = null;
+            ;
+            _LrcTimeCollection = null;
+            ;
+            nextLRCLineIndex = 0;
+            _LRCLinesTotal = 0;
+            _tagRoundFinished = 0;
+            _min = 0;
+            _sec = 0;
+            _msec = 0;
             _lines = null;
         }
 
-        private void ResetGUI(int screenID)
+        private void resetGUI(int screenID)
         {
+            int prevSelectedScreen = _selectedScreen;
             _selectedScreen = screenID;
 
             _isInTranslation = false;
@@ -2242,244 +2291,244 @@ namespace MyLyrics
 
             if (_selectedScreen == (int) MyLyricsSettings.Screen.LYRICS)
             {
-                GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlTitle, "Lyrics screen");
+                GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_TITLE, "Lyrics screen");
 
-                GUIControl.ClearControl(GetID, ControlLyricSelected);
-                GUIControl.FocusControl(GetID, ControlLyricSelected);
+                GUIControl.ClearControl(GetID, CONTROL_LYRIC_SELECTED);
+                GUIControl.FocusControl(GetID, CONTROL_LYRIC_SELECTED);
 
                 // Reset general and lyrics controls
-                GUIControl.ShowControl(GetID, (int) GUIGeneralControls.ControlLbStatus);
-                GUIControl.HideControl(GetID, ControlLyricSelected);
-                GUIControl.ShowControl(GetID, ControlLyricSelected);
-                GUIControl.SetControlLabel(GetID, ControlLyricSelected, "");
+                GUIControl.ShowControl(GetID, (int) GUI_General_Controls.CONTROL_LBStatus);
+                GUIControl.HideControl(GetID, CONTROL_LYRIC_SELECTED);
+                GUIControl.ShowControl(GetID, CONTROL_LYRIC_SELECTED);
+                GUIControl.SetControlLabel(GetID, CONTROL_LYRIC_SELECTED, "");
 
                 // album art only visible for basic screen
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtCurrently);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtDuration);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtAlbum);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtYear);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtNowPlayingBack);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtAlbumArt);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtProgress);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtProgressImage);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_CURRENTLY);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_DURATION);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_ALBUM);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_YEAR);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_NOWPLAYINGBACK);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_ALBUMART);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_PROGRESS);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_PROGRESSIMAGE);
 
                 // Hide LRC controls
-                GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlTagPickButton, "");
-                GUIControl.HideControl(GetID, (int) GUILRCControls.ControlTagPickButton);
+                GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_TAGPICKBUTTON, "");
+                GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_TAGPICKBUTTON);
                 //GUIControl.HideControl(GetID, (int)GUI_LRC_Controls.CONTROL_LRCPICK_STATUS);
 
-                for (var i = 0; i < TagInRound; i++)
+                for (int i = 0; i < _TAG_IN_ROUND; i++)
                 {
-                    GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditTime + i);
-                    GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditLine + i);
-                    GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditLineDone + i);
+                    GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + i);
+                    GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i);
+                    GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i);
 
-                    GUIControl.HideControl(GetID, (int) GUILRCControls.ControlViewLine + i);
-                    GUIControl.HideControl(GetID, (int) GUILRCControls.ControlViewLineDone + i);
+                    GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE + i);
+                    GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE_DONE + i);
                 }
 
-                for (var i = 0; i < 5; i++)
+                for (int i = 0; i < 5; i++)
                 {
-                    GUIControl.HideControl(GetID, (int) GUILRCControls.ControlMiniViewLine + i);
-                    GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlMiniViewLine + i, "");
+                    GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_MINI_VIEW_LINE + i);
+                    GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_MINI_VIEW_LINE + i, "");
                 }
             }
 
             else if (_selectedScreen == (int) MyLyricsSettings.Screen.LRC)
             {
-                GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlTitle, "LRC screen");
+                GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_TITLE, "LRC screen");
 
-                GUIControl.FocusControl(GetID, ControlLyricSelected);
+                GUIControl.FocusControl(GetID, CONTROL_LYRIC_SELECTED);
 
                 // Lyrics controls
-                GUIControl.ShowControl(GetID, (int) GUIGeneralControls.ControlLbStatus);
+                GUIControl.ShowControl(GetID, (int) GUI_General_Controls.CONTROL_LBStatus);
                 //GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, "");
-                GUIControl.HideControl(GetID, ControlLyricSelected);
+                GUIControl.HideControl(GetID, CONTROL_LYRIC_SELECTED);
 
                 // album art only visible for basic screen
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtCurrently);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtDuration);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtAlbum);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtYear);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtNowPlayingBack);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtAlbumArt);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtProgress);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtProgressImage);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_CURRENTLY);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_DURATION);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_ALBUM);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_YEAR);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_NOWPLAYINGBACK);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_ALBUMART);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_PROGRESS);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_PROGRESSIMAGE);
 
                 // LRC controls
-                GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlTagPickButton, "");
-                GUIControl.HideControl(GetID, (int) GUILRCControls.ControlTagPickButton);
+                GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_TAGPICKBUTTON, "");
+                GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_TAGPICKBUTTON);
                 //GUIControl.HideControl(GetID, (int)GUI_LRC_Controls.CONTROL_LRCPICK_STATUS);
 
-                for (var i = 0; i < TagInRound; i++)
+                for (int i = 0; i < _TAG_IN_ROUND; i++)
                 {
-                    GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditTime + i);
-                    GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditLine + i);
-                    GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditLineDone + i);
+                    GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + i);
+                    GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i);
+                    GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i);
 
-                    GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlViewLine + i);
-                    GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlViewLine + i, "");
-                    GUIControl.HideControl(GetID, (int) GUILRCControls.ControlViewLineDone + i);
-                    GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlViewLineDone + i, "");
+                    GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE + i);
+                    GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE + i, "");
+                    GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE_DONE + i);
+                    GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE_DONE + i, "");
                 }
 
                 if (string.IsNullOrEmpty(_artist))
                 {
-                    for (var i = 0; i < TagInRound; i++)
+                    for (int i = 0; i < _TAG_IN_ROUND; i++)
                     {
-                        GUIControl.HideControl(GetID, (int) GUILRCControls.ControlViewLine + i);
-                        GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlViewLine + i, "");
+                        GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE + i);
+                        GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE + i, "");
                     }
                 }
 
-                for (var i = 0; i < 5; i++)
+                for (int i = 0; i < 5; i++)
                 {
-                    GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlMiniViewLine + i);
-                    GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlMiniViewLine + i, "");
+                    GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_MINI_VIEW_LINE + i);
+                    GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_MINI_VIEW_LINE + i, "");
                 }
             }
 
 
-            else if (_selectedScreen == (int) MyLyricsSettings.Screen.LRCEditor)
+            else if (_selectedScreen == (int) MyLyricsSettings.Screen.LRC_EDITOR)
             {
                 GUIPropertyManager.OnPropertyChanged += TimeHandler;
 
-                GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlTitle, "LRC editor");
+                GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_TITLE, "LRC editor");
 
                 // Lyrics controls
-                GUIControl.ShowControl(GetID, (int) GUIGeneralControls.ControlLbStatus);
-                GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlLrcPickStatus, "");
+                GUIControl.ShowControl(GetID, (int) GUI_General_Controls.CONTROL_LBStatus);
+                GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_LRCPICK_STATUS, "");
                 //GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, "");
-                GUIControl.HideControl(GetID, ControlLyricSelected);
+                GUIControl.HideControl(GetID, CONTROL_LYRIC_SELECTED);
 
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtCurrently);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtDuration);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtAlbum);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtYear);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtNowPlayingBack);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtAlbumArt);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtProgress);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtProgressImage);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_CURRENTLY);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_DURATION);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_ALBUM);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_YEAR);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_NOWPLAYINGBACK);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_ALBUMART);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_PROGRESS);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_PROGRESSIMAGE);
 
                 // LRC controls
-                GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlTagPickButton, "Tag");
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlTagPickButton);
-                GUIControl.FocusControl(GetID, (int) GUILRCControls.ControlTagPickButton);
+                GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_TAGPICKBUTTON, "Tag");
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_TAGPICKBUTTON);
+                GUIControl.FocusControl(GetID, (int) GUI_LRC_Controls.CONTROL_TAGPICKBUTTON);
                 //GUIControl.HideControl(GetID, (int)GUI_LRC_Controls.CONTROL_LRCPICK_STATUS);
 
-                for (var i = 0; i < TagInRound; i++)
+                for (int i = 0; i < _TAG_IN_ROUND; i++)
                 {
-                    GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditTime + i);
-                    GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditTime + i, "");
+                    GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + i);
+                    GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + i, "");
                     //GUIControl.ShowControl(GetID, (int)GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i);
-                    GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditLineDone + i, "");
-                    GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlEditLine + i);
-                    GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditLine + i, "");
+                    GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i, "");
+                    GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i);
+                    GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i, "");
 
-                    GUIControl.HideControl(GetID, (int) GUILRCControls.ControlViewLine + i);
-                    GUIControl.HideControl(GetID, (int) GUILRCControls.ControlViewLineDone + i);
+                    GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE + i);
+                    GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE_DONE + i);
                 }
 
                 if (string.IsNullOrEmpty(_artist))
                 {
-                    for (var i = 0; i < TagInRound; i++)
+                    for (int i = 0; i < _TAG_IN_ROUND; i++)
                     {
-                        GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditTime + i);
-                        GUIControl.HideControl(GetID, (int) GUILRCControls.ControlViewLine + i);
-                        GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlViewLine + i, "");
-                        GUIControl.HideControl(GetID, (int) GUILRCControls.ControlViewLineDone + i);
-                        GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlViewLineDone + i, "");
-                        GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditLine + i);
-                        GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditLine + i, "");
-                        GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditLineDone + i);
-                        GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditLineDone + i, "");
+                        GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + i);
+                        GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE + i);
+                        GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE + i, "");
+                        GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE_DONE + i);
+                        GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE_DONE + i, "");
+                        GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i);
+                        GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i, "");
+                        GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i);
+                        GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i, "");
                     }
-                    ResetGUI((int) MyLyricsSettings.Screen.LYRICS);
+                    resetGUI((int) MyLyricsSettings.Screen.LYRICS);
                 }
 
-                for (var i = 0; i < 5; i++)
+                for (int i = 0; i < 5; i++)
                 {
-                    GUIControl.HideControl(GetID, (int) GUILRCControls.ControlMiniViewLine + i);
-                    GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlMiniViewLine + i, "");
+                    GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_MINI_VIEW_LINE + i);
+                    GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_MINI_VIEW_LINE + i, "");
                 }
             }
 
-            else if (_selectedScreen == (int) MyLyricsSettings.Screen.LRCPick)
+            else if (_selectedScreen == (int) MyLyricsSettings.Screen.LRC_PICK)
             {
-                GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlTitle, "LRC pick");
+                GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_TITLE, "LRC pick");
 
                 // Lyrics controls
-                GUIControl.ShowControl(GetID, (int) GUIGeneralControls.ControlLbStatus);
+                GUIControl.ShowControl(GetID, (int) GUI_General_Controls.CONTROL_LBStatus);
                 //GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, "");
-                GUIControl.HideControl(GetID, ControlLyricSelected);
+                GUIControl.HideControl(GetID, CONTROL_LYRIC_SELECTED);
 
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtCurrently);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtDuration);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtAlbum);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtYear);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtNowPlayingBack);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtAlbumArt);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtProgress);
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlArtProgressImage);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_CURRENTLY);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_DURATION);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_ALBUM);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_YEAR);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_NOWPLAYINGBACK);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_ALBUMART);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_PROGRESS);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_ART_PROGRESSIMAGE);
 
                 // LRC controls
-                GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlTagPickButton, "Pick");
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlTagPickButton);
-                GUIControl.FocusControl(GetID, (int) GUILRCControls.ControlTagPickButton);
+                GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_TAGPICKBUTTON, "Pick");
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_TAGPICKBUTTON);
+                GUIControl.FocusControl(GetID, (int) GUI_LRC_Controls.CONTROL_TAGPICKBUTTON);
                 //GUIControl.SetControlLabel(GetID, (int)GUI_LRC_Controls.CONTROL_TAGPICKBUTTON, "");
                 //GUIControl.HideControl(GetID, (int)GUI_LRC_Controls.CONTROL_TAGPICKBUTTON);
 
-                GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlLrcPickStatus);
+                GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_LRCPICK_STATUS);
 
                 //if (prevSelectedScreen != (int) MyLyricsSettings.Screen.LRC)
                 //{
-                for (var i = 0; i < TagInRound; i++)
+                for (int i = 0; i < _TAG_IN_ROUND; i++)
                 {
-                    GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditTime + i);
-                    GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditTime + i, " ");
-                    if (UseEditControlsOnLRCPick())
+                    GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + i);
+                    GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_TIME + i, " ");
+                    if (useEditControlsOnLRCPick())
                     {
-                        GUIControl.HideControl(GetID, (int) GUILRCControls.ControlViewLine + i);
-                        GUIControl.HideControl(GetID, (int) GUILRCControls.ControlViewLineDone + i);
+                        GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE + i);
+                        GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE_DONE + i);
 
-                        GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditLine + i, "");
-                        GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlEditLine + i);
-                        GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditLineDone + i, "");
-                        GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditLineDone + i);
+                        GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i, "");
+                        GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i);
+                        GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i, "");
+                        GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i);
                     }
                     else
                     {
-                        GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditLine + i);
-                        GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditLineDone + i);
+                        GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i);
+                        GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE_DONE + i);
 
-                        GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlViewLine + i, "");
-                        GUIControl.ShowControl(GetID, (int) GUILRCControls.ControlViewLine + i);
-                        GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlViewLineDone + i, "");
-                        GUIControl.HideControl(GetID, (int) GUILRCControls.ControlViewLineDone + i);
+                        GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE + i, "");
+                        GUIControl.ShowControl(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE + i);
+                        GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE_DONE + i, "");
+                        GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE_DONE + i);
                     }
                 }
                 //}
 
                 if (string.IsNullOrEmpty(_artist))
                 {
-                    for (var i = 0; i < TagInRound; i++)
+                    for (int i = 0; i < _TAG_IN_ROUND; i++)
                     {
-                        GUIControl.HideControl(GetID, (int) GUILRCControls.ControlViewLine + i);
-                        GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlViewLine + i, "");
-                        if (UseEditControlsOnLRCPick())
+                        GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE + i);
+                        GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_VIEW_LINE + i, "");
+                        if (useEditControlsOnLRCPick())
                         {
-                            GUIControl.HideControl(GetID, (int) GUILRCControls.ControlEditLine + i);
-                            GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlEditLine + i, "");
+                            GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i);
+                            GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_EDIT_LINE + i, "");
                         }
                     }
-                    GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlLrcPickStatus, "");
-                    ResetGUI((int) MyLyricsSettings.Screen.LRC);
+                    GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_LRCPICK_STATUS, "");
+                    resetGUI((int) MyLyricsSettings.Screen.LRC);
                 }
 
-                for (var i = 0; i < 5; i++)
+                for (int i = 0; i < 5; i++)
                 {
-                    GUIControl.HideControl(GetID, (int) GUILRCControls.ControlMiniViewLine + i);
-                    GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlMiniViewLine + i, "");
+                    GUIControl.HideControl(GetID, (int) GUI_LRC_Controls.CONTROL_MINI_VIEW_LINE + i);
+                    GUIControl.SetControlLabel(GetID, (int) GUI_LRC_Controls.CONTROL_MINI_VIEW_LINE + i, "");
                 }
             }
         }
@@ -2490,10 +2539,10 @@ namespace MyLyrics
         {
             set
             {
-                var line1 = (string) value[0];
-                var line2 = (string) value[1];
-                _statusText = line1 + "\r\n" + line2;
-                GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
+                string line1 = (string) value[0];
+                string line2 = (string) value[1];
+                _StatusText = line1 + "\r\n" + line2;
+                GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, _StatusText);
             }
         }
 
@@ -2508,10 +2557,10 @@ namespace MyLyrics
             {
                 if (_lyricsFound == false)
                 {
-                    var lyricText = (String) value[0];
-                    var artist = (String) value[1];
-                    var title = (String) value[2];
-                    var site = (String) value[3];
+                    string lyricText = (String) value[0];
+                    string artist = (String) value[1];
+                    string title = (String) value[2];
+                    string site = (String) value[3];
 
                     // If the lrc or lyric found matches the currently playing show the lyric else don't!
                     if (_artist.Equals(artist) && _title.Equals(title))
@@ -2520,19 +2569,19 @@ namespace MyLyrics
 
                         SaveLyricToDatabase(artist, title, lyricText, site, site.Equals("LrcFinder"));
 
-                        if (_currentTrackTag != null)
+                        if (_CurrentTrackTag != null)
                         {
-                            if (_worker.IsBusy)
-                                _worker.CancelAsync();
-                            var data = new SaveLyricToTagListsData(lyricText, _artist, _title,
-                                                                                       _currentTrackTag.FileName);
-                            _worker.RunWorkerAsync(data);
+                            if (worker.IsBusy)
+                                worker.CancelAsync();
+                            SaveLyricToTagListsData data = new SaveLyricToTagListsData(lyricText, _artist, _title,
+                                                                                       _CurrentTrackTag.FileName);
+                            worker.RunWorkerAsync(data);
                             //SaveLyricToTagLists(_CurrentTrackTag.FileName, lyricText);
                         }
                     }
 
-                    _searchingState = (int) SearchState.NotSearching;
-                    _lyriccontrollerIsWorking = false;
+                    _SearchingState = (int) SEARCH_STATE.NOT_SEARCHING;
+                    _LyriccontrollerIsWorking = false;
                 }
             }
         }
@@ -2546,73 +2595,74 @@ namespace MyLyrics
         {
             set
             {
-                var artist = (String) value[0];
-                var title = (String) value[1];
-                var message = (String) value[2];
-                var site = (String) value[3];
+                string artist = (String) value[0];
+                string title = (String) value[1];
+                string message = (String) value[2];
+                string site = (String) value[3];
 
                 if (!_lyricsFound && _artist.Equals(artist) && _title.Equals(title))
                 {
                     if (site.Equals("LrcFinder"))
                     {
-                        if (_searchType == (int) SearchTypes.BothLRCsAndLyrics)
-                            _searchType = (int) SearchTypes.OnlyLYRICS;
-                        _statusText = "No matching LRC found";
+                        if (_SearchType == (int) SEARCH_TYPES.BOTH_LRCS_AND_LYRICS)
+                            _SearchType = (int) SEARCH_TYPES.ONLY_LYRICS;
+                        _StatusText = "No matching LRC found";
                         
-                        PluginLogger.Info("No matching LRC found for {0} - {1}. Place: {2}", artist, title, site);
+                        logger.Info("No matching LRC found for {0} - {1}. Place: {2}", artist, title, site);
                     }
                     else
                     {
-                        _statusText = "No matching lyric found";
+                        _StatusText = "No matching lyric found";
                         
-                        PluginLogger.Info("No matching lyric found for {0} - {1}. Place: {2}", artist, title, site);
+                        logger.Info("No matching lyric found for {0} - {1}. Place: {2}", artist, title, site);
                     }
-                    GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
+                    GUIControl.SetControlLabel(GetID, (int) GUI_General_Controls.CONTROL_LBStatus, _StatusText);
                 }
 
-                GUIControl.ShowControl(GetID, ControlLyricSelected);
+                GUIControl.ShowControl(GetID, CONTROL_LYRIC_SELECTED);
 
-                _lyriccontrollerIsWorking = false;
+                _LyriccontrollerIsWorking = false;
             }
         }
 
         public string ThreadException
         {
-            set { var message = value; }
+            set { string message = value; }
         }
 
         //private void SaveLyricToTagLists(string fileName, string lyric)
         private void SaveLyricToTagLists(object sender, DoWorkEventArgs e)
         {
-            var data = (SaveLyricToTagListsData) e.Argument;
+            SaveLyricToTagListsData data = (SaveLyricToTagListsData) e.Argument;
             if (!string.IsNullOrEmpty(data.FileName) && !string.IsNullOrEmpty(data.Lyrics))
             {
-                lock (_lyricsToWriteToTag)
+                lock (_LyricsToWriteToTag)
                 {
-                    var currentTrackTag = _currentTrackTag;
+                    MusicTag currentTrackTag = _CurrentTrackTag;
                     // if lyric is a LRC, then always add
                     if (new SimpleLRC(data.Artist, data.Title, data.Lyrics).IsValid)
                     {
-                        if (currentTrackTag == _currentTrackTag)
+                        if (currentTrackTag == _CurrentTrackTag)
                             //only if track didnt change - i think it's unsafe to lock it
                         {
-                            _currentTrackTag.Lyrics = data.Lyrics;
+                            _CurrentTrackTag.Lyrics = data.Lyrics;
                         }
-                        _lyricsToWriteToTag.Add(new[] {data.FileName, data.Lyrics});
+                        _LyricsToWriteToTag.Add(new string[2] {data.FileName, data.Lyrics});
                     }
                         // if 'lyric' is plain lyric and lyric in musictag is LRC, then DON'T add
                     else if (new SimpleLRC(data.FileName).IsValid)
                     {
+                        return;
                     }
                         // if lyric in musictag is not LRC, then add plain lyric
                     else
                     {
-                        if (currentTrackTag == _currentTrackTag)
+                        if (currentTrackTag == _CurrentTrackTag)
                             //only if track didnt change - i think it's unsafe to lock it
                         {
-                            _currentTrackTag.Lyrics = data.Lyrics;
+                            _CurrentTrackTag.Lyrics = data.Lyrics;
                         }
-                        _lyricsToWriteToTag.Add(new[] {data.FileName, data.Lyrics});
+                        _LyricsToWriteToTag.Add(new string[2] {data.FileName, data.Lyrics});
                     }
                 }
             }
@@ -2660,7 +2710,7 @@ namespace MyLyrics
         /// </summary>
         public int GetWindowId()
         {
-            return WindowMylyrics;
+            return WINDOW_MYLYRICS;
         }
 
         /// <summary>
@@ -2693,7 +2743,7 @@ namespace MyLyrics
         public void ShowPlugin()
         {
             _core.Initialize();
-            var dlg = new MyLyricsSetup();
+            MyLyricsSetup dlg = new MyLyricsSetup();
             dlg.ShowDialog();
         }
 
@@ -2701,80 +2751,80 @@ namespace MyLyrics
 
         #region Nested type: GUI_General_Controls
 
-        private enum GUIGeneralControls
+        private enum GUI_General_Controls
         {
-            ControlBackground = 1,
-            ControlTitle = 2,
-            ControlLbStatus = 11,
-            ControlUpNext = 22,
-            ControlAlbum = 26,
-            ControlYear = 27,
-            ControlTrackTitle = 30,
-            ControlTrackArtist = 32,
-            ControlNumberDuration = 33,
-            ControlNextTrack = 121,
-            ControlNextArtist = 123,
+            CONTROL_BACKGROUND = 1,
+            CONTROL_TITLE = 2,
+            CONTROL_LBStatus = 11,
+            CONTROL_UPNEXT = 22,
+            CONTROL_ALBUM = 26,
+            CONTROL_YEAR = 27,
+            CONTROL_TRACKTITLE = 30,
+            CONTROL_TRACKARTIST = 32,
+            CONTROL_NUMBERDURATION = 33,
+            CONTROL_NEXTTRACK = 121,
+            CONTROL_NEXTARTIST = 123,
         }
 
         #endregion
 
         #region Nested type: GUI_LRC_Controls
 
-        private enum GUILRCControls
+        private enum GUI_LRC_Controls
         {
-            ControlArtCurrently = 24,
-            ControlArtDuration = 25,
-            ControlArtAlbum = 26,
-            ControlArtYear = 27,
-            ControlArtNowPlayingBack = 31,
-            ControlArtAlbumArt = 112,
-            ControlArtProgress = 118,
-            ControlArtProgressImage = 117,
+            CONTROL_ART_CURRENTLY = 24,
+            CONTROL_ART_DURATION = 25,
+            CONTROL_ART_ALBUM = 26,
+            CONTROL_ART_YEAR = 27,
+            CONTROL_ART_NOWPLAYINGBACK = 31,
+            CONTROL_ART_ALBUMART = 112,
+            CONTROL_ART_PROGRESS = 118,
+            CONTROL_ART_PROGRESSIMAGE = 117,
 
-            ControlTagPickButton = 50,
+            CONTROL_TAGPICKBUTTON = 50,
 
-            ControlEditTime = 600,
-            ControlEditLine = 200,
-            ControlEditLineDone = 300,
+            CONTROL_EDIT_TIME = 600,
+            CONTROL_EDIT_LINE = 200,
+            CONTROL_EDIT_LINE_DONE = 300,
 
-            ControlViewLine = 400,
-            ControlViewLineDone = 500,
+            CONTROL_VIEW_LINE = 400,
+            CONTROL_VIEW_LINE_DONE = 500,
 
-            ControlLrcPickStatus = 1011,
+            CONTROL_LRCPICK_STATUS = 1011,
 
-            ControlMiniViewLine = 1400
+            CONTROL_MINI_VIEW_LINE = 1400
         }
 
         #endregion
 
         #region Nested type: GUI_Lyrics_Controls
 
-        private enum GUILyricsControls
+        private enum GUI_Lyrics_Controls
         {
-            ControlLyric = 20,
-            ControlLyricScroll = 1020,
+            CONTROL_Lyric = 20,
+            CONTROL_Lyric_Scroll = 1020,
         }
 
         #endregion
 
         #region Nested type: SEARCH_STATE
 
-        private enum SearchState
+        private enum SEARCH_STATE
         {
-            NotSearching = 0,
-            SearchingForLRC = 1,
-            SearchingForLyric = 2
+            NOT_SEARCHING = 0,
+            SEARCHING_FOR_LRC = 1,
+            SEARCHING_FOR_LYRIC = 2
         }
 
         #endregion
 
         #region Nested type: SEARCH_TYPES
 
-        private enum SearchTypes
+        private enum SEARCH_TYPES
         {
-            BothLRCsAndLyrics = 0,
-            OnlyLRCs = 1,
-            OnlyLYRICS = 2
+            BOTH_LRCS_AND_LYRICS = 0,
+            ONLY_LRCS = 1,
+            ONLY_LYRICS = 2
         }
 
         #endregion
@@ -2787,12 +2837,12 @@ namespace MyLyrics
         public string Title { get; set; }
         public string FileName { get; set; }
 
-        public SaveLyricToTagListsData(string lyrics, string artist, string title, string filename)
+        public SaveLyricToTagListsData(string _lyrics, string _artist, string _title, string _filename)
         {
-            Lyrics = lyrics;
-            Artist = artist;
-            Title = title;
-            FileName = filename;
+            Lyrics = _lyrics;
+            Artist = _artist;
+            Title = _title;
+            FileName = _filename;
         }
     }
 }

@@ -1,3 +1,5 @@
+using System.Windows.Forms;
+
 namespace MyLyrics
 {
   partial class FindLyric
