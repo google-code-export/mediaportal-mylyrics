@@ -97,6 +97,13 @@ The plugin can show LRC's and plain lyrics. It uses both musictags and online se
               <ZipFileName>Installer{CopyFile}\{740f5180-49b0-436c-8449-55e38c224f2e}-GoogleTranslateAPI.dll</ZipFileName>
               <DestinationFilename>%Base%\GoogleTranslateAPI.dll</DestinationFilename>
             </FileItem>
+            <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+              <Param1 />
+              <UpdateOption>OverwriteIfOlder</UpdateOption>
+              <LocalFileName>..\source\External\NLog.dll</LocalFileName>
+              <ZipFileName>Installer{CopyFile}\{75233023-3ef9-45a5-a74d-26aedb4b4325}-NLog.dll</ZipFileName>
+              <DestinationFilename>%Base%\NLog.dll</DestinationFilename>
+            </FileItem>
           </Items>
         </Files>
       </GroupItem>
@@ -458,6 +465,13 @@ Compatible with MediaPortal 1.4.0
         <LocalFileName>..\source\My Lyrics\bin\Release\GoogleTranslateAPI.dll</LocalFileName>
         <ZipFileName>Installer{CopyFile}\{740f5180-49b0-436c-8449-55e38c224f2e}-GoogleTranslateAPI.dll</ZipFileName>
         <DestinationFilename>%Base%\GoogleTranslateAPI.dll</DestinationFilename>
+      </FileItem>
+      <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+        <Param1 />
+        <UpdateOption>OverwriteIfOlder</UpdateOption>
+        <LocalFileName>..\source\External\NLog.dll</LocalFileName>
+        <ZipFileName>Installer{CopyFile}\{75233023-3ef9-45a5-a74d-26aedb4b4325}-NLog.dll</ZipFileName>
+        <DestinationFilename>%Base%\NLog.dll</DestinationFilename>
       </FileItem>
       <FileItem InstallType="CopyFile" SystemFile="true" Modified="true">
         <Param1 />
