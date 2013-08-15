@@ -114,16 +114,16 @@ namespace MyLyrics
 
             if (!isCurSongCdTrack && !isInternetStream)
             {
-                _currentTrackTag = GetTrackTag(dbs, _currentTrackFileName, true);
-                //_CurrentTrackTag = dbs.GetTag(_CurrentTrackFileName);
-                //_CurrentTrackTag.Artist = LyricUtil.CapatalizeString(GUIPropertyManager.GetProperty("#Play.Current.Artist"));
-                //_CurrentTrackTag.Title = LyricUtil.CapatalizeString(GUIPropertyManager.GetProperty("#Play.Current.Title"));
+                var currentTitle = GUIPropertyManager.GetProperty("#Play.Current.Title");
+                var currentArtist = GUIPropertyManager.GetProperty("#Play.Current.Artist");
+                _currentTrackTag = GetTrackTag(dbs, _currentTrackFileName, true, currentTitle, currentArtist);
             }
 
             if (!isNextSongCdTrack && !isInternetStream)
             {
-                _nextTrackTag = GetTrackTag(dbs, _nextTrackFileName, true);
-                //_NextTrackTag = dbs.GetTag(_NextTrackFileName);
+                var nextTitle = GUIPropertyManager.GetProperty("#Play.Next.Title");
+                var nextArtist = GUIPropertyManager.GetProperty("#Play.Next.Artist");
+                _nextTrackTag = GetTrackTag(dbs, _nextTrackFileName, true, nextTitle, nextArtist);
             }
 
             if (isCurSongCdTrack || isNextSongCdTrack)
@@ -144,12 +144,16 @@ namespace MyLyrics
                 var nextItemIndex = 0;
 
                 if (iCurItemIndex < playListItemCount - 1)
+                {
                     nextItemIndex = iCurItemIndex + 1;
+                }
 
                 var nextPlaylistItem = curPlaylist[nextItemIndex];
 
                 if (isCurSongCdTrack)
+                {
                     _currentTrackTag = (MusicTag) curPlaylistItem.MusicTag;
+                }
 
                 if (isNextSongCdTrack && nextPlaylistItem != null)
                     _nextTrackTag = (MusicTag) nextPlaylistItem.MusicTag;
@@ -165,8 +169,6 @@ namespace MyLyrics
                     {
                         var curTrack = GUIMusicFiles.MusicCD.getTrack(curCDTrackNum);
                         _currentTrackTag = GetTrackTag(curTrack);
-                        //_CurrentTrackTag.Artist = LyricUtil.CapatalizeString(GUIPropertyManager.GetProperty("#Play.Current.Artist"));
-                        //_CurrentTrackTag.Title = LyricUtil.CapatalizeString(GUIPropertyManager.GetProperty("#Play.Current.Title"));
                     }
                     if (nextCDTrackNum < GUIMusicFiles.MusicCD.Tracks.Length)
                     {
@@ -183,6 +185,9 @@ namespace MyLyrics
                 _nextTrackTag = null;
                 _currentTrackTag = BassMusicPlayer.Player.GetStreamTags();
             }
+
+            // Update _artist & _title
+            UpdateArtistAndTitleFromTrackTag();
         }
 
         private bool IsCdTrack()
@@ -232,23 +237,34 @@ namespace MyLyrics
             return tag;
         }
 
-        private MusicTag GetTrackTag(MusicDatabase dbs, string strFile, bool useID3)
+        private MusicTag GetTrackTag(MusicDatabase dbs, string strFile, bool useID3, string title, string artist)
         {
             MusicTag tag;
             var song = new Song();
             var bFound = dbs.GetSongByFileName(strFile, ref song);
             if (!bFound)
             {
+                // Track information already available
+                if (!string.IsNullOrEmpty(title) && !string.IsNullOrEmpty(artist))
+                {
+                    song.Title = title;
+                    song.Artist = artist;
+                    song.Album = string.Empty;
+                    tag = song.ToMusicTag();
+                    return tag;
+                }
+
+                // If allowed, read tag from file
                 if (useID3)
                 {
                     tag = TagReader.ReadTag(strFile);
-                    var currentTitle = GUIPropertyManager.GetProperty("#Play.Current.Title");
-                    if (tag != null && tag.Title != currentTitle) // Track information not available
+                    if (tag != null && !string.IsNullOrEmpty(tag.Title) && !string.IsNullOrEmpty(tag.Artist))
                     {
                         return tag;
                     }
                 }
-                // tagreader failed or not using it
+                
+                // tagreader failed or not using it and no available track information
                 song.Title = Path.GetFileNameWithoutExtension(strFile);
                 song.Artist = string.Empty;
                 song.Album = string.Empty;

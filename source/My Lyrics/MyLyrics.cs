@@ -191,84 +191,21 @@ namespace MyLyrics
                 && (!g_Player.IsRadio || !string.IsNullOrEmpty(_artist)))
                 //&& (!g_Player.IsRadio || _CurrentTrackTag!=null))
             {
+
                 if (_newTrack)
                 {
-                    _alreadyValidLRC = false;
-
-                    _imagePathContainer.Clear();
-
-                    _lyricsFound = false;
-                    StopThread();
-                    _newTrack = false;
-
-                    GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlLrcPickStatus, "");
-
-                    if (g_Player.IsRadio == false)
-                    {
-                        _currentTrackFileName = g_Player.CurrentFile;
-                        _nextTrackFileName = PlayListPlayer.SingletonPlayer.GetNext();
-                        //_CurrentTrackTag = mDB.GetTag(g_Player.CurrentFile);
-                        GetTrackTags();
-
-                        if (_currentTrackTag != null)
-                        {
-                            _artist = _currentTrackTag.Artist.Trim();
-                            _artist = _artist.Replace("| ", "");
-                            _artist = _artist.Replace(" |", "");
-                            _artist = _artist.Replace("''", "'");
-                            _artist = LyricUtil.CapatalizeString(_artist);
-                            _title = _currentTrackTag.Title.Trim();
-                            _title = _title.Replace("''", "'");
-                            _title = LyricUtil.CapatalizeString(_title);
-
-                            GetAlbumArt();
-                            GetAlbumArt(_artist);
-
-                            // Outcommented some code that led to a serious bug were first found lyrics always was saved in lyrics database for all following tracks and accordingly always shown on screen!
-                            //if (currentLyrics != null && currentFile != null && _CurrentTrackTag.FileName == currentFile)
-                            //{
-                            //    if (_CurrentTrackTag.Lyrics != currentLyrics)
-                            //    {
-                            //        _CurrentTrackTag.Lyrics = currentLyrics;
-                            //    }
-                            //}
-                        }
-                        else
-                        {
-                            _artist = "";
-                            _title = "";
-                            _lyricText = "";
-                            _imagePathContainer.Clear();
-                            GuIelementImgCoverArt.Dispose();
-
-                            ResetLrcFields();
-                            ResetGUI(_selectedScreen);
-
-                            _statusText = "No music file is playing";
-                            GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
-                        }
-                    }
-                    else
-                    {
-                        GetAlbumArt(_artist);
-                    }
+                    HandleNewTrack();
                 }
 
                 if (_currentTrackTag != null || g_Player.IsRadio)
                 {
                     if (!g_Player.IsRadio)
                     {
-                        GUIPropertyManager.SetProperty("#Play.Current.Title", _currentTrackTag.Title);
-                        GUIPropertyManager.SetProperty("#Play.Current.Track", _currentTrackTag.Track > 0 ? _currentTrackTag.Track.ToString(CultureInfo.InvariantCulture) : string.Empty);
-                        GUIPropertyManager.SetProperty("#Play.Current.Album", _currentTrackTag.Album);
-                        GUIPropertyManager.SetProperty("#Play.Current.Artist", _currentTrackTag.Artist);
-                        GUIPropertyManager.SetProperty("#Play.Current.Genre", _currentTrackTag.Genre);
-                        GUIPropertyManager.SetProperty("#Play.Current.Year", _currentTrackTag.Year > 1900 ? _currentTrackTag.Year.ToString(CultureInfo.InvariantCulture) : string.Empty);
-                        GUIPropertyManager.SetProperty("#Play.Current.Rating", (System.Convert.ToDecimal(2 * _currentTrackTag.Rating + 1)).ToString(CultureInfo.InvariantCulture));
-                        GUIPropertyManager.SetProperty("#duration", MediaPortal.Util.Utils.SecondsToHMSString(_currentTrackTag.Duration));
+                        if (!string.IsNullOrEmpty(_currentTrackTag.Artist))
+                        {
+                            UpdateGuiPropertiesFromCurrentTrackTag();
+                        }
 
-                        //_CurrentTrackTag.Artist = LyricUtil.CapatalizeString(GUIPropertyManager.GetProperty("#Play.Current.Artist"));
-                        //_CurrentTrackTag.Title = LyricUtil.CapatalizeString(GUIPropertyManager.GetProperty("#Play.Current.Title"));
                         _currentTrackTag.Lyrics = LyricUtil.FixLyrics(_currentTrackTag.Lyrics);
 
                         UpdateNextTrackInfo();
@@ -281,61 +218,10 @@ namespace MyLyrics
                         // Get lyric
                         if (_artist.Length != 0 && _title.Length != 0)
                         {
-                            if (_searchingState == (int) SearchState.NotSearching)
-                            {
-                                var lrcActiveSites = LyricsSiteFactory.LrcLyricsSiteNames().Where(lrcSite => Setup.GetInstance().ActiveSites.Contains(lrcSite)).ToList();
-                                if (lrcActiveSites.Count > 0 &&
-                                    (_searchType == (int) SearchTypes.BothLRCsAndLyrics
-                                     || _searchType == (int) SearchTypes.OnlyLRCs))
-                                {
-                                    var lrcFoundInTagOrLyricDb = FindLrc();
-                                    if (lrcFoundInTagOrLyricDb)
-                                    {
-                                        _searchingState = (int) SearchState.NotSearching;
-                                    }
-                                    else
-                                    {
-                                        _searchingState = (int) SearchState.SearchingForLRC;
-                                    }
-                                }
-                                else
-                                {
-                                    var lyricFoundInTagOrLyricDb = FindLyric();
-                                    if (lyricFoundInTagOrLyricDb)
-                                    {
-                                        _searchingState = (int) SearchState.NotSearching;
-                                    }
-                                    else
-                                    {
-                                        _searchingState = (int) SearchState.SearchingForLyric;
-                                    }
-                                }
-                            }
-                            else if (_searchingState == (int) SearchState.SearchingForLRC &&
-                                     !_lyriccontrollerIsWorking)
-                            {
-                                if (_searchType == (int) SearchTypes.BothLRCsAndLyrics
-                                    || _searchType == (int) SearchTypes.OnlyLYRICS)
-                                {
-                                    FindLyric();
-                                    _searchingState = (int) SearchState.SearchingForLyric;
-                                }
-                                else
-                                {
-                                    _searchingState = (int) SearchState.NotSearching;
-                                }
-                            }
-                            else if (_searchingState == (int) SearchState.SearchingForLyric &&
-                                     !_lyriccontrollerIsWorking)
-                            {
-                                _searchingState = (int) SearchState.NotSearching;
-                            }
+                            GetLyrics();
                         }
                         else if ((_artist.Length == 0 && _title.Length > 0) || (_title.Length == 0 && _artist.Length > 0))
                         {
-                            //_ImagePathContainer.Clear();
-                            //GUIelement_ImgCoverArt.Dispose();
-
                             ResetLrcFields();
                             ResetGUI(_selectedScreen);
 
@@ -439,6 +325,141 @@ namespace MyLyrics
             //GUIGraphicsContext.ResetLastActivity();
 
             base.Process();
+        }
+
+        private void GetLyrics()
+        {
+            if (_searchingState == (int) SearchState.NotSearching)
+            {
+                var lrcActiveSites =
+                    LyricsSiteFactory.LrcLyricsSiteNames()
+                        .Where(lrcSite => Setup.GetInstance().ActiveSites.Contains(lrcSite))
+                        .ToList();
+                if (lrcActiveSites.Count > 0 &&
+                    (_searchType == (int) SearchTypes.BothLRCsAndLyrics
+                     || _searchType == (int) SearchTypes.OnlyLRCs))
+                {
+                    var lrcFoundInTagOrLyricDb = FindLrc();
+                    if (lrcFoundInTagOrLyricDb)
+                    {
+                        _searchingState = (int) SearchState.NotSearching;
+                    }
+                    else
+                    {
+                        _searchingState = (int) SearchState.SearchingForLRC;
+                    }
+                }
+                else
+                {
+                    var lyricFoundInTagOrLyricDb = FindLyric();
+                    if (lyricFoundInTagOrLyricDb)
+                    {
+                        _searchingState = (int) SearchState.NotSearching;
+                    }
+                    else
+                    {
+                        _searchingState = (int) SearchState.SearchingForLyric;
+                    }
+                }
+            }
+            else if (_searchingState == (int) SearchState.SearchingForLRC &&
+                     !_lyriccontrollerIsWorking)
+            {
+                if (_searchType == (int) SearchTypes.BothLRCsAndLyrics
+                    || _searchType == (int) SearchTypes.OnlyLYRICS)
+                {
+                    FindLyric();
+                    _searchingState = (int) SearchState.SearchingForLyric;
+                }
+                else
+                {
+                    _searchingState = (int) SearchState.NotSearching;
+                }
+            }
+            else if (_searchingState == (int) SearchState.SearchingForLyric &&
+                     !_lyriccontrollerIsWorking)
+            {
+                _searchingState = (int) SearchState.NotSearching;
+            }
+        }
+
+        private void UpdateGuiPropertiesFromCurrentTrackTag()
+        {
+            GUIPropertyManager.SetProperty("#Play.Current.Artist", _currentTrackTag.Artist);
+            GUIPropertyManager.SetProperty("#Play.Current.Title", _currentTrackTag.Title);
+            GUIPropertyManager.SetProperty("#Play.Current.Track", _currentTrackTag.Track > 0 ? _currentTrackTag.Track.ToString(CultureInfo.InvariantCulture) : string.Empty);
+            GUIPropertyManager.SetProperty("#Play.Current.Album", _currentTrackTag.Album);
+            GUIPropertyManager.SetProperty("#Play.Current.Genre", _currentTrackTag.Genre);
+            GUIPropertyManager.SetProperty("#Play.Current.Year", _currentTrackTag.Year > 1900 ? _currentTrackTag.Year.ToString(CultureInfo.InvariantCulture) : string.Empty);
+            GUIPropertyManager.SetProperty("#Play.Current.Rating", (System.Convert.ToDecimal(2*_currentTrackTag.Rating + 1)).ToString(CultureInfo.InvariantCulture));
+            GUIPropertyManager.SetProperty("#duration", MediaPortal.Util.Utils.SecondsToHMSString(_currentTrackTag.Duration));
+        }
+
+        private void HandleNewTrack()
+        {
+            _alreadyValidLRC = false;
+
+            _imagePathContainer.Clear();
+
+            _lyricsFound = false;
+            StopThread();
+            _newTrack = false;
+
+            GUIControl.SetControlLabel(GetID, (int) GUILRCControls.ControlLrcPickStatus, "");
+
+            if (g_Player.IsRadio == false)
+            {
+                _currentTrackFileName = g_Player.CurrentFile;
+                _nextTrackFileName = PlayListPlayer.SingletonPlayer.GetNext();
+                //_CurrentTrackTag = mDB.GetTag(g_Player.CurrentFile);
+                GetTrackTags();
+
+                if (_currentTrackTag != null)
+                {
+                    GetAlbumArt();
+                    GetAlbumArt(_artist);
+
+                    // Outcommented some code that led to a serious bug were first found lyrics always was saved in lyrics database for all following tracks and accordingly always shown on screen!
+                    //if (currentLyrics != null && currentFile != null && _CurrentTrackTag.FileName == currentFile)
+                    //{
+                    //    if (_CurrentTrackTag.Lyrics != currentLyrics)
+                    //    {
+                    //        _CurrentTrackTag.Lyrics = currentLyrics;
+                    //    }
+                    //}
+                }
+                else
+                {
+                    _artist = "";
+                    _title = "";
+                    _lyricText = "";
+                    _imagePathContainer.Clear();
+                    GuIelementImgCoverArt.Dispose();
+
+                    ResetLrcFields();
+                    ResetGUI(_selectedScreen);
+
+                    _statusText = "No music file is playing";
+                    GUIControl.SetControlLabel(GetID, (int) GUIGeneralControls.ControlLbStatus, _statusText);
+                }
+            }
+            else
+            {
+                GetAlbumArt(_artist);
+            }
+        }
+
+        private void UpdateArtistAndTitleFromTrackTag()
+        {
+            _artist = _currentTrackTag.Artist.Trim();
+            _artist = _artist.Replace("| ", "");
+            _artist = _artist.Replace(" |", "");
+            _artist = _artist.Replace("''", "'");
+            _artist = LyricUtil.CapatalizeString(_artist);
+
+            _title = _currentTrackTag.Title.Trim();
+            _title = _title.Replace("''", "'");
+            _title = LyricUtil.CapatalizeString(_title);
         }
 
         private bool CheckReallyEditLRCBeforeEdit()
@@ -1158,8 +1179,7 @@ namespace MyLyrics
                     {
                         _worker.CancelAsync();
                     }
-                    var data = new SaveLyricToTagListsData(_lyricText, _artist, _title,
-                                                                               _currentTrackTag.FileName);
+                    var data = new SaveLyricToTagListsData(_lyricText, _artist, _title, _currentTrackTag.FileName);
                     //worker.RunWorkerAsync(data);
                     //SaveLyricToTagLists(_CurrentTrackTag.FileName, _LyricText);
                     SaveLyricToTagLists(this, new DoWorkEventArgs(data));
@@ -1402,8 +1422,8 @@ namespace MyLyrics
                 return;
             }
 
-            if (tag2.Equals("#Play.Current.Track") || tag2.Equals("#Play.Current.Title") ||
-                tag2.Equals("#Play.Current.File") || tag2.Equals("#Play.Current.Artist")) // track has changed
+            if (tag2.Equals("#Play.Current.Title") || tag2.Equals("#Play.Current.Artist") ||
+                tag2.Equals("#Play.Current.File")) // track has changed
             {
                 if (value.Length != 0) // additional check        
                 {
@@ -1414,7 +1434,6 @@ namespace MyLyrics
                     _newTrack = true;
                     _searchType = (int) SearchTypes.BothLRCsAndLyrics;
                     _searchingState = (int) SearchState.NotSearching;
-                    Process();
                 }
                 else
                 {
@@ -1456,8 +1475,6 @@ namespace MyLyrics
                     _title = newTitle;
 
                     _newTrack = true;
-
-                    Process();
                 }
             }
         }
