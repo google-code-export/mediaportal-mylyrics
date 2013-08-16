@@ -299,6 +299,7 @@ Other changes:
 - Implement required changes for MPTagThat, so that it can use latest LyricsEngine from plugin.
 - Added Lyrics by site counter to batch search in the message box
 - Separated import from music tags and export to music tags (to be more readable)
+- Fixed stack overflow issue that caused MediaPortal to crash
 
 Change log since 1.7.2:
 - Fixed Lyrics007 (rewritten)
