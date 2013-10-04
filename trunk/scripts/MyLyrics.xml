@@ -2225,8 +2225,6 @@ Compatible with MediaPortal 1.4.0
       </ProjectSettings>
       <IsSkin>false</IsSkin>
     </PackageClass>
-  </Items>
-  <Items>
     <PackageClass>
       <Version>2.0</Version>
       <Groups>
@@ -2607,7 +2605,6 @@ Compatible with MediaPortal 1.4.0
       </ProjectSettings>
       <IsSkin>false</IsSkin>
     </PackageClass>
-  </Items>
   <PackageClass>
       <Version>2.0</Version>
       <Groups>
@@ -2799,4 +2796,5 @@ Compatible with MediaPortal 1.4.0
       </ProjectSettings>
       <IsSkin>false</IsSkin>
     </PackageClass>
+  </Items>
 </ExtensionCollection>
