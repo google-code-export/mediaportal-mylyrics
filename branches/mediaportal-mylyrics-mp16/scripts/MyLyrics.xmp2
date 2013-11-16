@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PackageClass xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Version>2.0</Version>
+  <Groups>
+    <Items>
+      <GroupItem Name="Default">
+        <ParentGroup />
+        <DisplayName>MyLyrics</DisplayName>
+        <DefaulChecked>true</DefaulChecked>
+        <Description>MyLyrics displays the lyric of the currently played song inside MediaPortal
+.
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics.
+</Description>
+        <Files>
+          <Items>
+            <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+              <Param1 />
+              <UpdateOption>AlwaysOverwrite</UpdateOption>
+              <LocalFileName>..\source\Skin\Default\myLyrics.xml</LocalFileName>
+              <ZipFileName>Installer{CopyFile}\{d19ffa7d-b993-4bac-b330-533e9ec64b8f}-myLyrics.xml</ZipFileName>
+              <DestinationFilename>%Skin%\Default\myLyrics.xml</DestinationFilename>
+            </FileItem>
+            <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+              <Param1 />
+              <UpdateOption>AlwaysOverwrite</UpdateOption>
+              <LocalFileName>..\source\Skin\Default\myLyrics.hiddenmenu.xml</LocalFileName>
+              <ZipFileName>Installer{CopyFile}\{3d8b873f-112c-4743-8920-66eaa544e471}-myLyrics.hiddenmenu.xml</ZipFileName>
+              <DestinationFilename>%Skin%\Default\myLyrics.hiddenmenu.xml</DestinationFilename>
+            </FileItem>
+            <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+              <Param1 />
+              <UpdateOption>AlwaysOverwrite</UpdateOption>
+              <LocalFileName>..\source\Skin\Default\myLyrics.common.play.fanart.xml</LocalFileName>
+              <ZipFileName>Installer{CopyFile}\{a01111fe-2c8e-4902-9eaa-466eeb037905}-myLyrics.common.play.fanart.xml</ZipFileName>
+              <DestinationFilename>%Skin%\Default\myLyrics.common.play.fanart.xml</DestinationFilename>
+            </FileItem>
+            <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+              <Param1 />
+              <UpdateOption>AlwaysOverwrite</UpdateOption>
+              <LocalFileName>..\source\Skin\Default\Media\hover_my lyrics.png</LocalFileName>
+              <ZipFileName>Installer{CopyFile}\{a89f2ec6-7180-4951-b343-296e620a0109}-hover_my lyrics.png</ZipFileName>
+              <DestinationFilename>%Skin%\Default\Media\hover_my lyrics.png</DestinationFilename>
+            </FileItem>
+            <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+              <Param1 />
+              <UpdateOption>AlwaysOverwrite</UpdateOption>
+              <LocalFileName>..\source\Skin\DefaultWide\myLyrics.xml</LocalFileName>
+              <ZipFileName>Installer{CopyFile}\{33ccc7ed-b833-4b30-9215-d4faec51c792}-myLyrics.xml</ZipFileName>
+              <DestinationFilename>%Skin%\Defaultwide\myLyrics.xml</DestinationFilename>
+            </FileItem>
+            <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+              <Param1 />
+              <UpdateOption>AlwaysOverwrite</UpdateOption>
+              <LocalFileName>..\source\Skin\DefaultWide\myLyrics.hiddenmenu.xml</LocalFileName>
+              <ZipFileName>Installer{CopyFile}\{923c1103-4dd2-4237-88e6-d137b886ea0b}-myLyrics.hiddenmenu.xml</ZipFileName>
+              <DestinationFilename>%Skin%\Defaultwide\myLyrics.hiddenmenu.xml</DestinationFilename>
+            </FileItem>
+            <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+              <Param1 />
+              <UpdateOption>AlwaysOverwrite</UpdateOption>
+              <LocalFileName>..\source\Skin\DefaultWide\myLyrics.common.play.fanart.xml</LocalFileName>
+              <ZipFileName>Installer{CopyFile}\{cb14eb89-9d67-47c0-88fa-3d0e3cf4929a}-myLyrics.common.play.fanart.xml</ZipFileName>
+              <DestinationFilename>%Skin%\Defaultwide\myLyrics.common.play.fanart.xml</DestinationFilename>
+            </FileItem>
+            <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+              <Param1 />
+              <UpdateOption>AlwaysOverwrite</UpdateOption>
+              <LocalFileName>..\source\Skin\DefaultWide\Media\hover_my lyrics.png</LocalFileName>
+              <ZipFileName>Installer{CopyFile}\{dc9d7cf3-731e-41ed-98f9-0dc78ac5fefc}-hover_my lyrics.png</ZipFileName>
+              <DestinationFilename>%Skin%\Defaultwide\Media\hover_my lyrics.png</DestinationFilename>
+            </FileItem>
+            <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+              <Param1 />
+              <UpdateOption>AlwaysOverwrite</UpdateOption>
+              <LocalFileName>..\source\My Lyrics\bin\Release\LyricsEngine.dll</LocalFileName>
+              <ZipFileName>Installer{CopyFile}\{abae78ba-a6d6-4946-b5f3-c1ca2384dd94}-LyricsEngine.dll</ZipFileName>
+              <DestinationFilename>%Base%\LyricsEngine.dll</DestinationFilename>
+            </FileItem>
+            <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+              <Param1 />
+              <UpdateOption>AlwaysOverwrite</UpdateOption>
+              <LocalFileName>..\source\My Lyrics\bin\Release\TranslateProvider.dll</LocalFileName>
+              <ZipFileName>Installer{CopyFile}\{e5302754-efe1-45b0-857d-0cad58a6d6e9}-TranslateProvider.dll</ZipFileName>
+              <DestinationFilename>%Base%\TranslateProvider.dll</DestinationFilename>
+            </FileItem>
+            <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+              <Param1 />
+              <UpdateOption>AlwaysOverwrite</UpdateOption>
+              <LocalFileName>..\source\My Lyrics\bin\Release\MyLyrics.dll</LocalFileName>
+              <ZipFileName>Installer{CopyFile}\{f46ec3b0-6cc4-4cde-ac31-435c250e43a3}-MyLyrics.dll</ZipFileName>
+              <DestinationFilename>%Base%\plugins\Windows\MyLyrics.dll</DestinationFilename>
+            </FileItem>
+            <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+              <Param1 />
+              <UpdateOption>AlwaysOverwrite</UpdateOption>
+              <LocalFileName>..\source\My Lyrics\bin\Release\GoogleTranslateAPI.dll</LocalFileName>
+              <ZipFileName>Installer{CopyFile}\{740f5180-49b0-436c-8449-55e38c224f2e}-GoogleTranslateAPI.dll</ZipFileName>
+              <DestinationFilename>%Base%\GoogleTranslateAPI.dll</DestinationFilename>
+            </FileItem>
+            <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+              <Param1 />
+              <UpdateOption>OverwriteIfOlder</UpdateOption>
+              <LocalFileName>..\source\External\NLog.dll</LocalFileName>
+              <ZipFileName>Installer{CopyFile}\{75233023-3ef9-45a5-a74d-26aedb4b4325}-NLog.dll</ZipFileName>
+              <DestinationFilename>%Base%\NLog.dll</DestinationFilename>
+            </FileItem>
+          </Items>
+        </Files>
+      </GroupItem>
+    </Items>
+  </Groups>
+  <Sections>
+    <Items>
+      <SectionItem Guid="24a17a50-29b8-46a8-975d-2bf8bc0a869e" Name="Welcome Screen" ConditionGroup="Default">
+        <Params>
+          <Items>
+            <SectionParam Name="Header text">
+              <Value>Welcome to the Extension Installer for [Name]</Value>
+              <ValueType>String</ValueType>
+              <Description />
+            </SectionParam>
+            <SectionParam Name="Description">
+              <Value>This will install [Name] version [Version] on your computer.
+It is recommended that you close all other applications before continuing.
+Click Next to continue or Cancel to exit Setup.</Value>
+              <ValueType>String</ValueType>
+              <Description />
+            </SectionParam>
+            <SectionParam Name="Left part image">
+              <Value />
+              <ValueType>File</ValueType>
+              <Description />
+            </SectionParam>
+            <SectionParam Name="Header image">
+              <Value />
+              <ValueType>File</ValueType>
+              <Description>Image in upper right part</Description>
+            </SectionParam>
+          </Items>
+        </Params>
+        <Actions>
+          <Items />
+        </Actions>
+        <IncludedGroups />
+        <PanelName>Welcome Screen</PanelName>
+        <WizardButtonsEnum>NextCancel</WizardButtonsEnum>
+      </SectionItem>
+      <SectionItem Guid="02b21c7b-21b6-4eb0-82d0-bf5204c5c5ce" Name="Install Section" ConditionGroup="Default">
+        <Params>
+          <Items>
+            <SectionParam Name="Header Title">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>Header title</Description>
+            </SectionParam>
+            <SectionParam Name="Header description">
+              <Value />
+              <ValueType>String</ValueType>
+              <Description>Description of section, shown in under section title</Description>
+            </SectionParam>
+            <SectionParam Name="Header image">
+              <Value />
+              <ValueType>File</ValueType>
+              <Description>Image in upper right part</Description>
+            </SectionParam>
+          </Items>
+        </Params>
+        <Actions>
+          <Items>
+            <ActionItem Name="InstallFiles" ActionType="InstallFiles" ConditionGroup="Default">
+              <Params>
+                <Items />
+              </Params>
+              <ExecuteLocation>AfterPanelShow</ExecuteLocation>
+            </ActionItem>
+          </Items>
+        </Actions>
+        <IncludedGroups>
+          <string>Default</string>
+        </IncludedGroups>
+        <PanelName>Install Section</PanelName>
+        <WizardButtonsEnum>Next</WizardButtonsEnum>
+      </SectionItem>
+      <SectionItem Guid="2611e10f-778a-4ffe-9a5e-68dc332af56f" Name="Setup Complete" ConditionGroup="Default">
+        <Params>
+          <Items>
+            <SectionParam Name="Header text">
+              <Value>The Extension Installer Wizard has successfully installed [Name].</Value>
+              <ValueType>String</ValueType>
+              <Description />
+            </SectionParam>
+            <SectionParam Name="Left part image">
+              <Value />
+              <ValueType>File</ValueType>
+              <Description />
+            </SectionParam>
+            <SectionParam Name="Header image">
+              <Value />
+              <ValueType>File</ValueType>
+              <Description>Image in upper right part</Description>
+            </SectionParam>
+          </Items>
+        </Params>
+        <Actions>
+          <Items />
+        </Actions>
+        <IncludedGroups />
+        <PanelName>Setup Complete</PanelName>
+        <WizardButtonsEnum>Finish</WizardButtonsEnum>
+      </SectionItem>
+    </Items>
+  </Sections>
+  <Dependencies>
+    <Items>
+      <DependencyItem>
+        <Type>MediaPortal</Type>
+        <Id />
+        <MinVersion>
+          <Major>1</Major>
+          <Minor>1</Minor>
+          <Build>6</Build>
+          <Revision>27644</Revision>
+        </MinVersion>
+        <MaxVersion>
+          <Major>1</Major>
+          <Minor>1</Minor>
+          <Build>6</Build>
+          <Revision>27644</Revision>
+        </MaxVersion>
+        <WarnOnly>true</WarnOnly>
+        <Message>This version of MyLyrics requires MediaPortal 1.2.0 Beta or higher!</Message>
+        <Name>MediaPortal</Name>
+      </DependencyItem>
+      <DependencyItem>
+        <Type>Skin</Type>
+        <Id />
+        <MinVersion>
+          <Major>1</Major>
+          <Minor>4</Minor>
+          <Build>0</Build>
+          <Revision>0</Revision>
+        </MinVersion>
+        <MaxVersion>
+          <Major>1</Major>
+          <Minor>4</Minor>
+          <Build>0</Build>
+          <Revision>0</Revision>
+        </MaxVersion>
+        <WarnOnly>true</WarnOnly>
+        <Message>requires Skin version 1.4.0.0 to 1.4.0.0.</Message>
+        <Name>Skin</Name>
+      </DependencyItem>
+    </Items>
+  </Dependencies>
+  <PluginDependencies>
+    <Items />
+  </PluginDependencies>
+  <GeneralInfo>
+    <Name>MyLyrics</Name>
+    <Id>acdc23fa-19b4-4867-bf25-176e79753869</Id>
+    <Author>yoavain</Author>
+    <HomePage>http://wiki.team-mediaportal.com/1_MEDIAPORTAL_1/17_Extensions/3_Plugins/MyLyrics</HomePage>
+    <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
+    <UpdateUrl>http://mediaportal-mylyrics.googlecode.com/svn/trunk/scripts/MyLyrics.xml</UpdateUrl>
+    <Version>
+      <Major>1</Major>
+      <Minor>8</Minor>
+      <Build>0</Build>
+      <Revision>0</Revision>
+    </Version>
+    <ExtensionDescription>MyLyrics displays the lyric of the currently played song inside MediaPortal.
+
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics.
+</ExtensionDescription>
+    <VersionDescription>Release notes to MyLyrics 1.8.0
+
+Change log since 1.7.3:
+Reworked everything. All lyrics search sites are now implementing a common interface. An abstract site class now handles timings and common stuff. Site implementation now only has to do the specific site things such as the parsing. GUI is dynamically created according to the number of active implementations. Site implementation now also responsible of the search categories, i.e. in which search priority to enable it when in Lyrics mode.
+(Sorry if the previous paragraph was too low level)
+The reason for doing such a work, which was practically rewriting almost everything, is this: Adding a new search site was hell, but now the effort is very very small. Since sites often change, there's a need to be able to disable a site by changing a single word in code, and not by searching all the places it is being used (GUI, configuration, etc.)
+Other changes:
+- Added skin files for Default 4:3
+- Added www.lyrster.com (took 1 hour now with the new interface ;) )
+- Added www.ViewLyrics.com
+- Added www.lyricsmode.com
+- Added www.lyrics.net
+- Changed Shironet to only work on Hebrew artists/titles.
+- Removed LyricsPluginSite
+- Removed HotLyrics
+- Removed LyricWiki
+- Fixed progress bar in batch search. 2 step progress bar: First for counting candidate songs for search, the second for the search itself (The reason the first is not filling till the end is because looping over all artists and all songs does not total to the number of songs due to "various" or missing titles…)
+- Removed any hardcoded references to GUILocalizeStrings.
+- Update #Play.Current.Lyrics on lyrics found
+- Some GUI overhaul done. Fixed a few inconsistencies.
+- Fix URL in about tab (and remove the use of IE. Now calls default browser)
+- Start using the correct configuration file (the MediaPortal.xml from ProgramData and not Program Files)
+- Change logger to print nicer.
+- Split About tab into 2 tabs: About &amp; Help. About now contains list of supported sites, and credits section
+- Implement required changes for MPTagThat, so that it can use latest LyricsEngine from plugin.
+- Added Lyrics by site counter to batch search in the message box
+- Separated import from music tags and export to music tags (to be more readable)
+- Fixed stack overflow issue that caused MediaPortal to crash
+
+Change log since 1.7.2:
+- Fixed Lyrics007 (rewritten)
+
+Change log since 1.7.1:
+- Fixed LRC finder
+- Fixed Shironet parser
+
+Change log since 1.7.0:
+- Version is compatible with MP 1.4.0 Final or higher
+
+MyLyrics displays the lyric of the currently played song inside MediaPortal.
+The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics. 
+
+Basic features:
+- Dynamic search for the lyric (both LRC's and plain lyrics) to the currently played music file.
+- Browse your music database and select the songs to which you want to find lyrics.
+- Batch search for lyrics matching songs in music database.
+- Search single title and select amoung lyrics from various lyrics sites.
+- Add/delete/edit lyrics and save changes in lyrics databases.
+- Import/export lyrics to/from music tags.
+- Include lyrics from the Internet, musictags, text- and lrc-files.
+- Create a LRC from a basic lyric on the fly and share it with the community.
+
+Keys:
+- E key (or '0' button on remote): Toggle between lyric and editor screen.
+- P key: Toggle between LRC and LRC Pick screen.
+- F key: Toggle between LRC and lyric mode. In lyric mode a new online search starts.
+- S key: Increase the vertical scroll speed in scroll mode. A total of six speed available.
+- Numeric keys (or left or right on remote) to select among various LRC's on LRC Pick screen
+- Enter key (or 'OK' or '#' on remote): Tag line in LRC editor mode.
+- Backslash key (or '*' on remote): Delete the last tagged line in LRC editor mode.
+- F9 (or info button on remote): Shows context menu
+
+Screens:
+- Lyric: shows lyric with coverart on the right.
+  (Two sub modes for both Lyrics basic and Lyrics wide: static (default) or scroll mode)
+- LRC: shows lrc file and coverart on the right.
+- LRC pick: uses BennieBoy's LRCFinder to select among different matching LRC entries.
+- LRC editor: enables the creation of lrc lyric from a plain lyric.
+- Translation screen. See a translated version of the lyric.
+
+Compatible with MediaPortal 1.4.0
+</VersionDescription>
+    <DevelopmentStatus>Stable</DevelopmentStatus>
+    <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/files/MyLyrics-{VERSION}.MPE1</OnlineLocation>
+    <ReleaseDate>2013-07-21T21:07:35</ReleaseDate>
+    <Tags>mylyrics,lyrics,lrcs,music</Tags>
+    <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
+    <Params>
+      <Items>
+        <SectionParam Name="Icon">
+          <Value>icon.bmp</Value>
+          <ValueType>File</ValueType>
+          <Description>The icon file of the package (jpg,png,bmp)</Description>
+        </SectionParam>
+        <SectionParam Name="Online Icon">
+          <Value>http://mediaportal-mylyrics.googlecode.com/svn/trunk/scripts/icon.bmp</Value>
+          <ValueType>String</ValueType>
+          <Description>The icon file of the package stored online (jpg,png,bmp)</Description>
+        </SectionParam>
+        <SectionParam Name="Configuration file">
+          <Value />
+          <ValueType>Template</ValueType>
+          <Description>The file used to configure the extension.
+ If have .exe extension the will be executed
+ If have .dll extension used like MP plugin configuration</Description>
+        </SectionParam>
+        <SectionParam Name="Online Screenshots">
+          <Value>https://mediaportal-mylyrics.googlecode.com/svn/trunk/Screenshots/DefaultWide01.jpg;https://mediaportal-mylyrics.googlecode.com/svn/trunk/Screenshots/DefaultWide02.jpg;https://mediaportal-mylyrics.googlecode.com/svn/trunk/Screenshots/DefaultWide03-LRC.jpg;https://mediaportal-mylyrics.googlecode.com/svn/trunk/Screenshots/Default01.jpg;https://mediaportal-mylyrics.googlecode.com/svn/trunk/Screenshots/Default02.jpg</Value>
+          <ValueType>String</ValueType>
+          <Description>Online stored screenshot urls separated by ; </Description>
+        </SectionParam>
+        <SectionParam Name="Force to uninstall on update">
+          <Value>YES</Value>
+          <ValueType>Bool</ValueType>
+          <Description>Show dialog and force to uninstall previous version when updating an extension. Should only be disabled if you are using an NSIS/MSI installer.</Description>
+        </SectionParam>
+      </Items>
+    </Params>
+  </GeneralInfo>
+  <UniqueFileList>
+    <Items>
+      <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+        <Param1 />
+        <UpdateOption>AlwaysOverwrite</UpdateOption>
+        <LocalFileName>..\source\Skin\Default\myLyrics.xml</LocalFileName>
+        <ZipFileName>Installer{CopyFile}\{d19ffa7d-b993-4bac-b330-533e9ec64b8f}-myLyrics.xml</ZipFileName>
+        <DestinationFilename>%Skin%\Default\myLyrics.xml</DestinationFilename>
+      </FileItem>
+      <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+        <Param1 />
+        <UpdateOption>AlwaysOverwrite</UpdateOption>
+        <LocalFileName>..\source\Skin\Default\myLyrics.hiddenmenu.xml</LocalFileName>
+        <ZipFileName>Installer{CopyFile}\{3d8b873f-112c-4743-8920-66eaa544e471}-myLyrics.hiddenmenu.xml</ZipFileName>
+        <DestinationFilename>%Skin%\Default\myLyrics.hiddenmenu.xml</DestinationFilename>
+      </FileItem>
+      <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+        <Param1 />
+        <UpdateOption>AlwaysOverwrite</UpdateOption>
+        <LocalFileName>..\source\Skin\Default\myLyrics.common.play.fanart.xml</LocalFileName>
+        <ZipFileName>Installer{CopyFile}\{a01111fe-2c8e-4902-9eaa-466eeb037905}-myLyrics.common.play.fanart.xml</ZipFileName>
+        <DestinationFilename>%Skin%\Default\myLyrics.common.play.fanart.xml</DestinationFilename>
+      </FileItem>
+      <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+        <Param1 />
+        <UpdateOption>AlwaysOverwrite</UpdateOption>
+        <LocalFileName>..\source\Skin\Default\Media\hover_my lyrics.png</LocalFileName>
+        <ZipFileName>Installer{CopyFile}\{a89f2ec6-7180-4951-b343-296e620a0109}-hover_my lyrics.png</ZipFileName>
+        <DestinationFilename>%Skin%\Default\Media\hover_my lyrics.png</DestinationFilename>
+      </FileItem>
+      <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+        <Param1 />
+        <UpdateOption>AlwaysOverwrite</UpdateOption>
+        <LocalFileName>..\source\Skin\DefaultWide\myLyrics.xml</LocalFileName>
+        <ZipFileName>Installer{CopyFile}\{33ccc7ed-b833-4b30-9215-d4faec51c792}-myLyrics.xml</ZipFileName>
+        <DestinationFilename>%Skin%\Defaultwide\myLyrics.xml</DestinationFilename>
+      </FileItem>
+      <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+        <Param1 />
+        <UpdateOption>AlwaysOverwrite</UpdateOption>
+        <LocalFileName>..\source\Skin\DefaultWide\myLyrics.hiddenmenu.xml</LocalFileName>
+        <ZipFileName>Installer{CopyFile}\{923c1103-4dd2-4237-88e6-d137b886ea0b}-myLyrics.hiddenmenu.xml</ZipFileName>
+        <DestinationFilename>%Skin%\Defaultwide\myLyrics.hiddenmenu.xml</DestinationFilename>
+      </FileItem>
+      <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+        <Param1 />
+        <UpdateOption>AlwaysOverwrite</UpdateOption>
+        <LocalFileName>..\source\Skin\DefaultWide\myLyrics.common.play.fanart.xml</LocalFileName>
+        <ZipFileName>Installer{CopyFile}\{cb14eb89-9d67-47c0-88fa-3d0e3cf4929a}-myLyrics.common.play.fanart.xml</ZipFileName>
+        <DestinationFilename>%Skin%\Defaultwide\myLyrics.common.play.fanart.xml</DestinationFilename>
+      </FileItem>
+      <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+        <Param1 />
+        <UpdateOption>AlwaysOverwrite</UpdateOption>
+        <LocalFileName>..\source\Skin\DefaultWide\Media\hover_my lyrics.png</LocalFileName>
+        <ZipFileName>Installer{CopyFile}\{dc9d7cf3-731e-41ed-98f9-0dc78ac5fefc}-hover_my lyrics.png</ZipFileName>
+        <DestinationFilename>%Skin%\Defaultwide\Media\hover_my lyrics.png</DestinationFilename>
+      </FileItem>
+      <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+        <Param1 />
+        <UpdateOption>AlwaysOverwrite</UpdateOption>
+        <LocalFileName>..\source\My Lyrics\bin\Release\LyricsEngine.dll</LocalFileName>
+        <ZipFileName>Installer{CopyFile}\{abae78ba-a6d6-4946-b5f3-c1ca2384dd94}-LyricsEngine.dll</ZipFileName>
+        <DestinationFilename>%Base%\LyricsEngine.dll</DestinationFilename>
+      </FileItem>
+      <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+        <Param1 />
+        <UpdateOption>AlwaysOverwrite</UpdateOption>
+        <LocalFileName>..\source\My Lyrics\bin\Release\TranslateProvider.dll</LocalFileName>
+        <ZipFileName>Installer{CopyFile}\{e5302754-efe1-45b0-857d-0cad58a6d6e9}-TranslateProvider.dll</ZipFileName>
+        <DestinationFilename>%Base%\TranslateProvider.dll</DestinationFilename>
+      </FileItem>
+      <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+        <Param1 />
+        <UpdateOption>AlwaysOverwrite</UpdateOption>
+        <LocalFileName>..\source\My Lyrics\bin\Release\MyLyrics.dll</LocalFileName>
+        <ZipFileName>Installer{CopyFile}\{f46ec3b0-6cc4-4cde-ac31-435c250e43a3}-MyLyrics.dll</ZipFileName>
+        <DestinationFilename>%Base%\plugins\Windows\MyLyrics.dll</DestinationFilename>
+      </FileItem>
+      <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+        <Param1 />
+        <UpdateOption>AlwaysOverwrite</UpdateOption>
+        <LocalFileName>..\source\My Lyrics\bin\Release\GoogleTranslateAPI.dll</LocalFileName>
+        <ZipFileName>Installer{CopyFile}\{740f5180-49b0-436c-8449-55e38c224f2e}-GoogleTranslateAPI.dll</ZipFileName>
+        <DestinationFilename>%Base%\GoogleTranslateAPI.dll</DestinationFilename>
+      </FileItem>
+      <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
+        <Param1 />
+        <UpdateOption>OverwriteIfOlder</UpdateOption>
+        <LocalFileName>..\source\External\NLog.dll</LocalFileName>
+        <ZipFileName>Installer{CopyFile}\{75233023-3ef9-45a5-a74d-26aedb4b4325}-NLog.dll</ZipFileName>
+        <DestinationFilename>%Base%\NLog.dll</DestinationFilename>
+      </FileItem>
+      <FileItem InstallType="CopyFile" SystemFile="true" Modified="true">
+        <Param1 />
+        <UpdateOption>OverwriteIfOlder</UpdateOption>
+        <LocalFileName>icon.bmp</LocalFileName>
+        <ZipFileName>Installer{CopyFile}\{3d86d46b-01c4-4a35-abe6-8215f581e6a2}-icon.bmp</ZipFileName>
+        <DestinationFilename />
+      </FileItem>
+    </Items>
+  </UniqueFileList>
+  <ProjectSettings>
+    <FolderGroups />
+    <ProjectFilename>MyLyrics.xmp2</ProjectFilename>
+    <UpdatePath1>update-{VERSION}.xml</UpdatePath1>
+    <UpdatePath2 />
+    <UpdatePath3 />
+  </ProjectSettings>
+  <IsSkin>false</IsSkin>
+</PackageClass>
