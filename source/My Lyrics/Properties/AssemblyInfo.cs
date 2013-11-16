@@ -43,5 +43,5 @@ using MediaPortal.Common.Utils;
 // by using the '*' as shown below:
 
 
-[assembly: AssemblyVersion("1.8.0.$WCREV$")]
-[assembly: AssemblyFileVersion("1.8.0.$WCREV$")]
+[assembly: AssemblyVersion("1.9.0.$WCREV$")]
+[assembly: AssemblyFileVersion("1.9.0.$WCREV$")]
