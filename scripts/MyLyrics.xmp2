@@ -264,7 +264,7 @@ Click Next to continue or Cancel to exit Setup.</Value>
     <UpdateUrl>http://mediaportal-mylyrics.googlecode.com/svn/trunk/scripts/MyLyrics.xml</UpdateUrl>
     <Version>
       <Major>1</Major>
-      <Minor>8</Minor>
+      <Minor>9</Minor>
       <Build>0</Build>
       <Revision>0</Revision>
     </Version>
@@ -272,7 +272,12 @@ Click Next to continue or Cancel to exit Setup.</Value>
 
 The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics.
 </ExtensionDescription>
-    <VersionDescription>Release notes to MyLyrics 1.8.0
+    <VersionDescription>Release notes to MyLyrics 1.9.0
+
+MediaPortal 1.6 compatibility
+
+
+Release notes to MyLyrics 1.8.0
 
 Change log since 1.7.3:
 Reworked everything. All lyrics search sites are now implementing a common interface. An abstract site class now handles timings and common stuff. Site implementation now only has to do the specific site things such as the parsing. GUI is dynamically created according to the number of active implementations. Site implementation now also responsible of the search categories, i.e. in which search priority to enable it when in Lyrics mode.
@@ -346,7 +351,7 @@ Compatible with MediaPortal 1.4.0
 </VersionDescription>
     <DevelopmentStatus>Stable</DevelopmentStatus>
     <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/files/MyLyrics-{VERSION}.MPE1</OnlineLocation>
-    <ReleaseDate>2013-07-21T21:07:35</ReleaseDate>
+    <ReleaseDate>2014-01-05T21:07:35</ReleaseDate>
     <Tags>mylyrics,lyrics,lrcs,music</Tags>
     <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
     <Params>
