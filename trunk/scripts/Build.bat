@@ -14,7 +14,7 @@ if "%programfiles(x86)%XXX"=="XXX" goto 32BIT
 :CONT
 
 :: Build
-"%WINDIR%\Microsoft.NET\Framework\v4.0.30319\MSBUILD.exe" /target:Rebuild /property:Configuration=RELEASE MyLyrics.sln
+"%WINDIR%\Microsoft.NET\Framework\v4.0.30319\MSBUILD.exe" /target:Rebuild /property:Configuration=RELEASE /fl /flp:logfile=MyLyrics.log;verbosity=diagnostic MyLyrics.sln
 
 :: Run test classes
 "%PROGS%\Microsoft Visual Studio 10.0\Common7\IDE\MSTest.exe" /testcontainer:MyLyricsTests\bin\Release\MyLyricsTests.dll /resultsfile:..\scripts\testresult.xml
