@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using MediaPortal.Common.Utils;
 
-[assembly: CompatibleVersion("1.3.100.0", "1.3.100.0")]
+[assembly: CompatibleVersion("1.5.100.0", "1.5.100.0")]
 [assembly: UsesSubsystem("MP.SkinEngine")]
 [assembly: UsesSubsystem("MP.Players.Music")]
 [assembly: UsesSubsystem("MP.DB.Music")]
@@ -43,5 +43,5 @@ using MediaPortal.Common.Utils;
 // by using the '*' as shown below:
 
 
-[assembly: AssemblyVersion("1.8.0.$WCREV$")]
-[assembly: AssemblyFileVersion("1.8.0.$WCREV$")]
+[assembly: AssemblyVersion("1.9.0.$WCREV$")]
+[assembly: AssemblyFileVersion("1.9.0.$WCREV$")]
