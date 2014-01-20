@@ -1,3 +1,9 @@
+Release notes to MyLyrics 1.9.1
+- fixed issue with unicode characters
+
+Release notes to MyLyrics 1.9.0
+- Compatibility for 1.6.0 Pre-Release & Final
+
 Release notes to MyLyrics 1.8.0
 
 MyLyrics displays the lyric of the currently played song inside MediaPortal.
