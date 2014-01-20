@@ -284,14 +284,19 @@ Click Next to continue or Cancel to exit Setup.</Value>
     <Version>
       <Major>1</Major>
       <Minor>9</Minor>
-      <Build>0</Build>
+      <Build>1</Build>
       <Revision>0</Revision>
     </Version>
     <ExtensionDescription>MyLyrics displays the lyric of the currently played song inside MediaPortal.
 
 The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics.
 </ExtensionDescription>
-    <VersionDescription>Release notes to MyLyrics 1.9.0
+    <VersionDescription>Release notes to MyLyrics 1.9.1
+
+Fixed issue with unicode characters
+
+
+Release notes to MyLyrics 1.9.0
 
 MediaPortal 1.6 compatibility
 
