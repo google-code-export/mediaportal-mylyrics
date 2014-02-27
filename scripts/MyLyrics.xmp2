@@ -266,7 +266,7 @@ Click Next to continue or Cancel to exit Setup.</Value>
           <Revision>0</Revision>
         </MaxVersion>
         <WarnOnly>false</WarnOnly>
-        <Message>requires Installer version 1.7.0.0 to 1.7.0.0.</Message>
+        <Message>requires Installer version 1.6.100.0 to 1.7.0.0.</Message>
         <Name>Installer</Name>
       </DependencyItem>
     </Items>
