@@ -3417,8 +3417,8 @@ Screens:
 Compatible with MediaPortal 1.4.0
 </VersionDescription>
         <DevelopmentStatus>Stable</DevelopmentStatus>
-        <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/svn/trunk/builds/MyLyrics-1.9.5.260.MPE1</OnlineLocation>
-        <ReleaseDate>2014-02-27T11:32:47.3234943+02:00</ReleaseDate>
+        <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/svn/trunk/builds/MyLyrics-1.9.5.262.MPE1</OnlineLocation>
+        <ReleaseDate>2014-03-03T07:41:18.4181993+02:00</ReleaseDate>
         <Tags>mylyrics,lyrics,lrcs,music</Tags>
         <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
         <Params>
