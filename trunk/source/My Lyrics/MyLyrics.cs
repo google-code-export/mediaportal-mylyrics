@@ -13,6 +13,7 @@ using System.Threading;
 using System.Xml;
 using LyricsEngine;
 using LyricsEngine.LRC;
+using LyricsEngine.LyricsDatabase;
 using LyricsEngine.LyricsSites;
 using MediaPortal.Configuration;
 using MediaPortal.Dialogs;

@@ -1,4 +1,5 @@
 using System.Xml;
+using LyricsEngine.LyricsDatabase;
 using MediaPortal.Profile;
 
 namespace MyLyrics.Convert
