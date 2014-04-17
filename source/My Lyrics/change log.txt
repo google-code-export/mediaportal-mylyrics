@@ -1,3 +1,6 @@
+Release notes to MyLyrics 1.9.7
+- Compatibility for 1.7.0 Final
+
 Release notes to MyLyrics 1.9.5
 - Compatibility for 1.7.0 Pre-Release
 
