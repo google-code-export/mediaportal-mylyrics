@@ -255,8 +255,8 @@ Click Next to continue or Cancel to exit Setup.</Value>
         <Id />
         <MinVersion>
           <Major>1</Major>
-          <Minor>6</Minor>
-          <Build>100</Build>
+          <Minor>7</Minor>
+          <Build>0</Build>
           <Revision>0</Revision>
         </MinVersion>
         <MaxVersion>
@@ -266,7 +266,7 @@ Click Next to continue or Cancel to exit Setup.</Value>
           <Revision>0</Revision>
         </MaxVersion>
         <WarnOnly>false</WarnOnly>
-        <Message>requires Installer version 1.6.100.0 to 1.7.0.0.</Message>
+        <Message>requires Installer version 1.7.0.0 to 1.7.0.0.</Message>
         <Name>Installer</Name>
       </DependencyItem>
     </Items>
@@ -284,14 +284,18 @@ Click Next to continue or Cancel to exit Setup.</Value>
     <Version>
       <Major>1</Major>
       <Minor>9</Minor>
-      <Build>5</Build>
+      <Build>7</Build>
       <Revision>0</Revision>
     </Version>
     <ExtensionDescription>MyLyrics displays the lyric of the currently played song inside MediaPortal.
 
 The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics.
 </ExtensionDescription>
-    <VersionDescription>Release notes to MyLyrics 1.9.5
+    <VersionDescription>Release notes to MyLyrics 1.9.7
+
+Compatibility for 1.7 Final
+
+Release notes to MyLyrics 1.9.5
 
 Compatibility for 1.7 Pre
 
@@ -380,7 +384,7 @@ Compatible with MediaPortal 1.4.0
 </VersionDescription>
     <DevelopmentStatus>Stable</DevelopmentStatus>
     <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/svn/trunk/builds/MyLyrics-{VERSION}.MPE1</OnlineLocation>
-    <ReleaseDate>2014-02-27T21:07:35</ReleaseDate>
+    <ReleaseDate>2014-04-17T21:07:35</ReleaseDate>
     <Tags>mylyrics,lyrics,lrcs,music</Tags>
     <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
     <Params>
