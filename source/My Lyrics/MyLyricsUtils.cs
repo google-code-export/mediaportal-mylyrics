@@ -1,6 +1,4 @@
-﻿using LyricsEngine.LyricsDatabase;
-
-namespace MyLyrics
+﻿namespace MyLyrics
 {
     public class MyLyricsUtils
     {
