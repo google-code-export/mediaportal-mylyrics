@@ -11,7 +11,6 @@ using System.Threading;
 using System.Windows.Forms;
 using Google.API.Translate;
 using LyricsEngine;
-using LyricsEngine.LyricsDatabase;
 using LyricsEngine.LyricsSites;
 using MediaPortal.Configuration;
 using MediaPortal.Music.Database;

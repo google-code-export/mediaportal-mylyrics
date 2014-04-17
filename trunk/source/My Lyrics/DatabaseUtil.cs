@@ -2,7 +2,6 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using LyricsEngine;
 using LyricsEngine.LRC;
-using LyricsEngine.LyricsDatabase;
 using MediaPortal.Configuration;
 
 namespace MyLyrics

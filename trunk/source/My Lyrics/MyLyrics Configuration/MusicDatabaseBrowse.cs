@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using LyricsEngine;
-using LyricsEngine.LyricsDatabase;
 using LyricsEngine.LyricsSites;
 using MediaPortal.Music.Database;
 using MediaPortal.TagReader;

@@ -6,7 +6,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
 using LyricsEngine;
 using LyricsEngine.LRC;
-using LyricsEngine.LyricsDatabase;
 using LyricsEngine.LyricsSites;
 using MediaPortal.Configuration;
 using MyLyrics.XmlSettings;
