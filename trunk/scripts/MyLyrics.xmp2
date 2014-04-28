@@ -262,11 +262,11 @@ Click Next to continue or Cancel to exit Setup.</Value>
         <MaxVersion>
           <Major>1</Major>
           <Minor>7</Minor>
-          <Build>0</Build>
+          <Build>99</Build>
           <Revision>0</Revision>
         </MaxVersion>
         <WarnOnly>false</WarnOnly>
-        <Message>requires Installer version 1.7.0.0 to 1.7.0.0.</Message>
+        <Message>requires Installer version 1.7.0.0 to 1.7.99.0.</Message>
         <Name>Installer</Name>
       </DependencyItem>
     </Items>
@@ -293,7 +293,7 @@ The plugin can show LRC's and plain lyrics. It uses both musictags and online se
 </ExtensionDescription>
     <VersionDescription>Release notes to MyLyrics 1.9.7
 
-Compatibility for 1.7 Final
+Compatibility for 1.7 Final /1.7.1 HotFix
 
 Release notes to MyLyrics 1.9.5
 
@@ -384,7 +384,7 @@ Compatible with MediaPortal 1.4.0
 </VersionDescription>
     <DevelopmentStatus>Stable</DevelopmentStatus>
     <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/svn/trunk/builds/MyLyrics-{VERSION}.MPE1</OnlineLocation>
-    <ReleaseDate>2014-04-17T21:07:35</ReleaseDate>
+    <ReleaseDate>2014-04-28T21:07:35</ReleaseDate>
     <Tags>mylyrics,lyrics,lrcs,music</Tags>
     <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
     <Params>
