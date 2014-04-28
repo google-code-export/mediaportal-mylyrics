@@ -3231,7 +3231,7 @@ Compatible with MediaPortal 1.4.0
       </ProjectSettings>
       <IsSkin>false</IsSkin>
     </PackageClass>
-        <PackageClass>
+    <PackageClass>
       <Version>2.0</Version>
       <Groups>
         <Items>
@@ -3456,7 +3456,7 @@ Compatible with MediaPortal 1.4.0
       </ProjectSettings>
       <IsSkin>false</IsSkin>
     </PackageClass>
-        <PackageClass>
+    <PackageClass>
       <Version>2.0</Version>
       <Groups>
         <Items>
@@ -3525,11 +3525,11 @@ Compatible with MediaPortal 1.4.0
             <MaxVersion>
               <Major>1</Major>
               <Minor>7</Minor>
-              <Build>0</Build>
+              <Build>99</Build>
               <Revision>0</Revision>
             </MaxVersion>
             <WarnOnly>false</WarnOnly>
-            <Message>requires Installer version 1.7.0.0 to 1.7.0.0.</Message>
+            <Message>requires Installer version 1.7.0.0 to 1.7.99.0.</Message>
             <Name>Installer</Name>
           </DependencyItem>
         </Items>
@@ -3548,7 +3548,7 @@ Compatible with MediaPortal 1.4.0
           <Major>1</Major>
           <Minor>9</Minor>
           <Build>7</Build>
-          <Revision>272</Revision>
+          <Revision>279</Revision>
         </Version>
         <ExtensionDescription>MyLyrics displays the lyric of the currently played song inside MediaPortal.
 
@@ -3556,7 +3556,7 @@ The plugin can show LRC's and plain lyrics. It uses both musictags and online se
 </ExtensionDescription>
         <VersionDescription>Release notes to MyLyrics 1.9.7
 
-Compatibility for 1.7 Final
+Compatibility for 1.7 Final /1.7.1 HotFix
 
 Release notes to MyLyrics 1.9.5
 
@@ -3646,8 +3646,8 @@ Screens:
 Compatible with MediaPortal 1.4.0
 </VersionDescription>
         <DevelopmentStatus>Stable</DevelopmentStatus>
-        <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/svn/trunk/builds/MyLyrics-1.9.7.272.MPE1</OnlineLocation>
-        <ReleaseDate>2014-04-17T16:49:53.2739968+03:00</ReleaseDate>
+        <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/svn/trunk/builds/MyLyrics-1.9.7.279.MPE1</OnlineLocation>
+        <ReleaseDate>2014-04-28T22:52:10.0353214+03:00</ReleaseDate>
         <Tags>mylyrics,lyrics,lrcs,music</Tags>
         <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
         <Params>
