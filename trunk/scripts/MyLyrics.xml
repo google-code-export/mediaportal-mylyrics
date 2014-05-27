@@ -3777,7 +3777,7 @@ Compatible with MediaPortal 1.4.0
           <Major>1</Major>
           <Minor>9</Minor>
           <Build>8</Build>
-          <Revision>281</Revision>
+          <Revision>283</Revision>
         </Version>
         <ExtensionDescription>MyLyrics displays the lyric of the currently played song inside MediaPortal.
 
@@ -3879,8 +3879,8 @@ Screens:
 Compatible with MediaPortal 1.4.0
 </VersionDescription>
         <DevelopmentStatus>Stable</DevelopmentStatus>
-        <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/svn/trunk/builds/MyLyrics-1.9.8.281.MPE1</OnlineLocation>
-        <ReleaseDate>2014-05-27T18:25:02.9585508+03:00</ReleaseDate>
+        <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/svn/trunk/builds/MyLyrics-1.9.8.283.MPE1</OnlineLocation>
+        <ReleaseDate>2014-05-27T18:43:17.0421288+03:00</ReleaseDate>
         <Tags>mylyrics,lyrics,lrcs,music</Tags>
         <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
         <Params>
