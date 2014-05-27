@@ -41,5 +41,5 @@ using MediaPortal.Common.Utils;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.9.7.$WCREV$")]
-[assembly: AssemblyFileVersion("1.9.7.$WCREV$")]
+[assembly: AssemblyVersion("1.9.8.$WCREV$")]
+[assembly: AssemblyFileVersion("1.9.8.$WCREV$")]
