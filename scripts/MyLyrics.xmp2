@@ -255,18 +255,18 @@ Click Next to continue or Cancel to exit Setup.</Value>
         <Id />
         <MinVersion>
           <Major>1</Major>
-          <Minor>7</Minor>
+          <Minor>8</Minor>
           <Build>0</Build>
           <Revision>0</Revision>
         </MinVersion>
         <MaxVersion>
           <Major>1</Major>
-          <Minor>7</Minor>
+          <Minor>8</Minor>
           <Build>999</Build>
           <Revision>999</Revision>
         </MaxVersion>
         <WarnOnly>false</WarnOnly>
-        <Message>requires Installer version 1.7.0.0 to 1.7.999.999.</Message>
+        <Message>requires Installer version 1.8.0.0 to 1.8.999.999.</Message>
         <Name>Installer</Name>
       </DependencyItem>
     </Items>
@@ -282,16 +282,20 @@ Click Next to continue or Cancel to exit Setup.</Value>
     <ForumPage>http://forum.team-mediaportal.com/my-lyrics-plugin-163/</ForumPage>
     <UpdateUrl>http://mediaportal-mylyrics.googlecode.com/svn/trunk/scripts/MyLyrics.xml</UpdateUrl>
     <Version>
-      <Major>1</Major>
-      <Minor>9</Minor>
-      <Build>8</Build>
+      <Major>2</Major>
+      <Minor>0</Minor>
+      <Build>0</Build>
       <Revision>0</Revision>
     </Version>
     <ExtensionDescription>MyLyrics displays the lyric of the currently played song inside MediaPortal.
 
 The plugin can show LRC's and plain lyrics. It uses both musictags and online searches to find lyrics.
 </ExtensionDescription>
-    <VersionDescription>Release notes to MyLyrics 1.9.8
+    <VersionDescription>Release notes to MyLyrics 2.0.0
+
+Compatibility for 1.8 Final
+
+Release notes to MyLyrics 1.9.8
 
 Compatibility for 1.8 Pre-Release
 
@@ -388,7 +392,7 @@ Compatible with MediaPortal 1.4.0
 </VersionDescription>
     <DevelopmentStatus>Stable</DevelopmentStatus>
     <OnlineLocation>https://mediaportal-mylyrics.googlecode.com/svn/trunk/builds/MyLyrics-{VERSION}.MPE1</OnlineLocation>
-    <ReleaseDate>2014-05-27T21:07:35</ReleaseDate>
+    <ReleaseDate>2014-07-01T21:07:35</ReleaseDate>
     <Tags>mylyrics,lyrics,lrcs,music</Tags>
     <Location>..\builds\MyLyrics-MAJOR.MINOR.BUILD.REVISION.MPE1</Location>
     <Params>
