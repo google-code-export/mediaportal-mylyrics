@@ -25,8 +25,8 @@ using System.Reflection;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("2.0.0.$WCREV$")]
-[assembly: AssemblyFileVersion("2.0.0.$WCREV$")]
+[assembly: AssemblyVersion("2.1.0.$WCREV$")]
+[assembly: AssemblyFileVersion("2.1.0.$WCREV$")]
 
 
 //
