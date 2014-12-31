@@ -20,7 +20,7 @@ using MediaPortal.Common.Utils;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("My Lyrics")]
-[assembly: AssemblyCopyright("Copyright © 2009-2014")]
+[assembly: AssemblyCopyright("Copyright © 2009-2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -41,5 +41,5 @@ using MediaPortal.Common.Utils;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("2.1.0.$WCREV$")]
-[assembly: AssemblyFileVersion("2.1.0.$WCREV$")]
+[assembly: AssemblyVersion("2.2.0.$WCREV$")]
+[assembly: AssemblyFileVersion("2.2.0.$WCREV$")]

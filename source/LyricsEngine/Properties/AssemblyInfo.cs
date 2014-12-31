@@ -11,7 +11,7 @@ using System.Reflection;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("LyricsEngine")]
-[assembly: AssemblyCopyright("Copyright © 2009-2014")]
+[assembly: AssemblyCopyright("Copyright © 2009-2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -25,8 +25,8 @@ using System.Reflection;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("2.1.0.$WCREV$")]
-[assembly: AssemblyFileVersion("2.1.0.$WCREV$")]
+[assembly: AssemblyVersion("2.2.0.$WCREV$")]
+[assembly: AssemblyFileVersion("2.2.0.$WCREV$")]
 
 
 //
